@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tibia Scrapper - Acervo Completo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="referrer" content="no-referrer">
+    
+    <style>
+    body { background-color: #0a0a0a; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; }
+
+    /* --- CORES DAS VOCAÇÕES (Estilo Pílula Vibrante) --- */
+    .badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .voc-Sorcerer { background-color: #00ffff !important; color: #000 !important; box-shadow: 0 0 5px rgba(0,255,255,0.3); }
+    .voc-Druid { background-color: #00ff00 !important; color: #000 !important; box-shadow: 0 0 5px rgba(0,255,0,0.3); }
+    .voc-Knight { background-color: #ffff00 !important; color: #000 !important; box-shadow: 0 0 5px rgba(255,255,0,0.3); }
+    .voc-Paladin { background-color: #ff0000 !important; color: #fff !important; box-shadow: 0 0 5px rgba(255,0,0,0.3); }
+    .voc-Todas { background-color: #555 !important; color: #fff !important; }
+
+    /* --- MENU DE CATEGORIAS --- */
+    .cat-card {
+        background: #111;
+        border: 1px solid #222;
+        border-radius: 8px;
+        padding: 20px;
+        text-decoration: none;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: 0.3s;
+        height: 100%;
+    }
+    .cat-card:hover { background: #1a1a1a; border-color: #ffaa00; color: #ffaa00; transform: translateY(-3px); }
+    .cat-icon { font-size: 2.2rem; margin-bottom: 8px; }
+
+    /* --- CARD DO EQUIPAMENTO (Estilo Pro) --- */
+    .item-card {
+        background: #121212;
+        border: 1px solid #252525;
+        border-radius: 4px;
+        padding: 15px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: 0.2s;
+    }
+    .item-card:hover { border-color: #444; background: #161616; }
+
+    .img-slot {
+        background: #000;
+        border-radius: 3px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+    }
+    .item-img { width: 32px; height: 32px; image-rendering: pixelated; }
+    
+    .item-name { font-weight: bold; color: #ffaa00; font-size: 1.1rem; margin-bottom: 2px; text-align: center; }
+    .lvl-req { font-size: 0.7rem; color: #666; margin-bottom: 12px; text-align: center; font-weight: bold; text-transform: uppercase; }
+
+    /* ESTILO DA DESCRIÇÃO (INFOBOX) */
+    .desc-box {
+        background: rgba(0, 0, 0, 0.4);
+        padding: 12px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        margin-top: auto;
+    }
+    .attr-row { 
+        border-bottom: 1px solid #1a1a1a; 
+        padding: 5px 0; 
+        display: block; 
+        color: #b0b0b0;
+    }
+    .attr-row:last-child { border-bottom: none; }
+
+    #backToTop {
+        display: none; position: fixed; bottom: 20px; right: 20px;
+        z-index: 1000; border: none; background-color: #ffaa00;
+        color: black; padding: 12px 18px; border-radius: 5px;
+        font-weight: bold; transition: 0.3s;
+    }
+</style>
+</head>
+<body class="container py-5">
+
+    <div th:if="${exibirMenu}">
+        <h1 class="text-center mb-5 fw-bold">Biblioteca de Equipamentos</h1>
+        
+        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+            <div class="col">
+                <a href="/equipamentos?categoria=Helmets" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/6/6c/Full_Helmet_of_the_Ancients.gif" class="cat-icon-img">
+                    <span>Helmets</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Armors" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/3/38/Robe_of_the_Underworld.gif" class="cat-icon-img">
+                    <span>Armors</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Legs" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/3/34/Dwarven_Legs.gif" class="cat-icon-img">
+                    <span>Legs</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Boots" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/3/33/Pair_of_Soulwalkers.gif" class="cat-icon-img">
+                    <span>Boots</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Shields" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/3/33/Necromancer_Shield.gif" class="cat-icon-img">
+                    <span>Shields</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Spellbooks" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/3/3c/Spellbook_of_Ancient_Arcana.gif" class="cat-icon-img">
+                    <span>Spellbooks</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Amulets" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/f/f2/Ornamented_Brooch.gif" class="cat-icon-img">
+                    <span>Amulets</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Rings" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/a/a4/Engraved_Wedding_Ring.gif" class="cat-icon-img">
+                    <span>Rings</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Wands" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/8/8e/Wand_of_Starstorm.gif" class="cat-icon-img">
+                    <span>Wands</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Rods" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/c/cc/Underworld_Rod.gif" class="cat-icon-img">
+                    <span>Rods</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Axes" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/9/9a/Umbral_Master_Chopper.gif" class="cat-icon-img">
+                    <span>Axes</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Clubs" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/e/e3/Hammer_of_Prophecy.gif" class="cat-icon-img">
+                    <span>Clubs</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Swords" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/0/0a/Berserker.gif" class="cat-icon-img">
+                    <span>Swords</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Fist" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/3/38/Grand_Sanguine_Claws.gif" class="cat-icon-img">
+                    <span>Fists</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Distance" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/8/8d/Royal_Crossbow.gif" class="cat-icon-img">
+                    <span>Distance</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Quivers" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/7/71/Alicorn_Quiver.gif" class="cat-icon-img">
+                    <span>Quivers</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Ammunition" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/a/a6/Infernal_Bolt.gif" class="cat-icon-img">
+                    <span>Ammunition</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Backpacks" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/7/7f/Lilypad_Backpack.gif" class="cat-icon-img">
+                    <span>Backpacks</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/equipamentos?categoria=Extra Slot" class="cat-card">
+                    <img src="https://www.tibiawiki.com.br/images/3/3a/Lit_Torch.gif" class="cat-icon-img">
+                    <span>Extra Slot</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${itens != null}">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">Categoria: <span class="text-warning" th:text="${titulo}"></span></h2>
+            <a href="/equipamentos" class="btn btn-outline-secondary btn-sm">Voltar ao Menu</a>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+            <div class="col" th:each="item : ${itens}">
+                <div class="item-card shadow">
+                    
+                    <div class="img-slot">
+                        <img th:src="${item.imagemUrl}" class="item-img" alt="Item">
+                    </div>
+
+                    <div class="item-name" th:text="${item.nome}"></div>
+                    <div class="lvl-req" th:if="${item.levelMinimo > 0}" th:text="'Level ' + ${item.levelMinimo}"></div>
+
+                    <div class="d-flex flex-wrap justify-content-center gap-1 mb-4"> <span th:each="v : ${#strings.arraySplit(item.vocacoes, ';')}" 
+                            th:if="${v != ''}"
+                            th:classappend="'voc-' + ${v}" 
+                            class="badge rounded-pill" 
+                            th:text="${v}"></span>
+                    </div>
+
+                    <div class="desc-box">
+                        <div class="attr-row" th:if="${item.alcance > 0}" th:text="'Range: ' + ${item.alcance}"></div>
+                        <div class="attr-row" th:if="${item.ataque > 0}" th:text="'Atk: ' + ${item.ataque}"></div>
+                        <div class="attr-row" th:if="${item.hitPercent != null and item.hitPercent != '' and item.hitPercent != '0'}" 
+                            th:text="'Hit%: ' + ${item.hitPercent}">
+                        </div>
+                        <div class="attr-row" 
+                            th:if="${item.danoElemental != null and item.danoElemental != 'Nenhum'}" 
+                            th:text="'Dano Elemental: +' + ${item.danoElemental} + '.'">
+                        </div>
+                        <div class="attr-row" th:if="${item.defesa > 0}" th:text="'Def: ' + ${item.defesa}"></div>
+                        <div class="attr-row" th:if="${item.modDefesa != null and item.modDefesa != '' and item.modDefesa != '0'}" 
+                            th:text="'Extra Def: ' + ${item.modDefesa}">
+                        </div>
+                        <div class="attr-row" th:if="${item.armadura > 0}" th:text="'Arm: ' + ${item.armadura}"></div>
+                        <div class="attr-row" th:if="${item.tipoDano != null}" th:text="'Dano: ' + ${item.tipoDano}"></div>
+                        <div class="attr-row" 
+                            th:if="${item.bonusSkill != null and item.bonusSkill != 'Nenhum' and item.bonusSkill != 'Nenhuma'}"
+                            th:text="'Bônus: ' + ${item.bonusSkill} + '.'">
+                        </div>
+                        <div class="attr-row" 
+                            th:if="${item.protecao != null and item.protecao != 'Nenhum' and item.protecao != 'Nenhuma' 
+                            and item.protecao != 'Nenhum.' and item.protecao != 'Nenhuma.' and item.protecao != ''}"
+                            th:text="'Proteção: ' + ${item.protecao} + '.'">
+                        </div>
+                        <div class="attr-row" th:if="${item.volume > 0}" th:text="'Volume: ' + ${item.volume}"></div>
+                        <div class="attr-row" th:if="${item.danoMedio != null and item.danoMedio != ''}" 
+                            th:text="'Dano Médio: ' + ${item.danoMedio}">
+                        </div>
+                        <div class="attr-row" th:if="${item.manaPorAtaque > 0}" th:text="'Mana por Ataque: ' + ${item.manaPorAtaque}"></div>
+                        <div class="attr-row" th:if="${item.slots > 0}" th:text="'Slots: ' + ${item.slots}"></div>
+                        <div class="attr-row" th:if="${item.tier > 0}" th:text="'Tier: ' + ${item.tier}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="backToTop" title="Voltar ao Topo">
+        <i class="fas fa-arrow-up"></i> ↑
+    </button>
+    <script>
+    var mybutton = document.getElementById("backToTop");
+
+    window.onscroll = function() {
+        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+            mybutton.style.display = "block";
+        } else {
+            mybutton.style.display = "none";
+        }
+    };
+    mybutton.onclick = function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
+</script>
+</body>
+</html>
