@@ -4,31 +4,38 @@ import com.joao.tibia_scrapper.model.Equipamento;
 import com.joao.tibia_scrapper.repository.EquipamentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/equipamentos")
-@CrossOrigin("*")
 public class EquipamentoController {
 
     @Autowired
     private EquipamentoRepository repository;
 
-    @GetMapping("/buscar")
-    public List<Equipamento> buscarEquipamentos(
-            @RequestParam String vocacao, 
-            @RequestParam(defaultValue = "1000") Integer level) {
-        
-        return repository.findByVocacoesContainingAndLevelMinimoLessThanEqual(vocacao, level);
-    }
+    @GetMapping
+    public List<Equipamento> listar(
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) Integer level,
+            @RequestParam(required = false) String vocacao,
+            @RequestParam(required = false) String protecao,
+            @RequestParam(required = false) String elemento,
+            @RequestParam(required = false) String bonus,
+            @RequestParam(required = false) String atributos,
+            @RequestParam(required = false) String cargas,
+            @RequestParam(required = false) String duracao,
+            @RequestParam(required = false) Integer range,
+            @RequestParam(required = false) Integer slots,
+            @RequestParam(required = false) Integer tier) {
 
-    @GetMapping("/categoria/{categoria}")
-    public List<Equipamento> buscarPorCategoria(@PathVariable String categoria) {
-        return repository.findByCategoria(categoria);
-    }
+        if (categoria != null && !categoria.isEmpty()) {
+            return repository.findComFiltrosAvancados(
+                    categoria, level, vocacao, protecao, elemento, 
+                    bonus, atributos, cargas, duracao, range, slots, tier
+            );
+        }
 
-    @GetMapping("/todos")
-    public List<Equipamento> listarTodos() {
         return repository.findAll();
     }
 }

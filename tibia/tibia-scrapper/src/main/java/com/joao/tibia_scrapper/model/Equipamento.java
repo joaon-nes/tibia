@@ -112,7 +112,7 @@ public class Equipamento {
     public void setDanoElemental(String danoElemental) { this.danoElemental = danoElemental; }
 
     public String getElementalBond() { return elementalBond; }
-    public void setElementalBond(String elementalBond) { this.danoElemental = elementalBond; }
+    public void setElementalBond(String elementalBond) { this.elementalBond = elementalBond; }
 
     public String getProtecao() { return protecao; }
     public void setProtecao(String protecao) { this.protecao = protecao; }
