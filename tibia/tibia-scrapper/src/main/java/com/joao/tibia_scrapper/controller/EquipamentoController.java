@@ -1,41 +1,45 @@
 package com.joao.tibia_scrapper.controller;
 
+import com.joao.tibia_scrapper.dto.EquipamentoFilterDTO;
 import com.joao.tibia_scrapper.model.Equipamento;
 import com.joao.tibia_scrapper.repository.EquipamentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/equipamentos")
+@RequestMapping("/api/enciclopedia")
 public class EquipamentoController {
 
     @Autowired
     private EquipamentoRepository repository;
 
     @GetMapping
-    public List<Equipamento> listar(
-            @RequestParam(required = false) String categoria,
-            @RequestParam(required = false) Integer level,
-            @RequestParam(required = false) String vocacao,
-            @RequestParam(required = false) String protecao,
-            @RequestParam(required = false) String elemento,
-            @RequestParam(required = false) String bonus,
-            @RequestParam(required = false) String atributos,
-            @RequestParam(required = false) String cargas,
-            @RequestParam(required = false) String duracao,
-            @RequestParam(required = false) Integer range,
-            @RequestParam(required = false) Integer slots,
-            @RequestParam(required = false) Integer tier) {
+    public List<Equipamento> listar(EquipamentoFilterDTO filtro) {
 
-        if (categoria != null && !categoria.isEmpty()) {
-            return repository.findComFiltrosAvancados(
-                    categoria, level, vocacao, protecao, elemento, 
-                    bonus, atributos, cargas, duracao, range, slots, tier
-            );
+        List<String> categoriasLista = null;
+        if (filtro.categoria() != null && !filtro.categoria().isEmpty()) {
+            categoriasLista = Arrays.asList(filtro.categoria().split(","));
         }
 
-        return repository.findAll();
+        return repository.findComFiltrosAvancados(
+                categoriasLista, 
+                filtro.level(), 
+                filtro.vocacao(), 
+                filtro.protecao(), 
+                filtro.elemento(), 
+                filtro.bonus(), 
+                filtro.atributos(), 
+                filtro.range(), 
+                filtro.slots(), 
+                filtro.tier()
+        );
+    }
+
+    @GetMapping("/categoria/{cat}")
+    public List<Equipamento> buscarParaBuild(@PathVariable String cat) {
+        return repository.findByCategoriaIgnoreCase(cat);
     }
 }

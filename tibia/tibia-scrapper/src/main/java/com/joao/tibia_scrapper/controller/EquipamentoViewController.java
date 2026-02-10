@@ -1,16 +1,19 @@
 package com.joao.tibia_scrapper.controller;
 
+import com.joao.tibia_scrapper.dto.EquipamentoFilterDTO;
 import com.joao.tibia_scrapper.model.Equipamento;
 import com.joao.tibia_scrapper.model.TibiaCoin;
 import com.joao.tibia_scrapper.repository.EquipamentoRepository;
 import com.joao.tibia_scrapper.repository.TibiaCoinRepository;
+import com.joao.tibia_scrapper.service.TibiaCoinService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -18,33 +21,34 @@ public class EquipamentoViewController {
 
     @Autowired
     private EquipamentoRepository repository;
-
     @Autowired
     private TibiaCoinRepository tibiaCoinRepository;
+    @Autowired
+    private TibiaCoinService tibiaCoinService;
 
-    @GetMapping("/equipamentos")
-    public String listarEquipamentos(
-            @RequestParam(required = false) String categoria,
-            @RequestParam(required = false) Integer level,
-            @RequestParam(required = false) String vocacao,
-            @RequestParam(required = false) String protecao,
-            @RequestParam(required = false) String elemento,
-            @RequestParam(required = false) String bonus,
-            @RequestParam(required = false) String atributos,
-            @RequestParam(required = false) String cargas,
-            @RequestParam(required = false) String duracao,
-            @RequestParam(required = false) Integer range,
-            @RequestParam(required = false) Integer slots,
-            @RequestParam(required = false) Integer tier,
-            @RequestParam(required = false) String mundo,
-            HttpSession session,
-            Model model) {
+    @ModelAttribute("ultimaAtualizacao")
+    public String adicionarDataAtualizacao() {
+        return tibiaCoinService.getUltimaAtualizacaoFormatada();
+    }
 
+    @ModelAttribute("listaCoins")
+    public List<TibiaCoin> popularMundos() {
+        return tibiaCoinRepository.findAll();
+    }
+
+    @GetMapping({"/", "/home"})
+    public String home() {
+        return "home";
+    }
+
+    @GetMapping("/enciclopedia")
+    public String listarEquipamentos(EquipamentoFilterDTO filtro, HttpSession session, Model model) {
+        
         List<TibiaCoin> mundosOrdenados = tibiaCoinRepository.findAllByOrderByMundoAsc();
         model.addAttribute("mundos", mundosOrdenados);
 
-        if (mundo != null && !mundo.isEmpty()) {
-            session.setAttribute("mundoSelecionado", mundo);
+        if (filtro.mundo() != null && !filtro.mundo().isEmpty()) {
+            session.setAttribute("mundoSelecionado", filtro.mundo());
         }
         String mundoNaSessao = (String) session.getAttribute("mundoSelecionado");
         model.addAttribute("mundoSelecionado", mundoNaSessao);
@@ -52,22 +56,24 @@ public class EquipamentoViewController {
         if (mundoNaSessao != null) {
             tibiaCoinRepository.findByMundo(mundoNaSessao).ifPresent(tc -> {
                 model.addAttribute("valorTc", tc.getPrecoMedio());
-
                 String tempo = (tc.getTempoReferenciaSite() != null) ? tc.getTempoReferenciaSite() : "Sincronizando...";
                 model.addAttribute("ultimaVerificacao", tempo);
                 model.addAttribute("mundoAtivoNome", tc.getMundo());
             });
         }
 
-        if (categoria != null && !categoria.isEmpty()) {
+        if (filtro.categoria() != null && !filtro.categoria().isEmpty()) {
+            List<String> categoriasLista = Arrays.asList(filtro.categoria().split(","));
+            
             List<Equipamento> itens = repository.findComFiltrosAvancados(
-                    categoria, level, vocacao, protecao, elemento, bonus, atributos, cargas, duracao, range, slots,
-                    tier);
+                    categoriasLista, filtro.level(), filtro.vocacao(), filtro.protecao(), 
+                    filtro.elemento(), filtro.bonus(), filtro.atributos(), 
+                    filtro.range(), filtro.slots(), filtro.tier()
+            );
 
             model.addAttribute("itens", itens);
-            model.addAttribute("titulo", categoria);
-            model.addAttribute("f", new FilterDTO(level, vocacao, protecao, elemento, bonus, atributos, cargas, duracao,
-                    range, slots, tier));
+            model.addAttribute("titulo", filtro.categoria());
+            model.addAttribute("f", filtro); 
         } else {
             model.addAttribute("exibirMenu", true);
         }
@@ -75,7 +81,20 @@ public class EquipamentoViewController {
         return "lista-equipamentos";
     }
 
-    public record FilterDTO(Integer level, String vocacao, String protecao, String elemento, String bonus,
-            String atributos, String cargas, String duracao, Integer range, Integer slots, Integer tier) {
+    @GetMapping("set-builder")
+    public String abrirMontarSet(HttpSession session, Model model) {
+        List<TibiaCoin> mundos = tibiaCoinRepository.findAllByOrderByMundoAsc();
+        model.addAttribute("mundos", mundos);
+
+        String mundoSelecionado = (String) session.getAttribute("mundoSelecionado");
+        if (mundoSelecionado != null) {
+            tibiaCoinRepository.findByMundo(mundoSelecionado).ifPresent(tc -> {
+                model.addAttribute("valorTc", tc.getPrecoMedio());
+                model.addAttribute("ultimaVerificacao", tc.getTempoReferenciaSite());
+                model.addAttribute("mundoSelecionado", mundoSelecionado);
+            });
+        }
+
+        return "montar-set";
     }
 }
