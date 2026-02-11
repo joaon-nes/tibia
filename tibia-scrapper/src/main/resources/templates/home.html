@@ -31,31 +31,6 @@
                 </ul>
 
                 <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-3">
-
-                    <div class="d-flex align-items-center bg-dark border border-secondary rounded px-3 py-1">
-                        <img src="https://www.tibiawiki.com.br/images/1/19/Tibia_Coin.gif" alt="TC" width="24"
-                            height="24" class="me-2">
-                        <div class="me-3">
-                            <label class="text-secondary d-block"
-                                style="font-size: 0.65rem; margin-bottom: -2px;">Mundo</label>
-                            <select id="selectMundo"
-                                class="form-select form-select-sm bg-black text-white border-secondary py-0 shadow-none"
-                                style="width: 110px; font-size: 0.8rem; height: 22px;" onchange="atualizarPreco()">
-                                <option th:each="coin : ${listaCoins}" th:value="${coin.precoMedio}"
-                                    th:text="${coin.mundo}" th:selected="${coin.mundo == 'Antica'}">
-                                </option>
-                            </select>
-                        </div>
-                        <div class="text-end">
-                            <div class="text-warning fw-bold" style="font-size: 0.9rem;">
-                                <span id="precoDisplay">0</span> golds
-                            </div>
-                            <small class="text-muted d-block" style="font-size: 0.65rem;">
-                                <i class="fa-regular fa-clock"></i> <span th:text="${ultimaAtualizacao}">...</span>
-                            </small>
-                        </div>
-                    </div>
-
                     <ul class="navbar-nav">
                         <li class="nav-item" sec:authorize="!isAuthenticated()">
                             <a href="/login" class="btn btn-sm btn-outline-warning fw-bold px-3">

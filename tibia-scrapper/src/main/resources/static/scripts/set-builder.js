@@ -21,7 +21,10 @@ function getSlotId(categoria) {
 
 function limparTextoParaBuild(texto) {
     if (!texto || texto === 'Nenhum' || texto === 'Nenhuma' || texto === '0' || texto === '') return '';
-    return texto;
+    let textoLimpo = texto.replace(/Fornece uma (pequena )?quantidade de luz\.?/gi, '').trim();
+    if (textoLimpo.startsWith(',')) textoLimpo = textoLimpo.substring(1).trim();
+    if (textoLimpo.endsWith(',')) textoLimpo = textoLimpo.substring(0, textoLimpo.length - 1).trim();
+    return textoLimpo;
 }
 
 function abrirModal(categoriaSlot) {
@@ -32,28 +35,17 @@ function abrirModal(categoriaSlot) {
     const voc = vocElement ? vocElement.value : "";
 
     if (categoriaSlot === 'Weapons') {
-        if (voc === 'Knight') {
-            categoriaApi = "Swords,Axes,Clubs";
-        } else if (voc === 'Paladin') {
-            categoriaApi = "Distance";
-        } else if (voc === 'Sorcerer' || voc === 'Druid') {
-            categoriaApi = "Wands,Rods";
-        } else if (voc === 'Monk') {
-            categoriaApi = "Fist";
-        } else {
-            categoriaApi = "Swords,Axes,Clubs,Wands,Rods,Distance,Fist";
-        }
+        if (voc === 'Knight') categoriaApi = "Swords,Axes,Clubs";
+        else if (voc === 'Paladin') categoriaApi = "Distance";
+        else if (voc === 'Sorcerer' || voc === 'Druid') categoriaApi = "Wands,Rods";
+        else if (voc === 'Monk') categoriaApi = "Fist";
+        else categoriaApi = "Swords,Axes,Clubs,Wands,Rods,Distance,Fist";
     } 
     else if (categoriaSlot === 'Shields') {
-        if (voc === 'Sorcerer' || voc === 'Druid') {
-            categoriaApi = "Shields,Spellbooks";
-        } else if (voc === 'Paladin') {
-            categoriaApi = "Shields,Quivers";
-        } else if (voc === 'Knight' || voc === 'Monk') {
-            categoriaApi = "Shields";
-        } else {
-            categoriaApi = "Shields,Spellbooks,Quivers";
-        }
+        if (voc === 'Sorcerer' || voc === 'Druid') categoriaApi = "Shields,Spellbooks";
+        else if (voc === 'Paladin') categoriaApi = "Shields,Quivers";
+        else if (voc === 'Knight' || voc === 'Monk') categoriaApi = "Shields";
+        else categoriaApi = "Shields,Spellbooks,Quivers";
     }
 
     const modalTitulo = document.getElementById('modal-titulo');
@@ -129,7 +121,12 @@ function carregarItens(categoriaApi) {
 
                 const bSkill = limparTextoParaBuild(item.bonusSkill);
                 const bProt = limparTextoParaBuild(item.protecao);
-                let extras = (bSkill && bProt) ? `${bSkill}, ${bProt}` : (bSkill || bProt || "");
+                
+                let extras = [];
+                if(bSkill) extras.push(bSkill);
+                if(bProt) extras.push(bProt);
+                
+                let extrasTexto = extras.join(', ');
 
                 div.innerHTML = `
                     <div class="p-1 h-100 d-flex flex-column align-items-center justify-content-between">
@@ -139,7 +136,7 @@ function carregarItens(categoriaApi) {
                         </div>
                         <div class="text-white-50" style="font-size: 11px; line-height: 1.2;">${stats.join(' | ')}</div>
                         <div class="text-warning" style="font-size: 10px; font-weight: bold;">Lvl: ${item.levelMinimo > 0 ? item.levelMinimo : '-'}</div>
-                        <div class="text-info" style="font-size: 10px; font-style: italic;">${extras}</div>
+                        <div class="text-info" style="font-size: 10px; font-style: italic;">${extrasTexto}</div>
                     </div>
                 `;
 
@@ -236,6 +233,7 @@ function limparSet() {
 function calcularStatus() {
     let totalArm = 0;
     let totalDef = 0; 
+    let totalAtk = 0;
     
     let skillsMap = {};
     let specialBonuses = [];
@@ -254,14 +252,18 @@ function calcularStatus() {
         if (item) {
             if (item.armadura) totalArm += item.armadura;
             if (item.defesa) totalDef += item.defesa;
+            if (item.ataque) totalAtk += item.ataque;
             if (item.modDefesa && !isNaN(parseInt(item.modDefesa))) totalDef += parseInt(item.modDefesa);
 
-            if (item.bonusSkill && item.bonusSkill !== 'Nenhum' && item.bonusSkill !== 'Nenhuma') {
+            let bonusRaw = item.bonusSkill || "";
+            bonusRaw = bonusRaw.replace(/Fornece uma (pequena )?quantidade de luz\.?/gi, '');
+
+            if (bonusRaw && bonusRaw !== 'Nenhum' && bonusRaw !== 'Nenhuma') {
                 const regexSkill = /([a-zA-Z\s]+)\s([+-]?\d+)/g;
                 let match;
                 let foundAny = false;
 
-                while ((match = regexSkill.exec(item.bonusSkill)) !== null) {
+                while ((match = regexSkill.exec(bonusRaw)) !== null) {
                     foundAny = true;
                     let nomeSkill = match[1].trim();
                     let valorSkill = parseInt(match[2]);
@@ -273,9 +275,9 @@ function calcularStatus() {
                     }
                 }
 
-                if (!foundAny) {
-                    if (!specialBonuses.includes(item.bonusSkill)) {
-                        specialBonuses.push(item.bonusSkill);
+                if (!foundAny && bonusRaw.trim().length > 2) { 
+                    if (!specialBonuses.includes(bonusRaw.trim())) {
+                        specialBonuses.push(bonusRaw.trim());
                     }
                 }
             }
@@ -285,7 +287,7 @@ function calcularStatus() {
                 let match;
                 while ((match = regexProt.exec(item.protecao)) !== null) {
                     const tipo = match[1];
-                    const valor = parseFloat(match[2]);
+                    const valor = parseFloat(match[2]); 
                     const chave = tipo.charAt(0).toUpperCase() + tipo.slice(1).toLowerCase();
                     
                     if (protecoesMult.hasOwnProperty(chave)) {
@@ -298,7 +300,6 @@ function calcularStatus() {
 
     for (const [key, mult] of Object.entries(protecoesMult)) {
         let protecaoFinal = (1.0 - mult) * 100;
-
         protecoes[key] = Number(protecaoFinal.toFixed(2));
     }
 
