@@ -41,7 +41,7 @@
 
         #card-rashid {
             background-color: #1a1a1a;
-            background-size: cover; 
+            background-size: cover;
             background-repeat: no-repeat;
             background-position: center center;
         }
@@ -417,8 +417,16 @@
                             <img id="rashid-img" src="https://www.tibiawiki.com.br/images/f/f5/Rashid.gif" alt="Rashid"
                                 class="creature-sprite">
                         </div>
-                        <span id="rashid-city" class="fw-bold text-light text-shadow-heavy"
-                            style="z-index: 5; font-size: 1em;">Calculando...</span>
+
+                        <div style="z-index: 5; font-size: 0.95em;" class="fw-bold text-light text-shadow-heavy mt-1">
+                            <span id="rashid-city">Calculando...</span>
+                            <a href="javascript:void(0)" onclick="abrirMapaRashid()"
+                                class="text-warning text-decoration-none ms-1 transition"
+                                title="Ver no Mapa interativo">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </a>
+                        </div>
+
                     </div>
                 </div>
 
@@ -500,6 +508,33 @@
         </div>
     </div>
 
+    <div class="modal fade" id="mapaRashidModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-transparent border-0 position-relative">
+
+                <button type="button" class="btn-close btn-close-white position-absolute" data-bs-dismiss="modal"
+                    aria-label="Close"
+                    style="top: 15px; right: 15px; z-index: 1050; background-color: rgba(0,0,0,0.7); padding: 10px; border-radius: 50%;"></button>
+
+                <div class="modal-body p-0 bg-dark position-relative shadow-lg"
+                    style="height: 500px; border-radius: 12px; overflow: hidden; border: 2px solid #444;">
+
+                    <iframe id="modal-rashid-iframe" src="" width="100%" height="100%" frameborder="0"
+                        style="border:0;"></iframe>
+
+                    <div class="position-absolute bottom-0 start-50 translate-middle-x w-100 text-center pb-4"
+                        style="pointer-events: none;">
+                        <span id="modal-rashid-desc" class="text-white"
+                            style="font-size: 1.1rem; text-shadow: 2px 2px 4px #000, -1px -1px 4px #000, 1px -1px 4px #000, -1px 1px 4px #000, 0 0 10px #000;">
+                            Carregando...
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer class="bg-black text-center text-secondary py-4 border-top border-dark mt-auto">
         <div class="container">
             <small>&copy; 2026 TibiaBuilder Project. Dados obtidos via TibiaData API e TibiaWiki.</small>
@@ -517,6 +552,8 @@
             });
         });
 
+        let rashidDataHoje = {};
+
         function atualizarRashid() {
             const now = new Date();
             const utcHour = now.getUTCHours();
@@ -527,18 +564,30 @@
             }
 
             const rashidData = {
-                0: { city: "Carlin", bg: "https://www.tibiawiki.com.br/images/8/87/Rashid_Carlin.png" },
-                1: { city: "Svargrond", bg: "https://www.tibiawiki.com.br/images/8/8c/Rashid_Svargrond.png" },
-                2: { city: "Liberty Bay", bg: "https://www.tibiawiki.com.br/images/2/22/Rashid_Liberty_Bay.png" },
-                3: { city: "Port Hope", bg: "https://www.tibiawiki.com.br/images/4/4e/Rashid_Port_Hope.png" },
-                4: { city: "Ankrahmun", bg: "https://www.tibiawiki.com.br/images/d/dd/Rashid_Ankrahmun.png" },
-                5: { city: "Darashia", bg: "https://www.tibiawiki.com.br/images/a/ab/Rashid_Darashia.png" },
-                6: { city: "Edron", bg: "https://www.tibiawiki.com.br/images/6/6f/Rashid_Edron.png" }
+                1: { city: "Svargrond", bg: "https://www.tibiawiki.com.br/images/8/8c/Rashid_Svargrond.png", coords: "32210,31158,7", desc: "Em Svargrond, na Taverna Dankwart, sul do templo." },
+                2: { city: "Liberty Bay", bg: "https://www.tibiawiki.com.br/images/2/22/Rashid_Liberty_Bay.png", coords: "32301,32837,7", desc: "Na taverna de Lyonel ao oeste do depot, Liberty Bay" },
+                3: { city: "Port Hope", bg: "https://www.tibiawiki.com.br/images/4/4e/Rashid_Port_Hope.png", coords: "32578,32754,7", desc: "Na taverna de Clyde ao norte do barco, em Port Hope." },
+                4: { city: "Ankrahmun", bg: "https://www.tibiawiki.com.br/images/d/dd/Rashid_Ankrahmun.png", coords: "33070,32882,6", desc: "Em Ankhramun, na taverna de Arito, acima do post office." },
+                5: { city: "Darashia", bg: "https://www.tibiawiki.com.br/images/a/ab/Rashid_Darashia.png", coords: "33235,32485,7", desc: "Na cidade de Darashia, na taverna de Miraia, a oeste do barco." },
+                6: { city: "Edron", bg: "https://www.tibiawiki.com.br/images/6/6f/Rashid_Edron.png", coords: "33168,31809,6", desc: "Em Edron, na taverna de Mirabell, acima do depot." },
+                0: { city: "Carlin", bg: "https://www.tibiawiki.com.br/images/8/87/Rashid_Carlin.png", coords: "32330,31782,6", desc: "Em Carlin, no primeiro andar do depot." }
             };
 
-            const currentRashid = rashidData[day];
-            document.getElementById('rashid-city').innerText = currentRashid.city;
-            document.getElementById('card-rashid').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.85) 100%), url('${currentRashid.bg}')`;
+            rashidDataHoje = rashidData[day];
+
+            document.getElementById('rashid-city').innerText = rashidDataHoje.city;
+            document.getElementById('card-rashid').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.85) 100%), url('${rashidDataHoje.bg}')`;
+        }
+
+        function abrirMapaRashid() {
+            const modal = new bootstrap.Modal(document.getElementById('mapaRashidModal'));
+
+            document.getElementById('modal-rashid-desc').innerText = rashidDataHoje.desc;
+
+            const embedUrl = `https://tibiamaps.io/map/embed#${rashidDataHoje.coords}:2`;
+            document.getElementById('modal-rashid-iframe').src = embedUrl;
+
+            modal.show();
         }
 
         window.currentNewsHtml = "";
