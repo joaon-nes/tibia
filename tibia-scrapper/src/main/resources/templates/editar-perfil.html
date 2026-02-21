@@ -1,85 +1,247 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
-    <title>Editar Perfil - Tibia Scraper</title>
+    <title>Editar Perfil - TibiaBuilder</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
+
 <body class="d-flex flex-column min-vh-100 bg-dark text-white">
 
-    <nav class="navbar navbar-dark bg-black border-bottom border-secondary mb-5">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-warning" href="/">
-                <i class="fa-solid fa-dragon"></i> TibiaScraper
-            </a>
-            <a href="/" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Voltar para Home</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-secondary mb-4 position-relative">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center" style="flex: 1;">
+                <button class="navbar-toggler me-2 border-secondary" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#menuPrincipal">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="menuPrincipal">
+                    <ul class="navbar-nav mb-2 mb-lg-0 fw-bold">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/montar-set">Montar Set</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/equipamentos">Enciclopédia</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/comunidade">Comunidade</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="position-absolute top-50 start-50 translate-middle text-center" style="z-index: 10;">
+                <a class="navbar-brand fw-bold text-warning fs-3 m-0" href="/"><i class="fa-solid fa-dragon"></i>
+                    TibiaBuilder</a>
+            </div>
+            <div class="d-flex align-items-center justify-content-end gap-2" style="flex: 1;">
+                <div class="d-flex align-items-center" sec:authorize="isAuthenticated()">
+                    <div class="dropdown me-4 pe-2">
+                        <button class="btn btn-sm btn-outline-light position-relative border-0" type="button"
+                            id="dropdownNotificacoes" data-bs-toggle="dropdown" aria-expanded="false"
+                            onclick="carregarNotificacoes()">
+                            <i class="fa-solid fa-bell fs-5"></i>
+                            <span id="notif-badge"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
+                                style="font-size: 0.6rem;">0</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary shadow"
+                            aria-labelledby="dropdownNotificacoes"
+                            style="width: 320px; max-height: 400px; overflow-y: auto;">
+                            <li>
+                                <h6 class="dropdown-header text-warning fw-bold border-bottom border-secondary">Últimas
+                                    Atualizações</h6>
+                            </li>
+                            <div id="lista-notificacoes-preview">
+                                <li class="text-center p-3 text-secondary"><i class="fas fa-spinner fa-spin"></i>
+                                    Carregando...</li>
+                            </div>
+                            <li>
+                                <hr class="dropdown-divider border-secondary">
+                            </li>
+                            <li><a class="dropdown-item text-center text-info small fw-bold py-2"
+                                    href="/notificacoes">Ver todas as notificações</a></li>
+                        </ul>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" id="dropdownUser"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-user"></i> <span class="d-none d-md-inline ms-1">Conta</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary shadow"
+                            aria-labelledby="dropdownUser">
+                            <li><a class="dropdown-item text-light" href="/perfil"><i
+                                        class="fa-solid fa-user-pen me-2 text-warning"></i> Editar Perfil</a></li>
+                            <li>
+                                <hr class="dropdown-divider border-secondary">
+                            </li>
+                            <li>
+                                <form action="/logout" method="post" class="m-0 p-0"><button type="submit"
+                                        class="dropdown-item text-danger"><i
+                                            class="fa-solid fa-right-from-bracket me-2"></i> Sair</button></form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div sec:authorize="!isAuthenticated()">
+                    <a href="/login" class="btn btn-sm btn-warning fw-bold">Entrar</a>
+                </div>
+            </div>
         </div>
     </nav>
 
     <main class="container flex-grow-1 d-flex align-items-center justify-content-center">
-        <div class="card auth-card text-white shadow">
+        <div class="card auth-card text-white shadow" style="max-width: 500px; width: 100%;">
             <div class="card-header auth-header text-center py-4">
                 <h3 class="fw-bold mb-0"><i class="fa-solid fa-user-pen me-2"></i>Editar Perfil</h3>
             </div>
-            
             <div class="card-body p-4">
-                
-                <div th:if="${param.sucesso}" class="alert alert-success bg-success text-white border-0 py-2 small mb-3">
-                    <i class="fa-solid fa-check-circle me-1"></i> Dados atualizados com sucesso!
+                <div th:if="${param.sucesso}"
+                    class="alert alert-success bg-success text-white border-0 py-2 small mb-3">
+                    <i class="fa-solid fa-check-circle me-1"></i> Perfil atualizado com sucesso!
                 </div>
                 <div th:if="${param.erro}" class="alert alert-danger bg-danger text-white border-0 py-2 small mb-3">
                     <i class="fa-solid fa-circle-exclamation me-1"></i> Erro ao atualizar perfil.
                 </div>
 
-                <form th:action="@{/perfil/atualizar}" method="post">
-                    
+                <form th:action="@{/perfil/atualizar}" method="post" enctype="multipart/form-data">
+                    <div class="text-center mb-4">
+                        <div class="bg-dark border border-secondary text-secondary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow overflow-hidden"
+                            style="width: 100px; height: 100px;">
+                            <img th:if="${usuario.avatar != null}" th:src="${usuario.avatar}"
+                                style="width: 100%; height: 100%; object-fit: cover;">
+                            <i th:unless="${usuario.avatar != null}" class="fa-solid fa-user fs-1"></i>
+                        </div>
+                        <label class="btn btn-sm btn-outline-warning mt-2">
+                            <i class="fa-solid fa-camera"></i> Alterar Foto
+                            <input type="file" name="imagemPerfil" class="d-none" accept="image/*"
+                                onchange="previewImage(this)">
+                        </label>
+                    </div>
+
                     <div class="mb-3">
-                        <label class="form-label text-secondary small">Email (Não alterável)</label>
-                        <input type="text" class="form-control bg-dark text-secondary border-secondary" 
-                               th:value="${usuario.email}" disabled readonly>
+                        <label class="form-label text-secondary small">Email (Não editável)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i
+                                    class="fa-solid fa-envelope"></i></span>
+                            <input type="text" class="form-control bg-dark text-white-50 border-secondary"
+                                th:value="${usuario.email}" disabled readonly>
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="nome" class="form-label text-secondary small">Nome de Exibição</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fa-solid fa-user"></i></span>
-                            <input type="text" class="form-control" id="nome" name="nome" th:value="${usuario.nome}" required>
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i
+                                    class="fa-solid fa-user"></i></span>
+                            <input type="text" class="form-control bg-black text-white border-secondary" id="nome"
+                                name="nome" th:value="${usuario.nome}" required>
                         </div>
                     </div>
+
+                    <hr class="border-secondary my-4">
+
+                    <div class="mb-3">
+                        <label class="form-label text-warning small fw-bold"><i class="fa-solid fa-link me-1"></i>
+                            Conectar Personagem (Tibia.com)</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-black text-white border-secondary"
+                                id="input-char-name" placeholder="Nome do Char" th:value="${usuario.charName}">
+                            <button class="btn btn-warning fw-bold" type="button"
+                                onclick="conectarPersonagem()">Conectar</button>
+                        </div>
+                        <small id="status-conexao" class="d-block mt-1"
+                            style="font-size: 11px; min-height: 15px;"></small>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-4"><label class="form-label text-secondary small">Level</label><input
+                                type="number" class="form-control bg-dark text-secondary border-secondary"
+                                id="charLevel" name="charLevel" th:value="${usuario.charLevel}" readonly></div>
+                        <div class="col-4"><label class="form-label text-secondary small">Vocação</label><input
+                                type="text" class="form-control bg-dark text-secondary border-secondary"
+                                id="charVocation" name="charVocation" th:value="${usuario.charVocation}" readonly></div>
+                        <div class="col-4"><label class="form-label text-secondary small">Mundo</label><input
+                                type="text" class="form-control bg-dark text-secondary border-secondary" id="charWorld"
+                                name="charWorld" th:value="${usuario.charWorld}" readonly></div>
+                    </div>
+                    <input type="hidden" id="charResidence" name="charResidence" th:value="${usuario.charResidence}">
+                    <input type="hidden" id="charNameFinal" name="charName" th:value="${usuario.charName}">
+
+                    <hr class="border-secondary my-4">
 
                     <div class="mb-4">
                         <label for="senha" class="form-label text-secondary small">Nova Senha (Opcional)</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fa-solid fa-lock"></i></span>
-                            <input type="password" class="form-control" id="senha" name="senha" placeholder="Deixe em branco para manter a atual">
-                        </div>
-                        <div class="form-text text-secondary" style="font-size: 0.75rem;">
-                            Preencha apenas se desejar alterar sua senha.
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i
+                                    class="fa-solid fa-lock"></i></span>
+                            <input type="password" class="form-control bg-black text-white border-secondary" id="senha"
+                                name="senha" placeholder="Deixe em branco para manter">
                         </div>
                     </div>
 
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-warning fw-bold">
-                            <i class="fa-solid fa-floppy-disk me-2"></i> Salvar Alterações
-                        </button>
+                        <button type="submit" class="btn btn-primary fw-bold"><i
+                                class="fa-solid fa-floppy-disk me-2"></i> Salvar Alterações</button>
                     </div>
                 </form>
-            </div>
-            
-            <div class="card-footer auth-footer text-center py-3">
-                <small class="text-secondary">Conta criada com função: <span class="text-info fw-bold" th:text="${usuario.role}">USER</span></small>
             </div>
         </div>
     </main>
 
     <footer class="bg-black text-center text-secondary py-4 border-top border-dark mt-auto">
-        <div class="container">
-            <small>&copy; 2026 Tibia Scraper Project.</small>
-        </div>
+        <div class="container"><small>&copy; 2026 TibiaBuilder Project.</small></div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/scripts/scripts.js}"></script>
+
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                alert("Imagem selecionada: " + input.files[0].name);
+            }
+        }
+
+        function conectarPersonagem() {
+            const nomeInput = document.getElementById('input-char-name');
+            const statusDiv = document.getElementById('status-conexao');
+            const nomeChar = nomeInput.value.trim();
+
+            if (!nomeChar) {
+                statusDiv.innerText = "Digite o nome do personagem.";
+                statusDiv.className = "text-danger small mt-1";
+                return;
+            }
+
+            statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando no Tibia.com...';
+            statusDiv.className = "text-info small mt-1";
+
+            fetch(`/api/character/buscar?nome=${encodeURIComponent(nomeChar)}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Personagem não encontrado');
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('charLevel').value = data.level;
+                    document.getElementById('charVocation').value = data.vocation;
+                    document.getElementById('charWorld').value = data.world;
+                    document.getElementById('charResidence').value = data.residence;
+                    document.getElementById('charNameFinal').value = data.name;
+                    nomeInput.value = data.name;
+
+                    statusDiv.innerHTML = `<i class="fa-solid fa-check text-success"></i> Encontrado: ${data.name} (${data.world})`;
+                    statusDiv.className = "text-success small mt-1";
+                })
+                .catch(error => {
+                    statusDiv.innerText = "Personagem não encontrado ou erro na conexão.";
+                    statusDiv.className = "text-danger small mt-1";
+
+                    document.getElementById('charLevel').value = "";
+                    document.getElementById('charVocation').value = "";
+                    document.getElementById('charWorld').value = "";
+                    document.getElementById('charResidence').value = "";
+                    document.getElementById('charNameFinal').value = "";
+                });
+        }
+    </script>
 </body>
+
 </html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Notificações - TibiaBuilder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-dark text-white">
+
+    <nav class="navbar navbar-dark bg-black border-bottom border-secondary mb-5">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-warning" href="/"><i class="fa-solid fa-dragon"></i> TibiaBuilder</a>
+            <div class="ms-auto">
+                <a href="/" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Voltar</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container flex-grow-1" style="max-width: 800px;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold text-white"><i class="fa-solid fa-bell text-warning"></i> Suas Notificações</h3>
+            <a href="/notificacoes/ler-todas" class="btn btn-sm btn-outline-info">Marcar todas como lidas</a>
+        </div>
+
+        <div class="list-group bg-black border-secondary">
+            <div th:each="notif : ${notificacoes}"
+                class="list-group-item list-group-item-action bg-dark text-white border-secondary p-3 mb-1 rounded d-flex align-items-center"
+                th:classappend="${!notif.lida} ? 'border-start border-4 border-warning' : ''">
+
+                <div class="me-3 fs-4" style="width: 40px; text-align: center;">
+                    <i class="fa-solid" th:classappend="${notif.getIcone()}"></i>
+                </div>
+
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-secondary"
+                            th:text="${#temporals.format(notif.data, 'dd/MM HH:mm')}">Data</small>
+                        <span th:if="${!notif.lida}" class="badge bg-warning text-dark"
+                            style="font-size: 0.6em;">NOVA</span>
+                    </div>
+
+                    <a th:href="@{/notificacoes/ler/{id}(id=${notif.id})}"
+                        class="text-decoration-none text-white stretched-link">
+                        <strong class="text-warning" th:text="${notif.remetente.username}">Fulano</strong>
+                        <span th:text="${notif.mensagem}">mensagem...</span>
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(notificacoes)}" class="text-center py-5 text-secondary">
+                <i class="fa-regular fa-bell-slash fs-1 mb-3"></i>
+                <p>Você não tem notificações no momento.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-black text-center text-secondary py-4 border-top border-dark mt-auto">
+        <div class="container"><small>&copy; 2026 TibiaBuilder Project.</small></div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

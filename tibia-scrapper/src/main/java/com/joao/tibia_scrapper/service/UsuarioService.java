@@ -42,19 +42,31 @@ public class UsuarioService implements UserDetailsService {
         repository.save(novoUsuario);
     }
 
-    public void salvarUsuario(String username, String password) {
-        String senhaCriptografada = passwordEncoder.encode(password);
-        Usuario novoUsuario = new Usuario(username, senhaCriptografada, "USER", username, username);
-        repository.save(novoUsuario);
-    }
+    public void atualizarUsuarioCompleto(String username, String novoNome, String novaSenha,
+            String charName, Integer charLevel, String charVocation,
+            String charWorld, String charResidence, String avatarBase64) {
 
-    public void atualizarUsuario(String username, String novoNome, String novaSenha) {
         Usuario usuario = repository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
+
         usuario.setNome(novoNome);
+
         if (novaSenha != null && !novaSenha.trim().isEmpty()) {
             usuario.setPassword(passwordEncoder.encode(novaSenha));
         }
+
+        if (avatarBase64 != null) {
+            usuario.setAvatar(avatarBase64);
+        }
+
+        if (charName != null && !charName.isEmpty()) {
+            usuario.setCharName(charName);
+            usuario.setCharLevel(charLevel);
+            usuario.setCharVocation(charVocation);
+            usuario.setCharWorld(charWorld);
+            usuario.setCharResidence(charResidence);
+        }
+
         repository.save(usuario);
     }
 }

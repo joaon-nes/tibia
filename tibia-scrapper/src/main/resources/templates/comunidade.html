@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Comunidade - TibiaBuilder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-dark text-white">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-secondary mb-4 position-relative">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center" style="flex: 1;">
+                <button class="navbar-toggler me-2 border-secondary" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#menuPrincipal">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="menuPrincipal">
+                    <ul class="navbar-nav mb-2 mb-lg-0 fw-bold">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/enciclopedia">Enciclopédia</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/set-builder">Set Builder</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="/comunidade">Comunidade</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="position-absolute top-50 start-50 translate-middle text-center" style="z-index: 10;">
+                <a class="navbar-brand fw-bold text-warning fs-3 m-0" href="/">
+                    <i class="fa-solid fa-dragon"></i> TibiaBuilder
+                </a>
+            </div>
+            <div class="d-flex align-items-center justify-content-end gap-2" style="flex: 1;">
+                <div class="d-flex align-items-center" sec:authorize="isAuthenticated()">
+                    <div class="dropdown me-4 pe-2">
+                        <button class="btn btn-sm btn-outline-light position-relative border-0" type="button"
+                            id="dropdownNotificacoes" data-bs-toggle="dropdown" aria-expanded="false"
+                            onclick="carregarNotificacoes()">
+                            <i class="fa-solid fa-bell fs-5"></i>
+                            <span id="notif-badge"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
+                                style="font-size: 0.6rem;">0</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary shadow"
+                            aria-labelledby="dropdownNotificacoes"
+                            style="width: 320px; max-height: 400px; overflow-y: auto;">
+                            <li>
+                                <h6 class="dropdown-header text-warning fw-bold border-bottom border-secondary">Últimas
+                                    Atualizações</h6>
+                            </li>
+                            <div id="lista-notificacoes-preview">
+                                <li class="text-center p-3 text-secondary"><i class="fas fa-spinner fa-spin"></i>
+                                    Carregando...</li>
+                            </div>
+                            <li>
+                                <hr class="dropdown-divider border-secondary">
+                            </li>
+                            <li><a class="dropdown-item text-center text-info small fw-bold py-2"
+                                    href="/notificacoes">Ver todas as notificações</a></li>
+                        </ul>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" id="dropdownUser"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-user"></i> <span class="d-none d-md-inline ms-1"
+                                sec:authentication="name">Usuario</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary shadow"
+                            aria-labelledby="dropdownUser">
+                            <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item text-warning" href="/admin"><i
+                                        class="fa-solid fa-gear me-2"></i> Painel Admin</a></li>
+                            <li><a class="dropdown-item text-light" href="/perfil"><i
+                                        class="fa-solid fa-user-pen me-2 text-warning"></i> Editar Perfil</a></li>
+                            <li>
+                                <hr class="dropdown-divider border-secondary opacity-50">
+                            </li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="m-0 p-0 px-2">
+                                    <button type="submit" class="btn btn-sm btn-danger w-100 text-start"><i
+                                            class="fa-solid fa-power-off me-2"></i> Sair</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div sec:authorize="!isAuthenticated()">
+                    <a href="/login" class="btn btn-sm btn-warning fw-bold px-3"><i
+                            class="fa-solid fa-right-to-bracket"></i> Entrar</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container flex-grow-1">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-white"><i class="fa-solid fa-users text-warning"></i> Comunidade</h2>
+            <a href="/comunidade/criar" class="btn btn-warning fw-bold"><i class="fa-solid fa-plus"></i> Novo Tópico</a>
+        </div>
+
+        <div class="list-group bg-black border-secondary shadow">
+            <div th:each="topico : ${topicos}"
+                class="list-group-item list-group-item-action bg-dark text-white border-secondary p-3 mb-2 rounded border">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1 fw-bold text-warning">
+                        <a th:href="@{/comunidade/topico/{id}(id=${topico.id})}"
+                            class="text-decoration-none text-warning stretched-link">
+                            <span th:text="${topico.titulo}">Titulo</span>
+                        </a>
+                    </h5>
+                    <small class="text-secondary"
+                        th:text="${#temporals.format(topico.dataCriacao, 'dd/MM HH:mm')}">Data</small>
+                </div>
+
+                <p class="mb-2 text-light text-opacity-75 small" th:text="${#strings.abbreviate(topico.conteudo, 120)}">
+                    Resumo...</p>
+
+                <div class="d-flex justify-content-between align-items-center border-top border-secondary pt-2 mt-2">
+                    <small class="text-info d-flex align-items-center">
+                        <i class="fa-solid fa-user-circle me-1"></i>
+                        <span th:text="${topico.autor.username}" class="fw-bold me-2">User</span>
+                        <span th:if="${topico.autor.charLevel != null}" class="badge bg-secondary text-white"
+                            style="font-size: 0.7em;">
+                            Level <span th:text="${topico.autor.charLevel}">0</span>
+                        </span>
+                    </small>
+
+                    <div class="d-flex gap-2">
+                        <span th:if="${topico.votosUteis.size() > 0}"
+                            class="badge bg-success bg-opacity-75 text-white border border-success rounded-pill">
+                            <i class="fa-solid fa-thumbs-up"></i> <span th:text="${topico.votosUteis.size()}"></span>
+                        </span>
+                        <span class="badge bg-black border border-secondary text-secondary rounded-pill">
+                            <i class="fa-solid fa-comments"></i> <span th:text="${topico.postagens.size()}">0</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(topicos)}" class="text-center py-5 text-secondary">
+                <i class="fa-solid fa-ghost fs-1 mb-3"></i>
+                <p>Nenhum tópico criado ainda. Seja o primeiro!</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-black text-center text-secondary py-4 border-top border-dark mt-auto">
+        <div class="container"><small>&copy; 2026 TibiaBuilder Project.</small></div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/scripts/scripts.js}"></script>
+</body>
+
+</html>

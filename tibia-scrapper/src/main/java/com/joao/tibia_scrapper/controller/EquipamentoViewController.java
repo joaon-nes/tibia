@@ -24,7 +24,7 @@ public class EquipamentoViewController {
         return "home";
     }
 
-    @GetMapping("/enciclopedia")
+    @GetMapping("/enciclopedia/equipamentos")
     public String listarEquipamentos(EquipamentoFilterDTO filtro, HttpSession session, Model model) {
         
         if (filtro.categoria() != null && !filtro.categoria().isEmpty()) {
@@ -43,7 +43,7 @@ public class EquipamentoViewController {
             model.addAttribute("exibirMenu", true);
         }
 
-        return "lista-equipamentos";
+        return "equipamentos";
     }
 
     @GetMapping("set-builder")

@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 @Entity
 @Table(name = "usuarios")
@@ -27,11 +28,20 @@ public class Usuario implements UserDetails {
     private String password;
 
     private String role;
-
     private String nome;
 
     @Column(unique = true)
     private String email;
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String avatar;
+
+    private String charName;
+    private Integer charLevel;
+    private String charVocation;
+    private String charWorld;
+    private String charResidence;
 
     public Usuario(String username, String password, String role, String nome, String email) {
         this.username = username;
@@ -43,7 +53,8 @@ public class Usuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.role == null) return Collections.emptyList();
+        if (this.role == null)
+            return Collections.emptyList();
         String roleName = this.role.startsWith("ROLE_") ? this.role : "ROLE_" + this.role;
         return Collections.singletonList(new SimpleGrantedAuthority(roleName));
     }
@@ -59,14 +70,37 @@ public class Usuario implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired() { return true; }
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
     @Override
-    public boolean isAccountNonLocked() { return true; }
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
     @Override
-    public boolean isCredentialsNonExpired() { return true; }
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
     @Override
-    public boolean isEnabled() { return true; }
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Usuario usuario = (Usuario) o;
+        return Objects.equals(id, usuario.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

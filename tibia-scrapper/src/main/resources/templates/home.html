@@ -4,167 +4,554 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tibia Scraper & Builder - Home</title>
+    <title>TibiaBuilder - Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .tibiadata-card {
+            border-radius: 8px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+            border: 1px solid #2a2a2a;
+        }
+
+        .tibiadata-header {
+            background-color: rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid #333;
+            padding: 8px 12px;
+            width: 100%;
+            z-index: 5;
+            position: relative;
+        }
+
+        .text-shadow-heavy {
+            text-shadow: 2px 2px 3px #000, -2px -2px 3px #000, 2px -2px 3px #000, -2px 2px 3px #000, 0 0 10px #000, 0 0 15px #000;
+        }
+
+        #card-boss {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.1) 40%, rgba(0, 0, 0, 0.1) 60%, rgba(0, 0, 0, 0.85) 100%), url('https://www.tibiawiki.com.br/images/f/f0/Client_Artwork_12.20.jpg');
+        }
+
+        #card-creature {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.1) 40%, rgba(0, 0, 0, 0.1) 60%, rgba(0, 0, 0, 0.85) 100%), url('https://www.tibiawiki.com.br/images/b/b0/Background_Artwork_13.20.13560.jpg');
+        }
+
+        #card-rashid {
+            background-color: #1a1a1a;
+        }
+
+        #card-news {
+            background-color: #111;
+            background-image: none;
+        }
+
+        .sprite-container {
+            position: relative;
+            width: 108px;
+            height: 108px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .creature-pedestal {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 104px;
+            height: 104px;
+            background-image: url('https://www.tibiawiki.com.br/images/b/ba/Boosted_Creature_Pedestal.gif');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center bottom;
+            z-index: 1;
+            filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.9));
+        }
+
+        #card-rashid .creature-pedestal {
+            display: none;
+        }
+
+        .creature-sprite {
+            position: relative;
+            z-index: 2;
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            filter: drop-shadow(0px 4px 3px rgba(0, 0, 0, 0.8));
+            margin-bottom: 8px;
+        }
+
+        #rashid-img {
+            margin-bottom: 0;
+        }
+
+        .info-icon {
+            font-size: 0.85em;
+            cursor: help;
+            color: rgba(255, 255, 255, 0.5);
+            transition: color 0.2s;
+        }
+
+        .info-icon:hover {
+            color: #fff;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #aaa;
+            transition: all 0.2s ease;
+            background: transparent;
+        }
+
+        .menu-item:hover,
+        .menu-item[aria-expanded="true"] {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .menu-icon {
+            width: 24px;
+            text-align: center;
+            margin-right: 12px;
+            font-size: 1.1em;
+        }
+
+        .menu-text {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .menu-title {
+            font-size: 0.95em;
+            font-weight: 500;
+            line-height: 1.2;
+            color: #dfdfdf;
+            transition: color 0.2s;
+        }
+
+        .menu-subtitle {
+            font-size: 0.75em;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .menu-item:hover .menu-title {
+            color: #fff;
+        }
+
+        .chevron-icon {
+            font-size: 0.75rem;
+            transition: transform 0.3s ease;
+            color: #666;
+        }
+
+        .menu-item[aria-expanded="true"] .chevron-icon {
+            transform: rotate(180deg);
+            color: #fff;
+        }
+
+        .submenu-container {
+            padding-left: 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 4px;
+            margin-bottom: 8px;
+            border-left: 1px solid #333;
+            margin-left: 23px;
+        }
+
+        .submenu-item {
+            font-size: 0.85em;
+            color: #888;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .submenu-item:hover {
+            color: #00b7ff;
+            background-color: rgba(0, 183, 255, 0.05);
+        }
+
+        .news-item {
+            transition: background 0.2s;
+            border-bottom: 1px solid #222 !important;
+            padding: 12px 20px !important;
+        }
+
+        .news-item:last-child {
+            border-bottom: none !important;
+        }
+
+        .news-item:hover {
+            background-color: #1a1a1a !important;
+        }
+    </style>
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-dark text-white">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-secondary">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-warning" href="/">
-                <i class="fa-solid fa-dragon"></i> TibiaScraper
-            </a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-secondary mb-4 position-relative">
+        <div class="container-fluid px-lg-5 d-flex justify-content-between align-items-center">
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <div style="flex: 1;"></div>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="position-absolute top-50 start-50 translate-middle text-center" style="z-index: 10;">
+                <a class="navbar-brand fw-bold text-warning fs-3 m-0" href="/">
+                    <i class="fa-solid fa-dragon"></i> TibiaBuilder
+                </a>
+            </div>
 
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link active" href="/">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/enciclopedia">Enciclopédia</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/set-builder">Set Builder</a></li>
-                </ul>
+            <div class="d-flex align-items-center justify-content-end gap-2" style="flex: 1;">
+                <div class="d-flex align-items-center" sec:authorize="isAuthenticated()">
 
-                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-3">
-                    <ul class="navbar-nav">
-                        <li class="nav-item" sec:authorize="!isAuthenticated()">
-                            <a href="/login" class="btn btn-sm btn-outline-warning fw-bold px-3">
-                                <i class="fa-solid fa-right-to-bracket"></i> Entrar
-                            </a>
-                        </li>
+                    <div class="dropdown me-4 pe-2">
+                        <button class="btn btn-sm btn-outline-light position-relative border-0" type="button"
+                            id="dropdownNotificacoes" data-bs-toggle="dropdown" aria-expanded="false"
+                            onclick="carregarNotificacoes()">
+                            <i class="fa-solid fa-bell fs-5"></i>
+                            <span id="notif-badge"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
+                                style="font-size: 0.6rem;">0</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary shadow"
+                            aria-labelledby="dropdownNotificacoes"
+                            style="width: 320px; max-height: 400px; overflow-y: auto;">
+                            <li>
+                                <h6 class="dropdown-header text-warning fw-bold border-bottom border-secondary">Últimas
+                                    Atualizações</h6>
+                            </li>
+                            <div id="lista-notificacoes-preview">
+                                <li class="text-center p-3 text-secondary"><i class="fas fa-spinner fa-spin"></i>
+                                    Carregando...</li>
+                            </div>
+                            <li>
+                                <hr class="dropdown-divider border-secondary">
+                            </li>
+                            <li><a class="dropdown-item text-center text-info small fw-bold py-2"
+                                    href="/notificacoes">Ver todas as notificações</a></li>
+                        </ul>
+                    </div>
 
-                        <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
-                            <a class="nav-link dropdown-toggle text-white fw-bold d-flex align-items-center" href="#"
-                                role="button" data-bs-toggle="dropdown">
-                                <div class="bg-warning text-black rounded-circle d-flex align-items-center justify-content-center me-2"
-                                    style="width: 32px; height: 32px;">
-                                    <i class="fa-solid fa-user"></i>
-                                </div>
-                                <span sec:authentication="name">Usuario</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-black border-secondary shadow">
-                                <li sec:authorize="hasRole('ADMIN')">
-                                    <a class="dropdown-item text-warning" href="/admin">
-                                        <i class="fa-solid fa-gear me-2"></i> Painel Admin
-                                    </a>
-                                </li>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" id="dropdownUser"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-user"></i> <span class="d-none d-md-inline ms-1"
+                                sec:authentication="name">Usuario</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary shadow"
+                            aria-labelledby="dropdownUser">
+                            <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item text-warning" href="/admin"><i
+                                        class="fa-solid fa-gear me-2"></i> Painel Admin</a></li>
+                            <li><a class="dropdown-item text-light" href="/perfil"><i
+                                        class="fa-solid fa-user-pen me-2 text-warning"></i> Editar Perfil</a></li>
+                            <li>
+                                <hr class="dropdown-divider border-secondary opacity-50">
+                            </li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="m-0 p-0 px-2">
+                                    <button type="submit" class="btn btn-sm btn-danger w-100 text-start"><i
+                                            class="fa-solid fa-power-off me-2"></i> Sair</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
-                                <li>
-                                    <a class="dropdown-item text-white" href="/perfil">
-                                        <i class="fa-solid fa-user-pen me-2"></i> Editar Perfil
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider border-secondary opacity-50">
-                                </li>
-                                <li>
-                                    <form th:action="@{/logout}" method="post" class="px-2">
-                                        <form th:action="@{/logout}" method="post" class="px-2">
-                                            <button type="submit" class="btn btn-sm btn-danger w-100 text-start">
-                                                <i class="fa-solid fa-power-off me-2"></i> Sair
-                                            </button>
-                                        </form>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-
+                <div sec:authorize="!isAuthenticated()">
+                    <a href="/login" class="btn btn-sm btn-warning fw-bold px-3"><i
+                            class="fa-solid fa-right-to-bracket"></i> Entrar</a>
                 </div>
             </div>
         </div>
     </nav>
 
-
-    <main class="container my-5 flex-grow-1">
+    <main class="container-fluid px-lg-5 mb-5 flex-grow-1 mt-2">
         <div class="row g-4">
-            <div class="col-md-6">
-                <div class="card h-100 feature-card bg-dark border-secondary">
-                    <div class="card-body text-center p-5">
-                        <div class="icon-circle mb-3 mx-auto bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center"
-                            style="width: 80px; height: 80px;">
-                            <i class="fa-solid fa-book-open fa-2x"></i>
+
+            <aside class="col-lg-3 col-xl-2 order-1">
+                <div class="sidebar-menu">
+
+                    <a href="/comunidade" class="menu-item">
+                        <i class="fa-solid fa-users text-primary menu-icon"></i>
+                        <div class="menu-text">
+                            <span class="menu-title">Comunidade</span>
+                            <span class="menu-subtitle">Fórum e discussões</span>
                         </div>
-                        <h3 class="card-title text-white">Comunidade</h3>
-                        <p class="card-text text-secondary">
-                            Live Feed. Interaja com outros jogadores.
-                        </p>
-                        <a href="/" class="btn btn-outline-light mt-3">Acessar Comunidade</a>
+                    </a>
+
+                    <a href="#collapseEnciclopedia" class="menu-item" data-bs-toggle="collapse" role="button"
+                        aria-expanded="false" aria-controls="collapseEnciclopedia">
+                        <i class="fa-solid fa-book-open text-warning menu-icon"></i>
+                        <div class="menu-text">
+                            <span class="menu-title">Enciclopédia</span>
+                            <span class="menu-subtitle">Base de dados</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down chevron-icon"></i>
+                    </a>
+
+                    <div class="collapse" id="collapseEnciclopedia">
+                        <div class="submenu-container">
+                            <a href="#" class="submenu-item">Vocações</a>
+                            <a href="/enciclopedia/equipamentos" class="submenu-item">Equipamentos</a>
+                            <a href="#" class="submenu-item">Runas</a>
+                            <a href="#" class="submenu-item">Magias</a>
+                            <a href="#" class="submenu-item">Criaturas</a>
+                            <a href="#" class="submenu-item">Imbuements</a>
+                        </div>
+                    </div>
+
+                    <a href="#" class="menu-item" style="pointer-events: none; opacity: 0.5;">
+                        <i class="fa-solid fa-users-viewfinder text-info menu-icon"></i>
+                        <div class="menu-text">
+                            <span class="menu-title">Buscar Party <span class="badge bg-danger ms-1 fw-normal"
+                                    style="font-size: 0.6em;">EM BREVE</span></span>
+                            <span class="menu-subtitle">Encontre jogadores</span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="menu-item" style="pointer-events: none; opacity: 0.5;">
+                        <i class="fa-solid fa-map-location-dot text-danger menu-icon"></i>
+                        <div class="menu-text">
+                            <span class="menu-title">Hunts <span class="badge bg-danger ms-1 fw-normal"
+                                    style="font-size: 0.6em;">EM BREVE</span></span>
+                            <span class="menu-subtitle">Locais de caça</span>
+                        </div>
+                    </a>
+
+                    <a href="/set-builder" class="menu-item">
+                        <i class="fa-solid fa-user-shield text-success menu-icon"></i>
+                        <div class="menu-text">
+                            <span class="menu-title">Set Builder</span>
+                            <span class="menu-subtitle">Simulador de status</span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="menu-item" style="pointer-events: none; opacity: 0.5;">
+                        <i class="fa-solid fa-handshake menu-icon" style="color: #ffc107;"></i>
+                        <div class="menu-text">
+                            <span class="menu-title">Trade Market <span class="badge bg-danger ms-1 fw-normal"
+                                    style="font-size: 0.6em;">EM BREVE</span></span>
+                            <span class="menu-subtitle">Compra e venda</span>
+                        </div>
+                    </a>
+
+                </div>
+            </aside>
+
+            <div class="col-lg-6 col-xl-8 order-3 order-lg-2">
+                <div style="width: 95%; margin: 0 auto;">
+                    <div class="tibiadata-card pb-0" id="card-news">
+                        <div class="tibiadata-header d-flex justify-content-between align-items-center">
+                            <h6 class="text-info fw-bold mb-0 text-shadow-heavy" style="font-size: 1em;">
+                                <i class="fa-solid fa-newspaper me-1"></i> Últimas Notícias
+                            </h6>
+                            <a href="https://www.tibia.com/news/?subtopic=latestnews" target="_blank"
+                                class="text-secondary small text-decoration-none">Ver site oficial <i
+                                    class="fa-solid fa-arrow-up-right-from-square ms-1"
+                                    style="font-size: 0.8em;"></i></a>
+                        </div>
+                        <div class="list-group list-group-flush bg-transparent pt-1 pb-0 mb-0" id="news-list">
+                            <div class="text-center text-secondary py-5"><i
+                                    class="fas fa-spinner fa-spin fs-3 mb-2"></i><br>Buscando notícias...</div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card h-100 feature-card bg-dark border-secondary">
-                    <div class="card-body text-center p-5">
-                        <div class="icon-circle mb-3 mx-auto bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center"
-                            style="width: 80px; height: 80px;">
-                            <i class="fa-solid fa-book-open fa-2x"></i>
+
+            <aside class="col-lg-3 col-xl-2 order-2 order-lg-3 d-flex flex-column gap-3">
+
+                <div class="tibiadata-card text-center" id="card-boss">
+                    <div class="tibiadata-header d-flex justify-content-center align-items-center">
+                        <h6 class="text-warning fw-bold mb-0 text-shadow-heavy" style="font-size: 1em;">
+                            Boosted Boss
+                            <i class="fa-solid fa-circle-info ms-1 info-icon" data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="Boss diário com bônus de loot e equipamentos extras ao ser derrotado hoje."></i>
+                        </h6>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center py-2">
+                        <div class="sprite-container">
+                            <div class="creature-pedestal"></div>
+                            <img id="boosted-boss-img" src="https://www.tibiawiki.com.br/images/b/b4/Unknown_Item.gif"
+                                alt="Boss" class="creature-sprite">
                         </div>
-                        <h3 class="card-title text-white">Enciclopédia de Items</h3>
-                        <p class="card-text text-secondary">
-                            Pesquisa items por vocação, nível ou atributos. Dados sincronizados diretamente da Wiki.
-                        </p>
-                        <a href="/enciclopedia" class="btn btn-outline-light mt-3">Acessar Catálogo</a>
+                        <span id="boosted-boss-name" class="fw-bold text-light text-shadow-heavy"
+                            style="z-index: 5; font-size: 1em;">Carregando...</span>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card h-100 feature-card bg-dark border-secondary">
-                    <div class="card-body text-center p-5">
-                        <div class="icon-circle mb-3 mx-auto bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center"
-                            style="width: 80px; height: 80px;">
-                            <i class="fa-solid fa-book-open fa-2x"></i>
+
+                <div class="tibiadata-card text-center" id="card-creature">
+                    <div class="tibiadata-header d-flex justify-content-center align-items-center">
+                        <h6 class="text-success fw-bold mb-0 text-shadow-heavy" style="font-size: 1em;">
+                            Boosted Creature
+                            <i class="fa-solid fa-circle-info ms-1 info-icon" data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="Criatura diária que concede 2x Experiência, 2x Loot e renasce muito mais rápido."></i>
+                        </h6>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center py-2">
+                        <div class="sprite-container">
+                            <div class="creature-pedestal"></div>
+                            <img id="boosted-creature-img"
+                                src="https://www.tibiawiki.com.br/images/b/b4/Unknown_Item.gif" alt="Creature"
+                                class="creature-sprite">
                         </div>
-                        <h3 class="card-title text-white">Hunts</h3>
-                        <p class="card-text text-secondary">
-                            Encontre locais locais de caça. Você também pode colaborar com novas hunts.
-                        </p>
-                        <a href="/" class="btn btn-outline-light mt-3">Acessar Hunts</a>
+                        <span id="boosted-creature-name" class="fw-bold text-light text-shadow-heavy"
+                            style="z-index: 5; font-size: 1em;">Carregando...</span>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card h-100 feature-card bg-dark border-secondary">
-                    <div class="card-body text-center p-5">
-                        <div class="icon-circle mb-3 mx-auto bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center"
-                            style="width: 80px; height: 80px;">
-                            <i class="fa-solid fa-user-shield fa-2x"></i>
+
+                <div class="tibiadata-card text-center" id="card-rashid">
+                    <div class="tibiadata-header d-flex justify-content-center align-items-center">
+                        <h6 class="text-info fw-bold mb-0 text-shadow-heavy" style="font-size: 1em;">
+                            Rashid hoje
+                            <i class="fa-solid fa-circle-info ms-1 info-icon" data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="Localização atual do NPC Rashid (atualizada automaticamente com o Server Save)."></i>
+                        </h6>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center py-2">
+                        <div class="sprite-container">
+                            <div class="creature-pedestal"></div>
+                            <img id="rashid-img" src="https://www.tibiawiki.com.br/images/f/f5/Rashid.gif" alt="Rashid"
+                                class="creature-sprite">
                         </div>
-                        <h3 class="card-title text-white">Simulador de Set</h3>
-                        <p class="card-text text-secondary">
-                            Equipe o seu personagem virtualmente e veja os atributos totais (armadura, velocidade,
-                            proteções).
-                        </p>
-                        <a href="/set-builder" class="btn btn-outline-light mt-3">Iniciar Builder</a>
+                        <span id="rashid-city" class="fw-bold text-light text-shadow-heavy"
+                            style="z-index: 5; font-size: 1em;">Calculando...</span>
                     </div>
                 </div>
-            </div>
+
+            </aside>
 
         </div>
     </main>
 
     <footer class="bg-black text-center text-secondary py-4 border-top border-dark mt-auto">
         <div class="container">
-            <small>&copy; 2026 Tibia Scraper Project. Dados do Tibia.com e TibiaWiki.</small>
+            <small>&copy; 2026 TibiaBuilder Project. Dados obtidos via TibiaData API e TibiaWiki.</small>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/scripts/scripts.js}"></script>
 
     <script>
-        function atualizarPreco() {
-            const select = document.getElementById('selectMundo');
-            const preco = select.value;
-            const precoFormatado = new Intl.NumberFormat('pt-BR').format(preco);
-            document.getElementById('precoDisplay').innerText = precoFormatado;
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+
+        function atualizarRashid() {
+            const now = new Date();
+            const utcHour = now.getUTCHours();
+            let day = now.getUTCDay();
+
+            if (utcHour < 8) {
+                day = day === 0 ? 6 : day - 1;
+            }
+
+            const rashidData = {
+                0: { city: "Carlin", bg: "https://www.tibiawiki.com.br/images/8/87/Rashid_Carlin.png" },
+                1: { city: "Svargrond", bg: "https://www.tibiawiki.com.br/images/8/8c/Rashid_Svargrond.png" },
+                2: { city: "Liberty Bay", bg: "https://www.tibiawiki.com.br/images/2/22/Rashid_Liberty_Bay.png" },
+                3: { city: "Port Hope", bg: "https://www.tibiawiki.com.br/images/4/4e/Rashid_Port_Hope.png" },
+                4: { city: "Ankrahmun", bg: "https://www.tibiawiki.com.br/images/d/dd/Rashid_Ankrahmun.png" },
+                5: { city: "Darashia", bg: "https://www.tibiawiki.com.br/images/a/ab/Rashid_Darashia.png" },
+                6: { city: "Edron", bg: "https://www.tibiawiki.com.br/images/6/6f/Rashid_Edron.png" }
+            };
+
+            const currentRashid = rashidData[day];
+            document.getElementById('rashid-city').innerText = currentRashid.city;
+            document.getElementById('card-rashid').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.85) 100%), url('${currentRashid.bg}')`;
+        }
+
+        async function fetchTibiaData() {
+            try {
+                fetch('https://api.tibiadata.com/v4/creatures')
+                    .then(res => res.json())
+                    .then(data => {
+                        const creatureName = data.creatures.boosted.name;
+                        const formattedName = creatureName.replace(/ /g, '_');
+                        const animatedGif = `https://www.tibiawiki.com.br/wiki/Especial:Filepath/${encodeURIComponent(formattedName)}.gif`;
+
+                        const imgEl = document.getElementById('boosted-creature-img');
+                        imgEl.src = animatedGif;
+                        imgEl.setAttribute('onerror', `this.onerror=null; this.src='${data.creatures.boosted.image_url}';`);
+
+                        document.getElementById('boosted-creature-name').innerText = creatureName;
+                    }).catch(e => console.error(e));
+
+                fetch('https://api.tibiadata.com/v4/boostablebosses')
+                    .then(res => res.json())
+                    .then(data => {
+                        const bossName = data.boostable_bosses.boosted.name;
+                        const formattedName = bossName.replace(/ /g, '_');
+                        const animatedGif = `https://www.tibiawiki.com.br/wiki/Especial:Filepath/${encodeURIComponent(formattedName)}.gif`;
+
+                        const imgEl = document.getElementById('boosted-boss-img');
+                        imgEl.src = animatedGif;
+                        imgEl.setAttribute('onerror', `this.onerror=null; this.src='${data.boostable_bosses.boosted.image_url}';`);
+
+                        document.getElementById('boosted-boss-name').innerText = bossName;
+                    }).catch(e => console.error(e));
+
+                fetch('https://api.tibiadata.com/v4/news/latest')
+                    .then(res => res.json())
+                    .then(data => {
+                        const newsList = data.news.slice(0, 4);
+                        const container = document.getElementById('news-list');
+                        container.innerHTML = '';
+                        newsList.forEach(news => {
+                            let typeColor = 'text-primary';
+                            if (news.type === 'News Ticker') typeColor = 'text-warning';
+                            if (news.type === 'Featured Article') typeColor = 'text-success';
+
+                            container.innerHTML += `
+                                <a href="${news.url}" target="_blank" class="list-group-item list-group-item-action bg-transparent news-item text-decoration-none">
+                                    <div class="d-flex w-100 justify-content-between mb-1">
+                                        <small class="text-secondary fw-bold" style="font-size: 0.8em;"><i class="fa-regular fa-calendar me-1"></i> ${news.date}</small>
+                                        <span class="badge bg-dark border border-secondary ${typeColor}" style="font-size: 0.7em;">${news.type}</span>
+                                    </div>
+                                    <p class="mb-0 text-light" style="font-size: 0.9rem;">${news.news}</p>
+                                </a>
+                            `;
+                        });
+                    }).catch(e => {
+                        document.getElementById('news-list').innerHTML = '<div class="text-danger p-4 text-center">Erro ao carregar notícias do servidor oficial.</div>';
+                    });
+
+            } catch (error) {
+                console.error("Erro geral na API TibiaData:", error);
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            atualizarPreco();
+            atualizarRashid();
+            fetchTibiaData();
         });
     </script>
 </body>
