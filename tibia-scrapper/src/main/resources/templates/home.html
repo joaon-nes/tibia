@@ -41,6 +41,9 @@
 
         #card-rashid {
             background-color: #1a1a1a;
+            background-size: cover; 
+            background-repeat: no-repeat;
+            background-position: center center;
         }
 
         #card-news {
@@ -117,6 +120,7 @@
             color: #aaa;
             transition: all 0.2s ease;
             background: transparent;
+            cursor: pointer;
         }
 
         .menu-item:hover,
@@ -198,6 +202,7 @@
             transition: background 0.2s;
             border-bottom: 1px solid #222 !important;
             padding: 12px 20px !important;
+            cursor: pointer;
         }
 
         .news-item:last-child {
@@ -206,6 +211,21 @@
 
         .news-item:hover {
             background-color: #1a1a1a !important;
+        }
+
+        .tibia-news-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #e0e0e0;
+        }
+
+        .tibia-news-content a {
+            color: #00b7ff;
+            text-decoration: none;
+        }
+
+        .tibia-news-content a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -382,6 +402,26 @@
 
             <aside class="col-lg-3 col-xl-2 order-2 order-lg-3 d-flex flex-column gap-3">
 
+                <div class="tibiadata-card text-center" id="card-rashid">
+                    <div class="tibiadata-header d-flex justify-content-center align-items-center">
+                        <h6 class="text-info fw-bold mb-0 text-shadow-heavy" style="font-size: 1em;">
+                            Rashid hoje
+                            <i class="fa-solid fa-circle-info ms-1 info-icon" data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="Localização atual do NPC Rashid (atualizada automaticamente com o Server Save)."></i>
+                        </h6>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center py-2">
+                        <div class="sprite-container">
+                            <div class="creature-pedestal"></div>
+                            <img id="rashid-img" src="https://www.tibiawiki.com.br/images/f/f5/Rashid.gif" alt="Rashid"
+                                class="creature-sprite">
+                        </div>
+                        <span id="rashid-city" class="fw-bold text-light text-shadow-heavy"
+                            style="z-index: 5; font-size: 1em;">Calculando...</span>
+                    </div>
+                </div>
+
                 <div class="tibiadata-card text-center" id="card-boss">
                     <div class="tibiadata-header d-flex justify-content-center align-items-center">
                         <h6 class="text-warning fw-bold mb-0 text-shadow-heavy" style="font-size: 1em;">
@@ -423,30 +463,42 @@
                     </div>
                 </div>
 
-                <div class="tibiadata-card text-center" id="card-rashid">
-                    <div class="tibiadata-header d-flex justify-content-center align-items-center">
-                        <h6 class="text-info fw-bold mb-0 text-shadow-heavy" style="font-size: 1em;">
-                            Rashid hoje
-                            <i class="fa-solid fa-circle-info ms-1 info-icon" data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                title="Localização atual do NPC Rashid (atualizada automaticamente com o Server Save)."></i>
-                        </h6>
-                    </div>
-                    <div class="d-flex flex-column justify-content-center align-items-center py-2">
-                        <div class="sprite-container">
-                            <div class="creature-pedestal"></div>
-                            <img id="rashid-img" src="https://www.tibiawiki.com.br/images/f/f5/Rashid.gif" alt="Rashid"
-                                class="creature-sprite">
-                        </div>
-                        <span id="rashid-city" class="fw-bold text-light text-shadow-heavy"
-                            style="z-index: 5; font-size: 1em;">Calculando...</span>
-                    </div>
-                </div>
-
             </aside>
 
         </div>
     </main>
+
+    <div class="modal fade" id="newsModal" tabindex="-1" aria-labelledby="newsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <div class="modal-content bg-dark border-secondary text-white">
+                <div class="modal-header border-secondary bg-black">
+                    <h5 class="modal-title fw-bold text-info" id="newsModalLabel">
+                        <i class="fa-solid fa-newspaper me-2"></i> <span id="modal-news-title">Carregando...</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 bg-black tibia-news-content" id="modal-news-body">
+                    <div class="text-center py-5 text-secondary">
+                        <i class="fas fa-spinner fa-spin fs-2 mb-3"></i>
+                        <p>A carregar conteúdo do Tibia.com...</p>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary bg-black d-flex justify-content-between">
+                    <div>
+                        <button id="btn-traduzir" class="btn btn-warning btn-sm fw-bold me-2"
+                            onclick="traduzirTextoModal()" data-translated="false" style="display: none;">
+                            <i class="fa-solid fa-language me-1"></i> Traduzir para PT
+                        </button>
+                        <a href="#" id="modal-news-link" target="_blank" class="btn btn-outline-info btn-sm">
+                            <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Ver no Site
+                        </a>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer class="bg-black text-center text-secondary py-4 border-top border-dark mt-auto">
         <div class="container">
@@ -487,6 +539,100 @@
             const currentRashid = rashidData[day];
             document.getElementById('rashid-city').innerText = currentRashid.city;
             document.getElementById('card-rashid').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.85) 100%), url('${currentRashid.bg}')`;
+        }
+
+        window.currentNewsHtml = "";
+
+        function abrirNoticiaModal(id, type, date, url) {
+            const modal = new bootstrap.Modal(document.getElementById('newsModal'));
+            modal.show();
+
+            const titleEl = document.getElementById('modal-news-title');
+            const bodyEl = document.getElementById('modal-news-body');
+            const linkEl = document.getElementById('modal-news-link');
+            const btnTraduzir = document.getElementById('btn-traduzir');
+
+            btnTraduzir.style.display = 'none';
+            btnTraduzir.dataset.translated = "false";
+            btnTraduzir.classList.replace('btn-secondary', 'btn-warning');
+            btnTraduzir.innerHTML = '<i class="fa-solid fa-language me-1"></i> Traduzir para PT';
+
+            titleEl.innerText = `${type} - ${date}`;
+            linkEl.href = url;
+            bodyEl.innerHTML = `
+                <div class="text-center py-5 text-secondary">
+                    <i class="fas fa-spinner fa-spin fs-2 mb-3"></i>
+                    <p>A carregar conteúdo do Tibia.com...</p>
+                </div>`;
+
+            if (!id) {
+                bodyEl.innerHTML = `<div class="text-warning p-3">Não foi possível identificar o ID desta notícia. Por favor, leia no site oficial.</div>`;
+                return;
+            }
+
+            fetch(`https://api.tibiadata.com/v4/news/id/${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.news && data.news.content) {
+                        window.currentNewsHtml = data.news.content;
+                        bodyEl.innerHTML = window.currentNewsHtml;
+                        btnTraduzir.style.display = 'inline-block';
+                    } else if (data.news && data.news.content === "") {
+                        bodyEl.innerHTML = `<div class="text-warning p-3">O conteúdo desta notícia não está disponível através da API. Pode lê-la clicando no botão abaixo.</div>`;
+                    }
+                })
+                .catch(e => {
+                    console.error(e);
+                    bodyEl.innerHTML = `<div class="text-danger p-3"><i class="fa-solid fa-triangle-exclamation me-2"></i>Erro ao comunicar com a API do TibiaData.</div>`;
+                });
+        }
+
+        async function traduzirTextoModal() {
+            const bodyEl = document.getElementById('modal-news-body');
+            const btn = document.getElementById('btn-traduzir');
+
+            if (btn.dataset.translated === "true") {
+                bodyEl.innerHTML = window.currentNewsHtml;
+                btn.dataset.translated = "false";
+                btn.classList.replace('btn-secondary', 'btn-warning');
+                btn.innerHTML = '<i class="fa-solid fa-language me-1"></i> Traduzir para PT';
+                return;
+            }
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> A traduzir...';
+            btn.classList.replace('btn-warning', 'btn-secondary');
+
+            let tempDiv = document.createElement('div');
+            tempDiv.innerHTML = window.currentNewsHtml.replace(/<br\s*[\/]?>/gi, "\n").replace(/<\/p>/gi, "\n\n");
+
+            let textLines = tempDiv.innerText.split('\n').filter(line => line.trim() !== '');
+
+            let translatedLines = [];
+
+            try {
+                for (let line of textLines) {
+                    if (line.trim().length === 0) continue;
+
+                    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q=${encodeURIComponent(line)}`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+
+                    let translatedText = data[0].map(item => item[0]).join('');
+                    translatedLines.push(translatedText);
+                }
+
+                bodyEl.innerHTML = `<div class="text-light" style="font-size: 0.95em; line-height: 1.2;">` +
+                    translatedLines.map(p => `<p>${p}</p>`).join('') +
+                    `</div>`;
+
+                btn.dataset.translated = "true";
+                btn.innerHTML = '<i class="fa-solid fa-rotate-left me-1"></i> Ver Original';
+            } catch (error) {
+                console.error("Erro ao traduzir:", error);
+                alert("Ocorreu um erro ao traduzir. Tente novamente mais tarde.");
+                btn.classList.replace('btn-secondary', 'btn-warning');
+                btn.innerHTML = '<i class="fa-solid fa-language me-1"></i> Traduzir para PT';
+            }
         }
 
         async function fetchTibiaData() {
@@ -530,14 +676,25 @@
                             if (news.type === 'News Ticker') typeColor = 'text-warning';
                             if (news.type === 'Featured Article') typeColor = 'text-success';
 
+                            let newsId = '';
+                            try {
+                                const urlObj = new URL(news.url);
+                                newsId = urlObj.searchParams.get('id');
+                            } catch (e) {
+                                if (news.url.includes('id=')) {
+                                    newsId = news.url.split('id=')[1].split('&')[0];
+                                }
+                            }
+
                             container.innerHTML += `
-                                <a href="${news.url}" target="_blank" class="list-group-item list-group-item-action bg-transparent news-item text-decoration-none">
+                                <div class="list-group-item list-group-item-action bg-transparent news-item text-decoration-none"
+                                     onclick="abrirNoticiaModal('${newsId}', '${news.type}', '${news.date}', '${news.url}')">
                                     <div class="d-flex w-100 justify-content-between mb-1">
                                         <small class="text-secondary fw-bold" style="font-size: 0.8em;"><i class="fa-regular fa-calendar me-1"></i> ${news.date}</small>
                                         <span class="badge bg-dark border border-secondary ${typeColor}" style="font-size: 0.7em;">${news.type}</span>
                                     </div>
                                     <p class="mb-0 text-light" style="font-size: 0.9rem;">${news.news}</p>
-                                </a>
+                                </div>
                             `;
                         });
                     }).catch(e => {
