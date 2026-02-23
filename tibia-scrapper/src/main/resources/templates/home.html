@@ -351,6 +351,14 @@
                         </div>
                     </a>
 
+                    <a href="javascript:void(0)" class="menu-item" onclick="abrirMapa(32369, 32240, 7)">
+                        <i class="fa-solid fa-map text-success menu-icon"></i>
+                        <div class="menu-text">
+                            <span class="menu-title">Mapa</span>
+                            <span class="menu-subtitle">Explore o continente</span>
+                        </div>
+                    </a>
+
                     <a href="#" class="menu-item" style="pointer-events: none; opacity: 0.5;">
                         <i class="fa-solid fa-map-location-dot text-danger menu-icon"></i>
                         <div class="menu-text">
@@ -381,7 +389,7 @@
             </aside>
 
             <div class="col-lg-6 col-xl-8 order-3 order-lg-2">
-                <div style="width: 95%; margin: 0 auto;">
+                <div style="width: 55%;">
                     <div class="tibiadata-card pb-0" id="card-news">
                         <div class="tibiadata-header d-flex justify-content-between align-items-center">
                             <h6 class="text-info fw-bold mb-0 text-shadow-heavy" style="font-size: 1em;">
@@ -496,7 +504,7 @@
                     <div>
                         <button id="btn-traduzir" class="btn btn-warning btn-sm fw-bold me-2"
                             onclick="traduzirTextoModal()" data-translated="false" style="display: none;">
-                            <i class="fa-solid fa-language me-1"></i> Traduzir para PT
+                            <i class="fa-solid fa-language me-1"></i> Traduzir para pt-br
                         </button>
                         <a href="#" id="modal-news-link" target="_blank" class="btn btn-outline-info btn-sm">
                             <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Ver no Site
@@ -535,6 +543,25 @@
         </div>
     </div>
 
+    <div class="modal fade" id="mapaGlobalModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-transparent border-0 position-relative">
+
+                <button type="button" class="btn-close btn-close-white position-absolute" data-bs-dismiss="modal"
+                    aria-label="Close"
+                    style="top: 15px; right: 15px; z-index: 1050; background-color: rgba(0,0,0,0.7); padding: 10px; border-radius: 50%;"></button>
+
+                <div class="modal-body p-0 bg-dark position-relative shadow-lg"
+                    style="height: 500px; border-radius: 12px; overflow: hidden; border: 2px solid #444;">
+
+                    <iframe id="modal-global-iframe" src="" width="100%" height="100%" frameborder="0"
+                        style="border:0;"></iframe>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer class="bg-black text-center text-secondary py-4 border-top border-dark mt-auto">
         <div class="container">
             <small>&copy; 2026 TibiaBuilder Project. Dados obtidos via TibiaData API e TibiaWiki.</small>
@@ -564,7 +591,7 @@
             }
 
             const rashidData = {
-                1: { city: "Svargrond", bg: "https://www.tibiawiki.com.br/images/8/8c/Rashid_Svargrond.png", coords: "32210,31158,7", desc: "Em Svargrond, na Taverna Dankwart, sul do templo." },
+                1: { city: "Svargrond", bg: "https://www.tibiawiki.com.br/images/3/34/Rashid_Svargrond.png", coords: "32210,31158,7", desc: "Em Svargrond, na Taverna Dankwart, sul do templo." },
                 2: { city: "Liberty Bay", bg: "https://www.tibiawiki.com.br/images/2/22/Rashid_Liberty_Bay.png", coords: "32301,32837,7", desc: "Na taverna de Lyonel ao oeste do depot, Liberty Bay" },
                 3: { city: "Port Hope", bg: "https://www.tibiawiki.com.br/images/4/4e/Rashid_Port_Hope.png", coords: "32578,32754,7", desc: "Na taverna de Clyde ao norte do barco, em Port Hope." },
                 4: { city: "Ankrahmun", bg: "https://www.tibiawiki.com.br/images/d/dd/Rashid_Ankrahmun.png", coords: "33070,32882,6", desc: "Em Ankhramun, na taverna de Arito, acima do post office." },
@@ -592,6 +619,13 @@
 
         window.currentNewsHtml = "";
 
+        function abrirMapa(x, y, z) {
+            const modal = new bootstrap.Modal(document.getElementById('mapaGlobalModal'));
+            const embedUrl = `https://tibiamaps.io/map/embed#${x},${y},${z}:1`;
+            document.getElementById('modal-global-iframe').src = embedUrl;
+            modal.show();
+        }
+
         function abrirNoticiaModal(id, type, date, url) {
             const modal = new bootstrap.Modal(document.getElementById('newsModal'));
             modal.show();
@@ -604,7 +638,7 @@
             btnTraduzir.style.display = 'none';
             btnTraduzir.dataset.translated = "false";
             btnTraduzir.classList.replace('btn-secondary', 'btn-warning');
-            btnTraduzir.innerHTML = '<i class="fa-solid fa-language me-1"></i> Traduzir para PT';
+            btnTraduzir.innerHTML = '<i class="fa-solid fa-language me-1"></i> Traduzir para pt-br';
 
             titleEl.innerText = `${type} - ${date}`;
             linkEl.href = url;
@@ -717,7 +751,7 @@
                 fetch('https://api.tibiadata.com/v4/news/latest')
                     .then(res => res.json())
                     .then(data => {
-                        const newsList = data.news.slice(0, 4);
+                        const newsList = data.news.slice(0, 5);
                         const container = document.getElementById('news-list');
                         container.innerHTML = '';
                         newsList.forEach(news => {
@@ -747,7 +781,7 @@
                             `;
                         });
                     }).catch(e => {
-                        document.getElementById('news-list').innerHTML = '<div class="text-danger p-4 text-center">Erro ao carregar notícias do servidor oficial.</div>';
+                        document.getElementById('news-list').innerHTML = '<div class="text-white p-4 text-center">Erro ao carregar notícias do servidor oficial.</div>';
                     });
 
             } catch (error) {
