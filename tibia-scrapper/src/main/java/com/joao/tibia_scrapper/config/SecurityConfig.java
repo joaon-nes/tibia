@@ -28,9 +28,13 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
             )
-            .csrf(csrf -> csrf.disable());
+            .csrf(csrf -> csrf.disable())
+            .exceptionHandling(exception -> exception
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.sendRedirect("/");
+                })
+            );
 
         return http.build();
     }
-
 }

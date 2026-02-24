@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TibiaBuilder - Painel Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .admin-card {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-5px);
+            border-color: #555;
+        }
+
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 1.8rem;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-dark text-white">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-secondary mb-4 position-relative">
+        <div class="container-fluid px-lg-5 d-flex justify-content-between align-items-center">
+
+            <div style="flex: 1;"></div>
+
+            <div class="position-absolute top-50 start-50 translate-middle text-center" style="z-index: 10;">
+                <a class="navbar-brand fw-bold text-warning fs-3 m-0 d-flex align-items-center justify-content-center"
+                    href="/">
+                    <i class="fa-solid fa-dragon me-2"></i> TibiaBuilder
+                    <span class="badge bg-danger ms-2"
+                        style="font-size: 0.4em; transform: translateY(-2px);">ADMIN</span>
+                </a>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-end" style="flex: 1;">
+                <span class="me-4 text-secondary d-none d-md-inline">
+                    <i class="fa-solid fa-user-shield me-1"></i> Bem-vindo, <span sec:authentication="name"
+                        class="fw-bold text-light">Admin</span>
+                </span>
+                <a href="/" class="btn btn-sm btn-outline-light"><i class="fa-solid fa-arrow-left me-1"></i> Voltar ao
+                    Site</a>
+            </div>
+
+        </div>
+    </nav>
+
+    <main class="container mb-5 flex-grow-1">
+
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="fw-bold text-light mb-0">Dashboard</h2>
+                <span class="text-secondary">Visão geral do sistema e base de dados</span>
+            </div>
+        </div>
+
+        <div th:if="${sucesso}"
+            class="alert alert-success alert-dismissible fade show border-success text-success bg-dark" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i> <span th:text="${sucesso}"></span>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show border-danger text-danger bg-dark"
+            role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${erro}"></span>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="admin-card p-4 d-flex align-items-center gap-4 shadow-sm h-100">
+                    <div class="icon-box bg-primary bg-opacity-10 text-primary">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-secondary fw-bold mb-1" style="font-size: 0.85em;">Contas Registadas</h6>
+                        <h2 class="mb-0 fw-bold text-light" th:text="${totalUsuarios}">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="admin-card p-4 d-flex align-items-center gap-4 shadow-sm h-100">
+                    <div class="icon-box bg-danger bg-opacity-10 text-danger">
+                        <i class="fa-solid fa-users-rays"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-secondary fw-bold mb-1" style="font-size: 0.85em;">Personagens Conectados</h6>
+                        <h2 class="mb-0 fw-bold text-light" th:text="${totalPersonagens}">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="admin-card p-4 d-flex align-items-center gap-4 shadow-sm h-100">
+                    <div class="icon-box bg-warning bg-opacity-10 text-warning">
+                        <i class="fa-solid fa-shirt"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-secondary fw-bold mb-1" style="font-size: 0.85em;">Itens no Banco</h6>
+                        <h2 class="mb-0 fw-bold text-light" th:text="${totalEquipamentos}">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="admin-card p-4 d-flex align-items-center gap-4 shadow-sm h-100">
+                    <div class="icon-box bg-success bg-opacity-10 text-success">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-secondary fw-bold mb-1" style="font-size: 0.85em;">Tópicos no Fórum</h6>
+                        <h2 class="mb-0 fw-bold text-light" th:text="${totalTopicos}">0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="mb-3 text-light fw-bold"><i class="fa-solid fa-chart-pie text-info me-2"></i> Estatísticas de
+            Jogadores</h4>
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="admin-card p-4 h-100 shadow-sm">
+                    <h6 class="text-secondary fw-bold mb-3 text-center">Vocações</h6>
+                    <div style="height: 250px;">
+                        <canvas id="chartVocacoes"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="admin-card p-4 h-100 shadow-sm">
+                    <h6 class="text-secondary fw-bold mb-3 text-center">Mundos</h6>
+                    <div style="height: 250px;">
+                        <canvas id="chartMundos"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="admin-card p-4 h-100 shadow-sm">
+                    <h6 class="text-secondary fw-bold mb-3 text-center">Cidades</h6>
+                    <div style="height: 250px;">
+                        <canvas id="chartCidades"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="mb-3 text-light fw-bold"><i class="fa-solid fa-bolt text-warning me-2"></i> Ações Rápidas</h4>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="admin-card p-4 h-100 d-flex flex-column">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fa-solid fa-spider text-danger fs-3 me-3"></i>
+                        <h5 class="text-light fw-bold mb-0">Web Scraper (TibiaWiki)</h5>
+                    </div>
+                    <p class="text-secondary flex-grow-1" style="font-size: 0.9em; line-height: 1.6;">
+                        Inicia o robô para varrer o TibiaWiki e extrair todos os equipamentos, magias e itens. <br>
+                        <span class="text-warning fw-bold"><i class="fa-solid fa-triangle-exclamation"></i>
+                            Atenção:</span> Este processo é demorado, consome processamento e irá sobrepor os dados
+                        existentes na base de dados.
+                    </p>
+                    <form th:action="@{/admin/importar-tudo}" method="post"
+                        onsubmit="return confirm('Tem certeza absoluta que deseja iniciar a extração? O servidor pode ficar lento durante o processo.');">
+                        <button type="submit" class="btn btn-outline-danger w-100 fw-bold py-2 mt-2">
+                            <i class="fa-solid fa-cloud-arrow-down me-2"></i> Iniciar Importação em Massa
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="admin-card p-4 h-100 d-flex flex-column" style="opacity: 0.5;">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fa-solid fa-user-gear text-info fs-3 me-3"></i>
+                        <h5 class="text-light fw-bold mb-0">Gerir Usuários <span class="badge bg-secondary ms-2"
+                                style="font-size: 0.5em;">EM BREVE</span></h5>
+                    </div>
+                    <p class="text-secondary flex-grow-1" style="font-size: 0.9em; line-height: 1.6;">
+                        Módulo futuro para promover contas a administradores, suspender utilizadores do fórum ou
+                        visualizar detalhes de registo.
+                    </p>
+                    <button class="btn btn-outline-secondary w-100 fw-bold py-2 mt-2" disabled>
+                        <i class="fa-solid fa-lock me-2"></i> Indisponível
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-black text-center text-secondary py-4 border-top border-dark mt-auto">
+        <div class="container">
+            <small>&copy; 2026 TibiaBuilder Project. Restrito a Administradores.</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script th:inline="javascript">
+        const statsVocacoes = /*[[${statsVocacoes}]]*/ {};
+        const statsMundos = /*[[${statsMundos}]]*/ {};
+        const statsCidades = /*[[${statsCidades}]]*/ {};
+
+        Chart.defaults.color = '#888';
+
+        if (Object.keys(statsVocacoes).length > 0) {
+            new Chart(document.getElementById('chartVocacoes'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(statsVocacoes),
+                    datasets: [{
+                        data: Object.values(statsVocacoes),
+                        backgroundColor: ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#95a5a6'],
+                        borderWidth: 0, hoverOffset: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        } else {
+            document.getElementById('chartVocacoes').parentElement.innerHTML = '<p class="text-center text-secondary mt-5">Sem dados suficientes</p>';
+        }
+
+        if (Object.keys(statsMundos).length > 0) {
+            new Chart(document.getElementById('chartMundos'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(statsMundos),
+                    datasets: [{
+                        label: 'Personagens',
+                        data: Object.values(statsMundos),
+                        backgroundColor: '#9b59b6',
+                        borderRadius: 4
+                    }]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        } else {
+            document.getElementById('chartMundos').parentElement.innerHTML = '<p class="text-center text-secondary mt-5">Sem dados suficientes</p>';
+        }
+
+        if (Object.keys(statsCidades).length > 0) {
+            new Chart(document.getElementById('chartCidades'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(statsCidades),
+                    datasets: [{
+                        data: Object.values(statsCidades),
+                        backgroundColor: ['#1abc9c', '#34495e', '#e67e22', '#bdc3c7', '#8e44ad', '#c0392b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+            });
+        } else {
+            document.getElementById('chartCidades').parentElement.innerHTML = '<p class="text-center text-secondary mt-5">Sem dados suficientes</p>';
+        }
+    </script>
+</body>
+
+</html>
