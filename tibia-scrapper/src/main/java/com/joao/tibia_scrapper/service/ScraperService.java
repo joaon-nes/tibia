@@ -1,5 +1,7 @@
 package com.joao.tibia_scrapper.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joao.tibia_scrapper.model.Equipamento;
 import com.joao.tibia_scrapper.repository.EquipamentoRepository;
 import org.jsoup.Jsoup;
@@ -7,9 +9,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class ScraperService {
@@ -20,6 +24,7 @@ public class ScraperService {
     private static final String URL_BASE = "https://www.tibiawiki.com.br";
 
     public void importarCategoria(String nomeCategoria, String subUrl) {
+        System.out.println("Iniciando busca da categoria: " + nomeCategoria);
         try {
             Document doc = Jsoup.connect(URL_BASE + "/" + subUrl)
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/121.0.0.0")
@@ -45,66 +50,27 @@ public class ScraperService {
                 }
 
                 Element link = col.get(0).selectFirst("a");
-                if (link == null) {
+                if (link == null)
                     continue;
-                }
-
-                if (nomeFull.isEmpty() || nomeFull.equalsIgnoreCase("Nome") || nomeFull.length() > 200) {
-                    continue;
-                }
 
                 String nome = col.get(0).text().trim();
                 if (nome.isEmpty() || nome.equalsIgnoreCase("Nome"))
                     continue;
 
-                Optional<Equipamento> itemOpt = repository.findByNome(nome);
-                Equipamento item = itemOpt.orElse(new Equipamento());
+                if (!repository.existsByNome(nome)) {
+                    Equipamento item = new Equipamento();
 
-                item.setNome(nomeFull);
-                item.setNome(nome);
-                item.setCategoria(nomeCategoria);
+                    item.setNome(nome);
+                    item.setCategoria(nomeCategoria);
 
-                Element img = col.get(1).selectFirst("img");
-                if (img != null) {
-                    String src = img.hasAttr("data-src") ? img.attr("data-src") : img.attr("src");
-                    item.setImagemUrl(src.startsWith("http") ? src : URL_BASE + src);
-                }
-
-                mapearColunasPorTipo(item, col, nomeCategoria);
-                if (item.getNome() != null && !item.getNome().isEmpty()) {
-
-                    if (item.getNome() != null && item.getNome().toLowerCase().contains("backpack")) {
-                        item.setSlots(1);
+                    Element img = col.get(1).selectFirst("img");
+                    if (img != null) {
+                        String src = img.hasAttr("data-src") ? img.attr("data-src") : img.attr("src");
+                        item.setImagemUrl(src.startsWith("http") ? src : URL_BASE + src);
                     }
-
-                    if (nomeCategoria.equalsIgnoreCase("Backpacks")) {
-                        if (item.getVolume() == null || item.getVolume() <= 0) {
-                            System.out.println("Pulando " + item.getNome() + " por estar sem volume.");
-                            continue;
-                        }
-                    }
-
-                    String bonus = item.getBonusSkill();
-
-                    if (nomeCategoria.equalsIgnoreCase("Extra Slot")) {
-                        if (bonus == null || bonus.trim().isEmpty()) {
-                            item.setBonusSkill("Fornece uma pequena quantidade de luz");
-                        } else {
-                            String bonusPadronizado = padronizarTexto(bonus);
-                            if (bonusPadronizado.toLowerCase().contains("speed")) {
-                                item.setBonusSkill(bonusPadronizado);
-                            } else {
-                                item.setProtecao(bonusPadronizado);
-                                item.setBonusSkill(null);
-                            }
-                        }
-                    } else {
-                        item.setBonusSkill(padronizarTexto(bonus));
-                    }
-
-                    item.setProtecao(padronizarTexto(item.getProtecao()));
 
                     repository.save(item);
+                    System.out.println("Salvo (Básico): " + nome);
                 }
             }
             System.out.println("Sucesso ao importar: " + nomeCategoria);
@@ -114,185 +80,112 @@ public class ScraperService {
         }
     }
 
-    private void mapearColunasPorTipo(Equipamento item, Elements col, String cat) {
-        int size = col.size();
-        if (size < 2)
-            return;
+    public void atualizarEquipamentosViaApi() {
+        List<Equipamento> equipamentos = repository.findAll();
+        System.out.println("Iniciando enriquecimento de " + equipamentos.size() + " equipamentos via API...");
 
-        item.setLevelMinimo(limparInt(col.get(2).text()));
-        item.setVocacoes(padronizarVocacao(col.get(3).text()));
+        RestTemplate restTemplate = new RestTemplate();
+        ObjectMapper mapper = new ObjectMapper();
 
-        switch (cat) {
-            case "Armors":
-            case "Helmets":
-            case "Legs":
-            case "Boots":
-                if (size > 4)
-                    item.setArmadura(limparInt(col.get(4).text()));
-                if (size > 5)
-                    item.setBonusSkill(col.get(5).text());
-                if (size > 6)
-                    item.setProtecao(col.get(6).text());
-                if (size > 7)
-                    item.setSlots(limparInt(col.get(7).text()));
-                if (size > 8)
-                    item.setTier(limparInt(col.get(8).text()));
-                break;
-            case "Shields":
-                if (size > 4)
-                    item.setSlots(limparInt(col.get(4).text()));
-                if (size > 5)
-                    item.setDefesa(limparInt(col.get(5).text()));
-                if (size > 6)
-                    item.setBonusSkill(col.get(6).text());
-                if (size > 7)
-                    item.setProtecao(col.get(7).text());
-                break;
-            case "Spellbooks":
-                if (size > 4)
-                    item.setDefesa(limparInt(col.get(4).text()));
-                if (size > 5)
-                    item.setBonusSkill(col.get(5).text());
-                if (size > 6)
-                    item.setProtecao(col.get(6).text());
-                if (size > 7)
-                    item.setSlots(limparInt(col.get(7).text()));
-                break;
-            case "Quivers":
-                if (size > 4)
-                    item.setVolume(limparInt(col.get(4).text()));
-                if (size > 5)
-                    item.setBonusSkill(col.get(5).text());
-                if (size > 6)
-                    item.setProtecao(col.get(6).text());
-                break;
-            case "Extra Slot":
-                item.setNome(col.get(0).text().trim());
-                item.setProtecao(col.get(2).text().trim());
-                item.setLevelMinimo(0);
-                break;
-            case "Swords":
-            case "Axes":
-            case "Clubs":
-                if (size > 4)
-                    item.setMaos(col.get(4).text());
-                if (size > 5)
-                    item.setAtaque(limparInt(col.get(5).text()));
-                if (size > 6)
-                    item.setDanoElemental(col.get(6).text().trim());
-                if (size > 7)
-                    item.setDefesa(limparInt(col.get(7).text()));
-                if (size > 8)
-                    item.setModDefesa(col.get(8).text());
-                if (size > 9)
-                    item.setBonusSkill(col.get(9).text());
-                if (size > 10)
-                    item.setSlots(limparInt(col.get(10).text()));
-                if (size > 11)
-                    item.setTier(limparInt(col.get(11).text()));
-                break;
-            case "Fist":
-                if (size > 4)
-                    item.setMaos(col.get(4).text());
-                if (size > 5)
-                    item.setAtaque(limparInt(col.get(5).text()));
-                if (size > 6)
-                    item.setElementalBond(col.get(6).text().trim());
-                if (size > 7)
-                    item.setDefesa(limparInt(col.get(7).text()));
-                if (size > 8)
-                    item.setModDefesa(col.get(8).text());
-                if (size > 9)
-                    item.setBonusSkill(col.get(9).text());
-                if (size > 10)
-                    item.setSlots(limparInt(col.get(10).text()));
-                if (size > 11)
-                    item.setTier(limparInt(col.get(11).text()));
-                break;
-            case "Wands":
-            case "Rods":
-                if (size > 4)
-                    item.setTipoDano(col.get(4).text());
-                if (size > 5)
-                    item.setBonusSkill(col.get(5).text());
-                if (size > 6)
-                    item.setProtecao(col.get(6).text());
-                if (size > 7)
-                    item.setDanoMedio(col.get(7).text());
-                if (size > 8)
-                    item.setManaPorAtaque(limparInt(col.get(8).text()));
-                if (size > 9)
-                    item.setSlots(limparInt(col.get(9).text()));
-                if (size > 10)
-                    item.setTier(limparInt(col.get(10).text()));
-                break;
-            case "Distance":
-                if (size > 4)
-                    item.setMaos(col.get(4).text());
-                if (size > 5)
-                    item.setAlcance(limparInt(col.get(5).text()));
-                if (size > 6)
-                    item.setAtaque(limparInt(col.get(6).text()));
-                if (size > 7)
-                    item.setHitPercent(col.get(7).text().trim());
-                if (size > 8)
-                    item.setBonusSkill(col.get(8).text());
-                if (size > 9)
-                    item.setDanoElemental(col.get(9).text().trim());
-                if (size > 10)
-                    item.setProtecao(col.get(10).text());
-                if (size > 11)
-                    item.setSlots(limparInt(col.get(11).text()));
-                if (size > 12)
-                    item.setTier(limparInt(col.get(12).text()));
-                break;
-            case "Ammunition":
-                if (size > 2)
-                    item.setLevelMinimo(limparInt(col.get(2).text()));
-                if (size > 3)
-                    item.setAtaque(limparInt(col.get(3).text()));
-                if (size > 4) {
-                    String texto = col.get(4).text().trim();
-                    boolean isNumerico = texto.matches("\\d*\\.?\\d+");
-                    if (!isNumerico && !texto.isEmpty()) {
-                        item.setDanoElemental(texto);
-                    } else if (isNumerico) {
+        for (Equipamento equip : equipamentos) {
+            try {
+                String apiUrl = "https://tibiawiki.dev/api/items/{nome}";
+                ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class, equip.getNome());
+
+                if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                    JsonNode root = mapper.readTree(response.getBody());
+
+                    if (root.has("levelrequired"))
+                        equip.setLevelMinimo(extrairInteiro(root.get("levelrequired").asText()));
+                    if (root.has("vocrequired")) {
+                        equip.setVocacoes(padronizarVocacao(root.get("vocrequired").asText()));
                     }
+                    if (root.has("hands")) {
+                        if (!equip.getCategoria().equalsIgnoreCase("Wands")
+                                && !equip.getCategoria().equalsIgnoreCase("Rods")) {
+                            equip.setMaos(root.get("hands").asText());
+                        }
+                    }
+                    if (root.has("defense"))
+                        equip.setDefesa(extrairInteiro(root.get("defense").asText()));
+                    if (root.has("defensemod"))
+                        equip.setModDefesa(root.get("defensemod").asText());
+                    if (root.has("attack"))
+                        equip.setAtaque(extrairInteiro(root.get("attack").asText()));
+                    if (root.has("armor"))
+                        equip.setArmadura(extrairInteiro(root.get("armor").asText()));
+                    if (root.has("imbueslots"))
+                        equip.setSlots(extrairInteiro(root.get("imbueslots").asText()));
+                    if (root.has("upgradeclass"))
+                        equip.setTier(extrairInteiro(root.get("upgradeclass").asText()));
+                    if (root.has("attrib"))
+                        equip.setAtributos(root.get("attrib").asText());
+                    if (root.has("hpleech_ch")) {
+                        equip.setLifeLeechChance(extrairInteiro(root.get("hpleech_ch").asText()));
+                    }
+                    if (root.has("hpleech_am")) {
+                        equip.setLifeLeechAmount(extrairInteiro(root.get("hpleech_am").asText()));
+                    }
+                    if (root.has("manaleech_ch")) {
+                        equip.setManaLeechChance(extrairInteiro(root.get("manaleech_ch").asText()));
+                    }
+                    if (root.has("manaleech_am")) {
+                        equip.setManaLeechAmount(extrairInteiro(root.get("manaleech_am").asText()));
+                    }
+                    if (root.has("crithit_ch")) {
+                        equip.setCriticalChance(extrairInteiro(root.get("crithit_ch").asText()));
+                    }
+                    if (root.has("critextra_dmg")) {
+                        equip.setCriticalDamage(extrairInteiro(root.get("critextra_dmg").asText()));
+                    }
+                    if (root.has("mantra")) {
+                        equip.setMantra(extrairInteiro(root.get("mantra").asText()));
+                    }
+                    if (root.has("range")) {
+                        equip.setAlcance(extrairInteiro(root.get("range").asText()));
+                    }
+                    if (root.has("resist")) {
+                        equip.setProtecao(root.get("resist").asText());
+                    }
+                    if (root.has("elementalbond")) {
+                        equip.setElementalBond(root.get("elementalbond").asText());
+                    }
+
+                    String danoElemental = extrairDanoElemental(root);
+                    if (!danoElemental.isEmpty())
+                        equip.setDanoElemental(danoElemental);
+
+                    repository.save(equip);
+                    System.out.println("✅ Status Atualizados: " + equip.getNome());
                 }
-                item.setVocacoes("Paladin");
-                break;
-            case "Amulets":
-            case "Rings":
-                if (size > 4)
-                    item.setArmadura(limparInt(col.get(4).text()));
-                if (size > 5)
-                    item.setCargas(col.get(5).text());
-                if (size > 6)
-                    item.setDuracao(col.get(6).text());
-                if (size > 7)
-                    item.setAtributos(col.get(7).text());
-                if (size > 8)
-                    item.setBonusSkill(col.get(8).text());
-                if (size > 9)
-                    item.setProtecao(col.get(9).text());
-                break;
-            case "Backpacks":
-                if (size > 2) {
-                    int valorVolume = limparInt(col.get(2).text());
-                    item.setVolume(valorVolume);
-                }
-                item.setLevelMinimo(0);
-                break;
-            default:
-                break;
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                System.err.println("❌ Sem dados na API para: " + equip.getNome());
+            }
+        }
+        System.out.println("🎉 Processo de enriquecimento via API finalizado!");
+    }
+
+    private Integer extrairInteiro(String texto) {
+        try {
+            String limpo = texto.replaceAll("[^0-9-]", "");
+            if (limpo.isEmpty())
+                return 0;
+            return Integer.parseInt(limpo);
+        } catch (Exception e) {
+            return 0;
         }
     }
 
-    private Integer limparInt(String t) {
-        if (t == null || t.isEmpty() || t.equals("-"))
-            return 0;
-        String n = t.replaceAll("[^0-9]", "");
-        return n.isEmpty() ? 0 : Integer.parseInt(n);
+    private String extrairDanoElemental(JsonNode root) {
+        String[] elementos = { "ice", "fire", "earth", "energy", "death", "holy" };
+        for (String elemento : elementos) {
+            if (root.has(elemento + "_attack")) {
+                String valor = root.get(elemento + "_attack").asText();
+                return valor + " " + elemento.substring(0, 1).toUpperCase() + elemento.substring(1);
+            }
+        }
+        return "";
     }
 
     private String padronizarVocacao(String t) {
@@ -300,29 +193,16 @@ public class ScraperService {
             return "";
         String b = t.toLowerCase();
         StringBuilder r = new StringBuilder();
-        if (b.contains("knight"))
-            r.append("Knight;");
-        if (b.contains("paladin"))
-            r.append("Paladin;");
-        if (b.contains("sorcerer"))
-            r.append("Sorcerer;");
-        if (b.contains("druid"))
-            r.append("Druid;");
-        if (b.contains("monk"))
-            r.append("Monk;");
+        if (b.contains("knights"))
+            r.append("Knights;");
+        if (b.contains("paladins"))
+            r.append("Paladins;");
+        if (b.contains("sorcerers"))
+            r.append("Sorcerers;");
+        if (b.contains("druids"))
+            r.append("Druids;");
+        if (b.contains("monks"))
+            r.append("Monks;");
         return r.toString();
-    }
-
-    private String padronizarTexto(String texto) {
-        if (texto == null || texto.trim().isEmpty())
-            return "";
-
-        String t = texto.trim();
-        if (t.equalsIgnoreCase("Nenhum.") || t.equalsIgnoreCase("Nenhum"))
-            return "Nenhum";
-        if (t.equalsIgnoreCase("Nenhuma.") || t.equalsIgnoreCase("Nenhuma"))
-            return "Nenhuma";
-
-        return t;
     }
 }

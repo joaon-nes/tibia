@@ -6,6 +6,7 @@ import com.joao.tibia_scrapper.repository.TopicoRepository;
 import com.joao.tibia_scrapper.repository.UsuarioRepository;
 import com.joao.tibia_scrapper.service.ScraperService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,5 +74,11 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("erro", "Erro ao executar o Scraper: " + e.getMessage());
         }
         return "redirect:/admin";
+    }
+
+    @PostMapping("/atualizar-itens-api")
+    public ResponseEntity<String> iniciarAtualizacaoApi() {
+        new Thread(() -> scraperService.atualizarEquipamentosViaApi()).start();
+        return ResponseEntity.ok("Processo de atualização via API iniciado. Acompanhe os logs na consola do Spring Boot!");
     }
 }

@@ -10,33 +10,145 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <script th:src="@{/scripts/scripts.js}" defer></script>
     <meta name="referrer" content="no-referrer">
+    <style>
+        .voc-Sorcerers {
+            background-color: #5bc0de !important;
+            color: #000 !important;
+        }
+
+        .voc-Druids {
+            background-color: #014d14 !important;
+            color: #fff !important;
+        }
+
+        .voc-Paladins {
+            background-color: #dc3545 !important;
+            color: #fff !important;
+        }
+
+        .voc-Knights {
+            background-color: #ffc107 !important;
+            color: #000 !important;
+        }
+
+        .voc-Monks {
+            background-color: #6f42c1 !important;
+            color: #fff !important;
+        }
+
+        /* Estilos da Sidebar importados da Home */
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #aaa;
+            transition: all 0.2s ease;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .menu-item:hover,
+        .menu-item[aria-expanded="true"] {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .menu-icon {
+            width: 24px;
+            text-align: center;
+            margin-right: 12px;
+            font-size: 1.1em;
+        }
+
+        .menu-text {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .menu-title {
+            font-size: 0.95em;
+            font-weight: 500;
+            line-height: 1.2;
+            color: #dfdfdf;
+            transition: color 0.2s;
+        }
+
+        .menu-subtitle {
+            font-size: 0.75em;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .menu-item:hover .menu-title {
+            color: #fff;
+        }
+
+        .chevron-icon {
+            font-size: 0.75rem;
+            transition: transform 0.3s ease;
+            color: #666;
+        }
+
+        .menu-item[aria-expanded="true"] .chevron-icon {
+            transform: rotate(180deg);
+            color: #fff;
+        }
+
+        .submenu-container {
+            padding-left: 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 4px;
+            margin-bottom: 8px;
+            border-left: 1px solid #333;
+            margin-left: 23px;
+        }
+
+        .submenu-item {
+            font-size: 0.85em;
+            color: #888;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .submenu-item:hover,
+        .submenu-item.active {
+            color: #00b7ff;
+            background-color: rgba(0, 183, 255, 0.05);
+        }
+    </style>
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-dark text-white">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-secondary mb-4 position-relative">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center" style="flex: 1;">
-                <button class="navbar-toggler me-2 border-secondary" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#menuPrincipal">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="menuPrincipal">
-                    <ul class="navbar-nav mb-2 mb-lg-0 fw-bold">
-                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="/enciclopedia">Enciclopédia</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/set-builder">Set Builder</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/comunidade">Comunidade</a></li>
-                    </ul>
-                </div>
-            </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-secondary mb-4 position-relative">
+        <div class="container-fluid px-lg-5 d-flex justify-content-between align-items-center">
+
+            <div style="flex: 1;"></div>
+
             <div class="position-absolute top-50 start-50 translate-middle text-center" style="z-index: 10;">
                 <a class="navbar-brand fw-bold text-warning fs-3 m-0" href="/">
                     <i class="fa-solid fa-dragon"></i> TibiaBuilder
                 </a>
             </div>
+
             <div class="d-flex align-items-center justify-content-end gap-2" style="flex: 1;">
                 <div class="d-flex align-items-center" sec:authorize="isAuthenticated()">
+
                     <div class="dropdown me-4 pe-2">
                         <button class="btn btn-sm btn-outline-light position-relative border-0" type="button"
                             id="dropdownNotificacoes" data-bs-toggle="dropdown" aria-expanded="false"
@@ -64,6 +176,7 @@
                                     href="/notificacoes">Ver todas as notificações</a></li>
                         </ul>
                     </div>
+
                     <div class="dropdown">
                         <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" id="dropdownUser"
                             data-bs-toggle="dropdown" aria-expanded="false">
@@ -74,6 +187,7 @@
                             aria-labelledby="dropdownUser">
                             <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item text-warning" href="/admin"><i
                                         class="fa-solid fa-gear me-2"></i> Painel Admin</a></li>
+                            <li><a class="dropdown-item text-light" href="/personagem"> Personagem</a></li>
                             <li><a class="dropdown-item text-light" href="/perfil"><i
                                         class="fa-solid fa-user-pen me-2 text-warning"></i> Editar Perfil</a></li>
                             <li>
@@ -88,6 +202,7 @@
                         </ul>
                     </div>
                 </div>
+
                 <div sec:authorize="!isAuthenticated()">
                     <a href="/login" class="btn btn-sm btn-warning fw-bold px-3"><i
                             class="fa-solid fa-right-to-bracket"></i> Entrar</a>
@@ -96,227 +211,414 @@
         </div>
     </nav>
 
-    <main class="container flex-grow-1">
+    <main class="container-fluid px-lg-5 mb-5 flex-grow-1 mt-2">
+        <div class="row g-4">
 
-        <div th:if="${exibirMenu}">
-            <a href="/home" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-arrow-left"></i>
-                Voltar</a>
-            <h2 class="text-center mb-5 fw-bold text-white"><i class="fa-solid fa-book-open text-warning"></i>
-                Biblioteca de Equipamentos</h2>
+            <aside class="col-lg-3 col-xl-2 order-1">
+                <div class="sidebar-menu">
 
-            <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Helmets" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/6/6c/Full_Helmet_of_the_Ancients.gif"
-                            class="cat-icon-img"><span>Helmets</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Armors" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/3/38/Robe_of_the_Underworld.gif"
-                            class="cat-icon-img"><span>Armors</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Legs" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/3/34/Dwarven_Legs.gif"
-                            class="cat-icon-img"><span>Legs</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Boots" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/3/33/Pair_of_Soulwalkers.gif"
-                            class="cat-icon-img"><span>Boots</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Shields" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/3/33/Necromancer_Shield.gif"
-                            class="cat-icon-img"><span>Shields</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Spellbooks" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/3/3c/Spellbook_of_Ancient_Arcana.gif"
-                            class="cat-icon-img"><span>Spellbooks</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Amulets" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/f/f2/Ornamented_Brooch.gif"
-                            class="cat-icon-img"><span>Amulets</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Rings" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/a/a4/Engraved_Wedding_Ring.gif"
-                            class="cat-icon-img"><span>Rings</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Wands" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/8/8e/Wand_of_Starstorm.gif"
-                            class="cat-icon-img"><span>Wands</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Rods" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/c/cc/Underworld_Rod.gif"
-                            class="cat-icon-img"><span>Rods</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Axes" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/9/9a/Umbral_Master_Chopper.gif"
-                            class="cat-icon-img"><span>Axes</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Clubs" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/e/e3/Hammer_of_Prophecy.gif"
-                            class="cat-icon-img"><span>Clubs</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Swords" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/0/0a/Berserker.gif"
-                            class="cat-icon-img"><span>Swords</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Fist" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/3/38/Grand_Sanguine_Claws.gif"
-                            class="cat-icon-img"><span>Fists</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Distance" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/8/8d/Royal_Crossbow.gif"
-                            class="cat-icon-img"><span>Distance</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Quivers" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/7/71/Alicorn_Quiver.gif"
-                            class="cat-icon-img"><span>Quivers</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Ammunition" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/a/a6/Infernal_Bolt.gif"
-                            class="cat-icon-img"><span>Ammunition</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Backpacks" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/7/7f/Lilypad_Backpack.gif"
-                            class="cat-icon-img"><span>Backpacks</span></a></div>
-                <div class="col"><a href="/enciclopedia/equipamentos?categoria=Extra Slot" class="cat-card"><img
-                            src="https://www.tibiawiki.com.br/images/3/3a/Lit_Torch.gif"
-                            class="cat-icon-img"><span>Extra Slot</span></a></div>
-            </div>
-        </div>
-
-        <div th:if="${itens != null}">
-            <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
-                <a href="/enciclopedia/equipamentos" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-arrow-left"></i>
-                    Voltar</a>
-                <h4 class="fw-bold text-white"><i class="fa-solid fa-layer-group text-warning"></i> Categoria: <span
-                        class="text-warning" th:text="${titulo}"></span></h4>
-            </div>
-
-            <div class="card bg-black border-secondary mb-4 shadow-sm">
-                <div class="card-body p-3">
-                    <form th:action="@{/enciclopedia/equipamentos}" method="get" class="row g-2">
-                        <input type="hidden" name="categoria" th:value="${titulo}">
-                        <input type="hidden" name="mundo" th:value="${mundoSelecionado}">
-
-                        <div class="col-md-2">
-                            <label class="text-secondary small fw-bold d-block mb-1">Level Min.</label>
-                            <input type="text" name="level"
-                                class="form-control form-control-sm bg-dark text-white border-secondary"
-                                th:value="${f?.level}" placeholder="0">
+                    <a href="/comunidade" class="menu-item">
+                        <i class="fa-solid fa-users text-primary menu-icon"></i>
+                        <div class="menu-text">
+                            <span class="menu-title">Comunidade</span>
+                            <span class="menu-subtitle">Fórum e discussões</span>
                         </div>
+                    </a>
 
-                        <div class="col-md-2">
-                            <label class="text-secondary small fw-bold d-block mb-1">Vocação</label>
-                            <select name="vocacao"
-                                class="form-select form-select-sm bg-dark text-white border-secondary">
-                                <option value="">Todas</option>
-                                <option th:selected="${f?.vocacao == 'Knight'}" value="Knight">Knight</option>
-                                <option th:selected="${f?.vocacao == 'Paladin'}" value="Paladin">Paladin</option>
-                                <option th:selected="${f?.vocacao == 'Sorcerer'}" value="Sorcerer">Sorcerer</option>
-                                <option th:selected="${f?.vocacao == 'Druid'}" value="Druid">Druid</option>
-                            </select>
+                    <a href="#collapseEnciclopedia" class="menu-item" data-bs-toggle="collapse" role="button"
+                        aria-expanded="true" aria-controls="collapseEnciclopedia">
+                        <i class="fa-solid fa-book-open text-warning menu-icon"></i>
+                        <div class="menu-text">
+                            <span class="menu-title">Enciclopédia</span>
+                            <span class="menu-subtitle">Base de dados</span>
                         </div>
+                        <i class="fa-solid fa-chevron-down chevron-icon"></i>
+                    </a>
 
-                        <div class="col-md-2">
-                            <label class="text-secondary small fw-bold d-block mb-1">Proteção</label>
-                            <select name="protecao"
-                                class="form-select form-select-sm bg-dark text-white border-secondary">
-                                <option value="">Todas</option>
-                                <option th:selected="${f?.protecao == 'Fire'}" value="Fire">Fire</option>
-                                <option th:selected="${f?.protecao == 'Ice'}" value="Ice">Ice</option>
-                                <option th:selected="${f?.protecao == 'Energy'}" value="Energy">Energy</option>
-                                <option th:selected="${f?.protecao == 'Earth'}" value="Earth">Earth</option>
-                                <option th:selected="${f?.protecao == 'Death'}" value="Death">Death</option>
-                                <option th:selected="${f?.protecao == 'Holy'}" value="Holy">Holy</option>
-                                <option th:selected="${f?.protecao == 'Physical'}" value="Physical">Physical</option>
-                            </select>
+                    <div class="collapse show" id="collapseEnciclopedia">
+                        <div class="submenu-container">
+                            <a href="#" class="submenu-item">Vocações</a>
+                            <a href="/enciclopedia/equipamentos" class="submenu-item active">Equipamentos</a>
+                            <a href="#" class="submenu-item">Runas</a>
+                            <a href="#" class="submenu-item">Magias</a>
+                            <a href="#" class="submenu-item">Criaturas</a>
+                            <a href="#" class="submenu-item">Imbuements</a>
                         </div>
+                    </div>
 
-                        <div class="col-md-2">
-                            <label class="text-secondary small fw-bold d-block mb-1">Bônus Skill</label>
-                            <select name="bonus" class="form-select form-select-sm bg-dark text-white border-secondary">
-                                <option value="">Todos</option>
-                                <option th:selected="${f?.bonus == 'Fist'}" value="Fist">Fist</option>
-                                <option th:selected="${f?.bonus == 'Axe'}" value="Axe">Axe</option>
-                                <option th:selected="${f?.bonus == 'Club'}" value="Club">Club</option>
-                                <option th:selected="${f?.bonus == 'Sword'}" value="Sword">Sword</option>
-                                <option th:selected="${f?.bonus == 'Distance'}" value="Distance">Distance</option>
-                                <option th:selected="${f?.bonus == 'Shielding'}" value="Shielding">Shield</option>
-                                <option th:selected="${f?.bonus == 'Magic Level'}" value="Magic Level">Magic Level
-                                </option>
-                                <option th:selected="${f?.bonus == 'Speed'}" value="Speed">Speed</option>
-                            </select>
+                    <a href="#" class="menu-item" style="pointer-events: none; opacity: 0.5;">
+                        <i class="fa-solid fa-users-viewfinder text-info menu-icon"></i>
+                        <div class="menu-text">
+                            <span class="menu-title">Buscar Party <span class="badge bg-danger ms-1 fw-normal"
+                                    style="font-size: 0.6em;">EM BREVE</span></span>
+                            <span class="menu-subtitle">Encontre jogadores</span>
                         </div>
+                    </a>
 
-                        <div class="col-md-1">
-                            <label class="text-secondary small fw-bold d-block mb-1">Slots</label>
-                            <select name="slots" class="form-select form-select-sm bg-dark text-white border-secondary">
-                                <option value="">Todos</option>
-                                <option th:selected="${f?.slots == 1}" value="1">1</option>
-                                <option th:selected="${f?.slots == 2}" value="2">2</option>
-                                <option th:selected="${f?.slots == 3}" value="3">3</option>
-                            </select>
+                    <a href="javascript:void(0)" class="menu-item" onclick="abrirMapa(32369, 32240, 7)">
+                        <i class="fa-solid fa-map text-success menu-icon"></i>
+                        <div class="menu-text">
+                            <span class="menu-title">Mapa</span>
+                            <span class="menu-subtitle">Explore o continente</span>
                         </div>
+                    </a>
 
-                        <div class="col-md-1">
-                            <label class="text-secondary small fw-bold d-block mb-1">Tier</label>
-                            <select name="tier" class="form-select form-select-sm bg-dark text-white border-secondary">
-                                <option value="">Todos</option>
-                                <option th:selected="${f?.tier == 1}" value="1">1</option>
-                                <option th:selected="${f?.tier == 2}" value="2">2</option>
-                                <option th:selected="${f?.tier == 3}" value="3">3</option>
-                                <option th:selected="${f?.tier == 4}" value="4">4</option>
-                            </select>
+                    <a href="#" class="menu-item" style="pointer-events: none; opacity: 0.5;">
+                        <i class="fa-solid fa-map-location-dot text-danger menu-icon"></i>
+                        <div class="menu-text">
+                            <span class="menu-title">Hunts <span class="badge bg-danger ms-1 fw-normal"
+                                    style="font-size: 0.6em;">EM BREVE</span></span>
+                            <span class="menu-subtitle">Locais de caça</span>
                         </div>
+                    </a>
 
-                        <div class="col-md-2 pt-4">
-                            <button type="submit" class="btn btn-warning btn-sm w-100 fw-bold"><i
-                                    class="fa-solid fa-filter"></i> Filtrar</button>
+                    <a href="/set-builder" class="menu-item">
+                        <i class="fa-solid fa-user-shield text-success menu-icon"></i>
+                        <div class="menu-text">
+                            <span class="menu-title">Set Builder</span>
+                            <span class="menu-subtitle">Simulador de status</span>
                         </div>
-                    </form>
+                    </a>
+
+                    <a href="#" class="menu-item" style="pointer-events: none; opacity: 0.5;">
+                        <i class="fa-solid fa-handshake menu-icon" style="color: #ffc107;"></i>
+                        <div class="menu-text">
+                            <span class="menu-title">Trade Market <span class="badge bg-danger ms-1 fw-normal"
+                                    style="font-size: 0.6em;">EM BREVE</span></span>
+                            <span class="menu-subtitle">Compra e venda</span>
+                        </div>
+                    </a>
+
                 </div>
-            </div>
+            </aside>
 
-            <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
-                <div class="col" th:each="item : ${itens}">
-                    <div class="item-container">
-                        <div class="item-card shadow-sm">
-                            <div class="img-slot">
-                                <img th:src="${item.imagemUrl}" class="item-img" alt="Item"
-                                    onerror="this.src='https://www.tibiawiki.com.br/images/b/b4/Unknown_Item.gif'">
-                            </div>
-                            <div class="item-name" th:text="${item.nome}"></div>
-                            <div class="lvl-req"
-                                th:text="${item.levelMinimo > 0} ? 'Level ' + ${item.levelMinimo} : 'Sem Level requerido'">
-                            </div>
+            <div class="col-lg-9 col-xl-10 order-2">
+                <div th:if="${exibirMenu}">
+                    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3" style="margin-top: 15px;">
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Helmets" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/6/6c/Full_Helmet_of_the_Ancients.gif"
+                                    class="cat-icon-img"><span>Helmets</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Armors" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/3/38/Robe_of_the_Underworld.gif"
+                                    class="cat-icon-img"><span>Armors</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Legs" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/3/34/Dwarven_Legs.gif"
+                                    class="cat-icon-img"><span>Legs</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Boots" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/3/33/Pair_of_Soulwalkers.gif"
+                                    class="cat-icon-img"><span>Boots</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Shields" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/3/33/Necromancer_Shield.gif"
+                                    class="cat-icon-img"><span>Shields</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Spellbooks" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/3/3c/Spellbook_of_Ancient_Arcana.gif"
+                                    class="cat-icon-img"><span>Spellbooks</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Amulets" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/f/f2/Ornamented_Brooch.gif"
+                                    class="cat-icon-img"><span>Amulets</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Rings" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/a/a4/Engraved_Wedding_Ring.gif"
+                                    class="cat-icon-img"><span>Rings</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Wands" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/8/8e/Wand_of_Starstorm.gif"
+                                    class="cat-icon-img"><span>Wands</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Rods" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/c/cc/Underworld_Rod.gif"
+                                    class="cat-icon-img"><span>Rods</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Axes" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/9/9a/Umbral_Master_Chopper.gif"
+                                    class="cat-icon-img"><span>Axes</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Clubs" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/e/e3/Hammer_of_Prophecy.gif"
+                                    class="cat-icon-img"><span>Clubs</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Swords" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/0/0a/Berserker.gif"
+                                    class="cat-icon-img"><span>Swords</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Fist" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/3/38/Grand_Sanguine_Claws.gif"
+                                    class="cat-icon-img"><span>Fists</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Distance" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/8/8d/Royal_Crossbow.gif"
+                                    class="cat-icon-img"><span>Distance</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Quivers" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/7/71/Alicorn_Quiver.gif"
+                                    class="cat-icon-img"><span>Quivers</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Ammunition" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/a/a6/Infernal_Bolt.gif"
+                                    class="cat-icon-img"><span>Ammunition</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Backpacks" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/7/7f/Lilypad_Backpack.gif"
+                                    class="cat-icon-img"><span>Backpacks</span></a></div>
+                        <div class="col"><a href="/enciclopedia/equipamentos?categoria=Extra Slot" class="cat-card"><img
+                                    src="https://www.tibiawiki.com.br/images/3/3a/Lit_Torch.gif"
+                                    class="cat-icon-img"><span>Extra Slot</span></a></div>
+                    </div>
+                </div>
 
-                            <div class="d-flex flex-wrap justify-content-center gap-1 mb-2">
-                                <span th:each="v : ${#strings.arraySplit(item.vocacoes, ';')}" th:if="${v != ''}"
-                                    th:classappend="'voc-' + ${v}" class="badge rounded-pill" th:text="${v}"></span>
-                            </div>
+                <div th:if="${itens != null}">
+                    <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+                        <a href="/enciclopedia/equipamentos" class="btn btn-outline-light btn-sm"><i
+                                class="fa-solid fa-arrow-left"></i> Voltar</a>
+                        <h4 class="fw-bold text-white"><i class="fa-solid fa-layer-group text-warning"></i> Categoria:
+                            <span class="text-warning" th:text="${titulo}"></span>
+                        </h4>
+                    </div>
 
-                            <div class="desc-box">
-                                <div class="attr-row" th:if="${item.armadura > 0}" th:text="'Arm: ' + ${item.armadura}">
-                                </div>
-                                <div class="attr-row" th:if="${item.maos != null}" th:text="'Mãos: ' + ${item.maos}">
-                                </div>
-                                <div class="attr-row" th:if="${item.ataque > 0}" th:text="'Atk: ' + ${item.ataque}">
-                                </div>
-                                <div class="attr-row" th:if="${item.defesa > 0}" th:text="'Def: ' + ${item.defesa}">
-                                </div>
-                                <div class="attr-row" th:if="${item.modDefesa != null and item.modDefesa != '0'}"
-                                    th:text="'Extra Def: ' + ${item.modDefesa}"></div>
-                                <div class="attr-row" th:if="${item.alcance > 0}" th:text="'Range: ' + ${item.alcance}">
-                                </div>
-                                <div class="attr-row" th:if="${item.hitPercent != null and item.hitPercent != '0'}"
-                                    th:text="'Hit%: ' + ${item.hitPercent}"></div>
-                                <div class="attr-row"
-                                    th:if="${item.bonusSkill != null and item.bonusSkill != 'Nenhum' and item.bonusSkill != ''}"
-                                    th:text="'Bônus: '+  ${item.bonusSkill}"></div>
-                                <div class="attr-row"
-                                    th:if="${item.protecao != null and item.protecao != 'Nenhum' and item.protecao != 'Nenhuma' and item.protecao != ''}"
-                                    th:text="'Proteção: ' + ${item.protecao}"></div>
-                                <div class="attr-row"
-                                    th:if="${item.danoElemental != null and item.danoElemental != 'Nenhum'}"
-                                    th:text="'Dano Elemental: +' + ${item.danoElemental}"></div>
-                                <div class="attr-row" th:if="${item.slots > 0}" th:text="'Slots: ' + ${item.slots}">
-                                </div>
-                                <div class="attr-row" th:if="${item.volume > 0}"
-                                    th:text="'Peso: ' + ${item.volume} + ' oz'"></div>
+                    <div class="card bg-black border-secondary mb-4 shadow-sm">
+                        <div class="card-body p-3">
+                            <form th:action="@{/enciclopedia/equipamentos}" method="get" class="row g-2">
+                                <input type="hidden" name="categoria" th:value="${titulo}">
 
-                                <div class="mt-3 text-center border-top border-secondary pt-2">
-                                    <a th:href="${item.wikiUrl}" target="_blank"
-                                        class="text-warning small text-decoration-none">Ver no TibiaWiki <i
-                                            class="fa-solid fa-up-right-from-square"></i></a>
+                                <div class="col-md-1">
+                                    <label class="text-secondary small fw-bold d-block mb-1">Level</label>
+                                    <input type="text" name="level"
+                                        class="form-control form-control-sm bg-dark text-white border-secondary"
+                                        th:value="${f?.level}" placeholder="Ex: 100">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="text-secondary small fw-bold d-block mb-1">Vocação</label>
+                                    <select name="vocacao"
+                                        class="form-select form-select-sm bg-dark text-white border-secondary">
+                                        <option value="">Todas</option>
+                                        <option th:selected="${f?.vocacao == 'Knight'}" value="Knight">Knight</option>
+                                        <option th:selected="${f?.vocacao == 'Paladin'}" value="Paladin">Paladin
+                                        </option>
+                                        <option th:selected="${f?.vocacao == 'Sorcerer'}" value="Sorcerer">Sorcerer
+                                        </option>
+                                        <option th:selected="${f?.vocacao == 'Druid'}" value="Druid">Druid</option>
+                                        <option th:selected="${f?.vocacao == 'Monk'}" value="Monk">Monk</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="text-secondary small fw-bold d-block mb-1">Elemento</label>
+                                    <select name="elemento"
+                                        class="form-select form-select-sm bg-dark text-white border-secondary">
+                                        <option value="">Todos</option>
+                                        <option th:selected="${f?.elemento == 'fire'}" value="fire">Fire</option>
+                                        <option th:selected="${f?.elemento == 'earth'}" value="earth">Earth</option>
+                                        <option th:selected="${f?.elemento == 'ice'}" value="ice">Ice</option>
+                                        <option th:selected="${f?.elemento == 'energy'}" value="energy">Energy</option>
+                                        <option th:selected="${f?.elemento == 'death'}" value="death">Death</option>
+                                        <option th:selected="${f?.elemento == 'holy'}" value="holy">Holy</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="text-secondary small fw-bold d-block mb-1">Proteção</label>
+                                    <select name="protecao"
+                                        class="form-select form-select-sm bg-dark text-white border-secondary">
+                                        <option value="">Todas</option>
+                                        <option th:selected="${f?.protecao == 'fire'}" value="fire">Fire</option>
+                                        <option th:selected="${f?.protecao == 'earth'}" value="earth">Earth</option>
+                                        <option th:selected="${f?.protecao == 'ice'}" value="ice">Ice</option>
+                                        <option th:selected="${f?.protecao == 'energy'}" value="energy">Energy</option>
+                                        <option th:selected="${f?.protecao == 'death'}" value="death">Death</option>
+                                        <option th:selected="${f?.protecao == 'holy'}" value="holy">Holy</option>
+                                        <option th:selected="${f?.protecao == 'physical'}" value="physical">Physical
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="text-secondary small fw-bold d-block mb-1">Bônus Especial</label>
+                                    <select name="bonusEspecial"
+                                        class="form-select form-select-sm bg-dark text-white border-secondary">
+                                        <option value="">Nenhum / Todos</option>
+                                        <option th:selected="${f?.bonusEspecial == 'Life Leech'}" value="Life Leech">
+                                            Life Leech</option>
+                                        <option th:selected="${f?.bonusEspecial == 'Mana Leech'}" value="Mana Leech">
+                                            Mana Leech</option>
+                                        <option th:selected="${f?.bonusEspecial == 'Critical'}" value="Critical">
+                                            Critical Hit</option>
+                                        <option th:selected="${f?.bonusEspecial == 'Mantra'}" value="Mantra">Mantra
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="text-secondary small fw-bold d-block mb-1">Buscar por
+                                        Status/Atributo</label>
+                                    <input type="text" name="atributos"
+                                        class="form-control form-control-sm bg-dark text-white border-secondary"
+                                        th:value="${f?.atributos}" placeholder="Ex: magic level">
+                                </div>
+
+                                <div class="col-md-1 mt-3">
+                                    <label class="text-secondary small fw-bold d-block mb-1">Slots</label>
+                                    <select name="slots"
+                                        class="form-select form-select-sm bg-dark text-white border-secondary">
+                                        <option th:value="${null}">0</option>
+                                        <option th:selected="${f?.slots == 1}" value="1">1</option>
+                                        <option th:selected="${f?.slots == 2}" value="2">2</option>
+                                        <option th:selected="${f?.slots == 3}" value="3">3</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-1 mt-3">
+                                    <label class="text-secondary small fw-bold d-block mb-1">Tier</label>
+                                    <select name="tier"
+                                        class="form-select form-select-sm bg-dark text-white border-secondary">
+                                        <option th:value="${null}">N/A</option>
+                                        <option th:selected="${f?.tier == 1}" value="1">1</option>
+                                        <option th:selected="${f?.tier == 2}" value="2">2</option>
+                                        <option th:selected="${f?.tier == 3}" value="3">3</option>
+                                        <option th:selected="${f?.tier == 4}" value="4">4</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-2 pt-4 mt-3">
+                                    <button type="submit" class="btn btn-warning btn-sm w-100 fw-bold"><i
+                                            class="fa-solid fa-filter"></i> Filtrar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+                        <div class="col" th:each="item : ${itens}">
+                            <div class="item-container">
+                                <div class="item-card shadow-sm">
+                                    <div class="img-slot">
+                                        <img th:src="${item.imagemUrl}" class="item-img" alt="Item"
+                                            onerror="this.src='https://www.tibiawiki.com.br/images/b/b4/Unknown_Item.gif'">
+                                    </div>
+                                    <div class="item-name" th:text="${item.nome}"></div>
+                                    <div class="lvl-req"
+                                        th:text="${item.levelMinimo != null and item.levelMinimo > 0} ? 'Level ' + ${item.levelMinimo} : 'Sem Level requerido'">
+                                    </div>
+
+                                    <div class="d-flex flex-wrap justify-content-center gap-1 mb-2">
+                                        <span th:each="v : ${#strings.arraySplit(item.vocacoes, ';')}"
+                                            th:if="${v != ''}" th:classappend="'voc-' + ${v}" class="badge rounded-pill"
+                                            th:text="${v}"></span>
+                                    </div>
+
+                                    <div class="desc-box">
+                                        <div class="attr-row" th:if="${item.armadura != null and item.armadura > 0}"
+                                            th:text="'Armadura: ' + ${item.armadura}">
+                                        </div>
+                                        <div class="attr-row" th:if="${item.maos != null and item.maos != ''}"
+                                            th:text="'Mãos: ' + ${#strings.capitalizeWords(item.maos)}">
+                                        </div>
+                                        <div class="attr-row" th:if="${item.ataque != null and item.ataque > 0}"
+                                            th:text="'Atk: ' + ${item.ataque}">
+                                        </div>
+                                        <div class="attr-row" th:if="${item.defesa != null and item.defesa > 0}"
+                                            th:text="'Def: ' + ${item.defesa}">
+                                        </div>
+                                        <div class="attr-row"
+                                            th:if="${item.modDefesa != null and item.modDefesa != '0' and item.modDefesa != ''}"
+                                            th:text="'Mod. Defesa: ' + ${item.modDefesa}">
+                                        </div>
+                                        <div class="attr-row" th:if="${item.alcance != null and item.alcance > 0}"
+                                            th:text="'Range: ' + ${item.alcance}">
+                                        </div>
+
+                                        <div th:classappend="${(item.armadura != null and item.armadura > 0) or (item.maos != null and item.maos != '') or (item.ataque != null and item.ataque > 0) or (item.defesa != null and item.defesa > 0) or (item.alcance != null and item.alcance > 0)} ? 'border-top border-secondary pt-1 mt-1' : ''"
+                                            th:if="${(item.danoElemental != null and item.danoElemental != '') or (item.elementalBond != null and item.elementalBond != '') or (item.criticalChance != null and item.criticalChance > 0) or (item.lifeLeechChance != null and item.lifeLeechChance > 0) or (item.manaLeechChance != null and item.manaLeechChance > 0)}">
+
+                                            <div class="attr-row text-white"
+                                                th:if="${item.danoElemental != null and item.danoElemental != ''}"
+                                                th:text="'Dano Elemental: +' + ${#strings.capitalizeWords(item.danoElemental)}">
+                                            </div>
+                                            <div class="attr-row text-white"
+                                                th:if="${item.elementalBond != null and item.elementalBond != ''}"
+                                                th:text="'Elemental Bond: ' + ${#strings.capitalizeWords(item.elementalBond)}">
+                                            </div>
+
+                                            <div th:if="${item.criticalChance != null and item.criticalChance > 0}">
+                                                <div class="attr-row text-white mt-1">Critical Hit:</div>
+                                                <div class="attr-row text-white ms-2 d-flex justify-content-between">
+                                                    <span class="text-secondary">Chance</span>
+                                                    <span th:text="${item.criticalChance} + '%'"></span>
+                                                </div>
+                                                <div class="attr-row text-white ms-2 d-flex justify-content-between">
+                                                    <span class="text-secondary">Extra Damage</span>
+                                                    <span th:text="'+' + ${item.criticalDamage} + '%'"></span>
+                                                </div>
+                                            </div>
+
+                                            <div th:if="${item.lifeLeechChance != null and item.lifeLeechChance > 0}">
+                                                <div class="attr-row text-white mt-1">Life Leech:</div>
+                                                <div class="attr-row text-white ms-2 d-flex justify-content-between">
+                                                    <span class="text-secondary">Chance</span>
+                                                    <span th:text="${item.lifeLeechChance} + '%'"></span>
+                                                </div>
+                                                <div class="attr-row text-white ms-2 d-flex justify-content-between">
+                                                    <span class="text-secondary">Amount</span>
+                                                    <span th:text="'+' + ${item.lifeLeechAmount} + '%'"></span>
+                                                </div>
+                                            </div>
+
+                                            <div th:if="${item.manaLeechChance != null and item.manaLeechChance > 0}">
+                                                <div class="attr-row text-white mt-1">Mana Leech:</div>
+                                                <div class="attr-row text-white ms-2 d-flex justify-content-between">
+                                                    <span class="text-secondary">Chance</span>
+                                                    <span th:text="${item.manaLeechChance} + '%'"></span>
+                                                </div>
+                                                <div class="attr-row text-white ms-2 d-flex justify-content-between">
+                                                    <span class="text-secondary">Amount</span>
+                                                    <span th:text="'+' + ${item.manaLeechAmount} + '%'"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div th:classappend="${(item.armadura != null and item.armadura > 0) or (item.danoElemental != null and item.danoElemental != '') or (item.criticalChance != null and item.criticalChance > 0)} ? 'border-top border-secondary pt-1 mt-1' : ''"
+                                            th:if="${(item.mantra != null and item.mantra > 0) or (item.atributos != null and item.atributos != '')}">
+
+                                            <div class="attr-row text-white"
+                                                th:if="${item.mantra != null and item.mantra > 0}"
+                                                th:text="'Mantra: +' + ${item.mantra}">
+                                            </div>
+                                            <div class="attr-row text-white"
+                                                th:if="${item.atributos != null and item.atributos != ''}"
+                                                th:text="'Bônus: ' + ${#strings.capitalizeWords(item.atributos)}">
+                                            </div>
+                                        </div>
+
+                                        <div th:classappend="${(item.armadura != null and item.armadura > 0) or (item.atributos != null and item.atributos != '') or (item.criticalChance != null and item.criticalChance > 0)} ? 'border-top border-secondary pt-1 mt-1' : ''"
+                                            th:if="${(item.slots != null and item.slots > 0) or (item.tier != null and item.tier > 0)}">
+
+                                            <div class="attr-row text-white"
+                                                th:if="${item.slots != null and item.slots > 0}"
+                                                th:text="'Imbuement slots: ' + ${item.slots}">
+                                            </div>
+                                            <div class="attr-row text-white"
+                                                th:if="${item.tier != null and item.tier > 0}"
+                                                th:text="'Tier: ' + ${item.tier}">
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-3 text-center border-secondary pt-2">
+                                            <a th:href="'https://www.tibiawiki.com.br/wiki/' + ${#strings.replace(item.nome, ' ', '_')}"
+                                                target="_blank" class="text-warning small text-decoration-none">Ver no
+                                                TibiaWiki
+                                                <i class="fa-solid fa-up-right-from-square"></i></a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </main>
+
+    <div class="modal fade" id="mapaGlobalModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-transparent border-0 position-relative">
+                <div class="modal-body p-0 bg-dark position-relative shadow-lg"
+                    style="height: 500px; border-radius: 12px; overflow: hidden; border: 2px solid #444;">
+                    <iframe id="modal-global-iframe" src="" width="100%" height="100%" frameborder="0"
+                        style="border:0;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer class="bg-black text-center text-secondary py-4 border-top border-dark mt-auto">
         <div class="container">
@@ -327,6 +629,15 @@
     <button id="backToTop" title="Voltar ao Topo" class="btn btn-warning shadow"><i
             class="fa-solid fa-arrow-up"></i></button>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function abrirMapa(x, y, z) {
+            const modal = new bootstrap.Modal(document.getElementById('mapaGlobalModal'));
+            const embedUrl = `https://tibiamaps.io/map/embed#${x},${y},${z}:1`;
+            document.getElementById('modal-global-iframe').src = embedUrl;
+            modal.show();
+        }
+    </script>
 </body>
 
 </html>

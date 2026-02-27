@@ -17,28 +17,32 @@ public class EquipamentoViewController {
 
     @Autowired
     private EquipamentoRepository repository;
-    @Autowired
-    
-    @GetMapping({"/", "/home"})
+
+    @GetMapping({ "/", "/home" })
     public String home() {
         return "home";
     }
 
     @GetMapping("/enciclopedia/equipamentos")
     public String listarEquipamentos(EquipamentoFilterDTO filtro, HttpSession session, Model model) {
-        
+
         if (filtro.categoria() != null && !filtro.categoria().isEmpty()) {
             List<String> categoriasLista = Arrays.asList(filtro.categoria().split(","));
-            
+
             List<Equipamento> itens = repository.findComFiltrosAvancados(
-                    categoriasLista, filtro.level(), filtro.vocacao(), filtro.protecao(), 
-                    filtro.elemento(), filtro.bonus(), filtro.atributos(), 
-                    filtro.range(), filtro.slots(), filtro.tier()
-            );
+                    categoriasLista,
+                    filtro.level(),
+                    filtro.vocacao(),
+                    filtro.elemento(),
+                    filtro.protecao(),
+                    filtro.atributos(),
+                    filtro.bonusEspecial(),
+                    filtro.slots(),
+                    filtro.tier());
 
             model.addAttribute("itens", itens);
             model.addAttribute("titulo", filtro.categoria());
-            model.addAttribute("f", filtro); 
+            model.addAttribute("f", filtro);
         } else {
             model.addAttribute("exibirMenu", true);
         }

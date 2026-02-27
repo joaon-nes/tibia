@@ -517,7 +517,26 @@
 
                     </div>
                 </div>
-
+                <div class="tibiadata-card text-center" id="card-creature">
+                    <div class="tibiadata-header d-flex justify-content-center align-items-center">
+                        <h6 class="text-info fw-bold mb-0 text-shadow-heavy" style="font-size: 1em;">
+                            Boosted Creature
+                            <i class="fa-solid fa-circle-info ms-1 info-icon" data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="Criatura diária que concede 2x Experiência, 2x Loot e renasce muito mais rápido."></i>
+                        </h6>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center py-2">
+                        <div class="sprite-container">
+                            <div class="creature-pedestal"></div>
+                            <img id="boosted-creature-img"
+                                src="https://www.tibiawiki.com.br/images/b/b4/Unknown_Item.gif" alt="Creature"
+                                class="creature-sprite">
+                        </div>
+                        <span id="boosted-creature-name" class="fw-bold text-light text-shadow-heavy"
+                            style="z-index: 5; font-size: 1em;">Carregando...</span>
+                    </div>
+                </div>
                 <div class="tibiadata-card text-center" id="card-boss">
                     <div class="tibiadata-header d-flex justify-content-center align-items-center">
                         <h6 class="text-warning fw-bold mb-0 text-shadow-heavy" style="font-size: 1em;">
@@ -537,30 +556,7 @@
                             style="z-index: 5; font-size: 1em;">Carregando...</span>
                     </div>
                 </div>
-
-                <div class="tibiadata-card text-center" id="card-creature">
-                    <div class="tibiadata-header d-flex justify-content-center align-items-center">
-                        <h6 class="text-success fw-bold mb-0 text-shadow-heavy" style="font-size: 1em;">
-                            Boosted Creature
-                            <i class="fa-solid fa-circle-info ms-1 info-icon" data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                title="Criatura diária que concede 2x Experiência, 2x Loot e renasce muito mais rápido."></i>
-                        </h6>
-                    </div>
-                    <div class="d-flex flex-column justify-content-center align-items-center py-2">
-                        <div class="sprite-container">
-                            <div class="creature-pedestal"></div>
-                            <img id="boosted-creature-img"
-                                src="https://www.tibiawiki.com.br/images/b/b4/Unknown_Item.gif" alt="Creature"
-                                class="creature-sprite">
-                        </div>
-                        <span id="boosted-creature-name" class="fw-bold text-light text-shadow-heavy"
-                            style="z-index: 5; font-size: 1em;">Carregando...</span>
-                    </div>
-                </div>
-
             </aside>
-
         </div>
     </main>
 
@@ -667,7 +663,7 @@
                 2: { city: "Liberty Bay", bg: "https://www.tibiawiki.com.br/images/3/33/Rashid_Liberty_Bay.png", coords: "32301,32837,7", desc: "Na taverna de Lyonel ao oeste do depot, Liberty Bay" },
                 3: { city: "Port Hope", bg: "https://www.tibiawiki.com.br/images/4/4e/Rashid_Port_Hope.png", coords: "32578,32754,7", desc: "Na taverna de Clyde ao norte do barco, em Port Hope." },
                 4: { city: "Ankrahmun", bg: "https://www.tibiawiki.com.br/images/d/dd/Rashid_Ankrahmun.png", coords: "33070,32882,6", desc: "Em Ankhramun, na taverna de Arito, acima do post office." },
-                5: { city: "Darashia", bg: "https://www.tibiawiki.com.br/images/a/ab/Rashid_Darashia.png", coords: "33235,32485,7", desc: "Na cidade de Darashia, na taverna de Miraia, a oeste do barco." },
+                5: { city: "Darashia", bg: "https://www.tibiawiki.com.br/images/c/cb/Rashid_Darashia.png", coords: "33235,32485,7", desc: "Na cidade de Darashia, na taverna de Miraia, a oeste do barco." },
                 6: { city: "Edron", bg: "https://www.tibiawiki.com.br/images/6/6f/Rashid_Edron.png", coords: "33168,31809,6", desc: "Em Edron, na taverna de Mirabell, acima do depot." },
                 0: { city: "Carlin", bg: "https://www.tibiawiki.com.br/images/8/87/Rashid_Carlin.png", coords: "32330,31782,6", desc: "Em Carlin, no primeiro andar do depot." }
             };

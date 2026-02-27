@@ -163,23 +163,41 @@
         <h4 class="mb-3 text-light fw-bold"><i class="fa-solid fa-bolt text-warning me-2"></i> Ações Rápidas</h4>
         <div class="row g-4">
             <div class="col-md-6">
-                <div class="admin-card p-4 h-100 d-flex flex-column">
+                <div class="admin-card p-4 h-100 d-flex flex-column border-danger">
                     <div class="d-flex align-items-center mb-3">
                         <i class="fa-solid fa-spider text-danger fs-3 me-3"></i>
-                        <h5 class="text-light fw-bold mb-0">Web Scraper (TibiaWiki)</h5>
+                        <h5 class="text-light fw-bold mb-0">1. Extrair Nomes (Scraper)</h5>
                     </div>
                     <p class="text-secondary flex-grow-1" style="font-size: 0.9em; line-height: 1.6;">
-                        Inicia o robô para varrer o TibiaWiki e extrair todos os equipamentos, magias e itens. <br>
-                        <span class="text-warning fw-bold"><i class="fa-solid fa-triangle-exclamation"></i>
-                            Atenção:</span> Este processo é demorado, consome processamento e irá sobrepor os dados
-                        existentes na base de dados.
+                        Inicia o robô para varrer o TibiaWiki e salvar os <strong>Nomes e Imagens</strong> dos
+                        equipamentos no banco de dados. <br>
+                        <span class="text-warning fw-bold"><i class="fa-solid fa-triangle-exclamation"></i> Passo
+                            1:</span> Execute este passo primeiro caso seu banco de dados esteja vazio.
                     </p>
                     <form th:action="@{/admin/importar-tudo}" method="post"
-                        onsubmit="return confirm('Tem certeza absoluta que deseja iniciar a extração? O servidor pode ficar lento durante o processo.');">
+                        onsubmit="return confirm('Iniciar a extração inicial de nomes e imagens do TibiaWiki?');">
                         <button type="submit" class="btn btn-outline-danger w-100 fw-bold py-2 mt-2">
                             <i class="fa-solid fa-cloud-arrow-down me-2"></i> Iniciar Importação em Massa
                         </button>
                     </form>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="admin-card p-4 h-100 d-flex flex-column border-info">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fa-solid fa-database text-info fs-3 me-3"></i>
+                        <h5 class="text-light fw-bold mb-0">2. Atualizar Atributos (API)</h5>
+                    </div>
+                    <p class="text-secondary flex-grow-1" style="font-size: 0.9em; line-height: 1.6;">
+                        Descarrega os atributos completos (Ataque, Defesa, Slots, Elementos) para os itens do banco de
+                        dados através da API oficial. <br>
+                        <span class="text-info fw-bold"><i class="fa-solid fa-circle-info"></i> Passo 2:</span> Execute
+                        isto apenas <strong class="text-white">após</strong> o Passo 1. (Demora cerca de 15 minutos).
+                    </p>
+                    <button onclick="iniciarAtualizacaoApi()" class="btn btn-outline-info w-100 fw-bold py-2 mt-2">
+                        <i class="fa-solid fa-play me-2"></i> Iniciar Atualização via API
+                    </button>
                 </div>
             </div>
             <div class="col-md-6">
@@ -268,6 +286,29 @@
             });
         } else {
             document.getElementById('chartCidades').parentElement.innerHTML = '<p class="text-center text-secondary mt-5">Sem dados suficientes</p>';
+        }
+
+        function iniciarAtualizacaoApi() {
+            if (!confirm("Deseja iniciar a atualização de todos os equipamentos via API? O processo rodará em segundo plano.")) {
+                return;
+            }
+
+            fetch('/admin/atualizar-itens-api', {
+                method: 'POST',
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    }
+                    throw new Error('Falha na requisição');
+                })
+                .then(mensagem => {
+                    alert("✅ " + mensagem);
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("❌ Erro ao tentar se comunicar com o servidor.");
+                });
         }
     </script>
 </body>

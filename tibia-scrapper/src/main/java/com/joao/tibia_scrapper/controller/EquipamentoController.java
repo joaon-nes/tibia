@@ -18,24 +18,21 @@ public class EquipamentoController {
 
     @GetMapping
     public List<Equipamento> listar(EquipamentoFilterDTO filtro) {
-
         List<String> categoriasLista = null;
         if (filtro.categoria() != null && !filtro.categoria().isEmpty()) {
             categoriasLista = Arrays.asList(filtro.categoria().split(","));
         }
 
         return repository.findComFiltrosAvancados(
-                categoriasLista, 
-                filtro.level(), 
-                filtro.vocacao(), 
-                filtro.protecao(), 
-                filtro.elemento(), 
-                filtro.bonus(), 
-                filtro.atributos(), 
-                filtro.range(), 
-                filtro.slots(), 
-                filtro.tier()
-        );
+                categoriasLista,
+                filtro.level(),
+                filtro.vocacao(),
+                filtro.elemento(),
+                filtro.protecao(),
+                filtro.atributos(),
+                filtro.bonusEspecial(),
+                filtro.slots(),
+                filtro.tier());
     }
 
     @GetMapping("/categoria/{cat}")

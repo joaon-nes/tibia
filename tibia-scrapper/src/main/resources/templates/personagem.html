@@ -335,25 +335,13 @@
                                             </div>
                                         </div>
 
-                                        <div class="mt-3 pt-2 border-top border-dark"
+                                        <div class="mt-3 border-dark"
                                             style="font-size: 11px; color: #ccc; line-height: 1.6;">
-                                            <div class="d-flex justify-content-between px-1">
-                                                <span>Attack Value</span>
-                                                <span id="atk-value-text" class="text-white">0</span>
-                                            </div>
-                                            <div id="elemental-conversion-container"></div>
-                                            
-                                            <div class="d-flex justify-content-between px-1">
-                                                <span>Defense Value</span>
-                                                <span id="def-value-text" style="color: #00b900;">0</span>
-                                            </div>
-                                            <div class="d-flex justify-content-between px-1 mb-2">
-                                                <span>Armor Value</span>
-                                                <span id="armor-value-text" style="color: #00b900;">0</span>
-                                            </div>
 
-                                            <div id="extra-stats-container"
-                                                class="border-top border-secondary pt-2 mt-2">
+                                            <div id="elemental-conversion-container"></div>
+
+                                            <div id="painel-atributos-master" class="mt-3 border-dark"
+                                                style="font-size: 11px; color: #ccc; line-height: 1.6;">
                                             </div>
                                         </div>
                                     </div>
@@ -362,30 +350,40 @@
                                 <div class="col-lg-5">
                                     <div class="inventory-container p-3 rounded d-flex flex-column align-items-center gap-2"
                                         style="background-color: #1a1a1a; border: 1px solid #333;">
-                                        
-                                        <div class="d-flex justify-content-center gap-2 mb-2 w-100 border-bottom border-dark pb-3">
-                                            <input type="radio" class="btn-check" name="set-options" id="set1" autocomplete="off" checked onchange="trocarSet(1)">
-                                            <label class="btn btn-outline-info btn-sm flex-grow-1" for="set1">Set 1</label>
-                                
-                                            <input type="radio" class="btn-check" name="set-options" id="set2" autocomplete="off" onchange="trocarSet(2)">
-                                            <label class="btn btn-outline-info btn-sm flex-grow-1" for="set2">Set 2</label>
-                                
-                                            <input type="radio" class="btn-check" name="set-options" id="set3" autocomplete="off" onchange="trocarSet(3)">
-                                            <label class="btn btn-outline-info btn-sm flex-grow-1" for="set3">Set 3</label>
+
+                                        <div
+                                            class="d-flex justify-content-center gap-2 mb-2 w-100 border-bottom border-dark pb-3">
+                                            <input type="radio" class="btn-check" name="set-options" id="set1"
+                                                autocomplete="off" checked onchange="trocarSet(1)">
+                                            <label class="btn btn-outline-info btn-sm flex-grow-1" for="set1">Set
+                                                1</label>
+
+                                            <input type="radio" class="btn-check" name="set-options" id="set2"
+                                                autocomplete="off" onchange="trocarSet(2)">
+                                            <label class="btn btn-outline-info btn-sm flex-grow-1" for="set2">Set
+                                                2</label>
+
+                                            <input type="radio" class="btn-check" name="set-options" id="set3"
+                                                autocomplete="off" onchange="trocarSet(3)">
+                                            <label class="btn btn-outline-info btn-sm flex-grow-1" for="set3">Set
+                                                3</label>
                                         </div>
 
                                         <div class="d-flex gap-2">
-                                            <div class="slot" id="slot-Amulets" onclick="abrirBusca('Amulets')" oncontextmenu="removerItem(event, 'Amulets')">
+                                            <div class="slot" id="slot-Amulets" onclick="abrirBusca('Amulets')"
+                                                oncontextmenu="removerItem(event, 'Amulets')">
                                                 <img src="https://www.tibiawiki.com.br/images/3/3e/Crystal_Necklace.gif"
                                                     class="slot-img img-grayscale">
                                                 <span class="slot-tier"></span>
                                             </div>
-                                            <div class="slot" id="slot-Helmets" onclick="abrirBusca('Helmets')" oncontextmenu="removerItem(event, 'Helmets')">
+                                            <div class="slot" id="slot-Helmets" onclick="abrirBusca('Helmets')"
+                                                oncontextmenu="removerItem(event, 'Helmets')">
                                                 <img src="https://www.tibiawiki.com.br/images/2/29/Leather_Helmet.gif"
                                                     class="slot-img img-grayscale">
                                                 <span class="slot-tier"></span>
                                             </div>
-                                            <div class="slot" id="slot-Backpacks" onclick="abrirBusca('Backpacks')" oncontextmenu="removerItem(event, 'Backpacks')">
+                                            <div class="slot" id="slot-Backpacks" onclick="abrirBusca('Backpacks')"
+                                                oncontextmenu="removerItem(event, 'Backpacks')">
                                                 <img src="https://www.tibiawiki.com.br/images/9/9a/Backpack.gif"
                                                     class="slot-img img-grayscale">
                                                 <span class="slot-tier"></span>
@@ -393,17 +391,20 @@
                                         </div>
 
                                         <div class="d-flex gap-2">
-                                            <div class="slot" id="slot-Weapons" onclick="abrirBusca('Weapons')" oncontextmenu="removerItem(event, 'Weapons')">
+                                            <div class="slot" id="slot-Weapons" onclick="abrirBusca('Weapons')"
+                                                oncontextmenu="removerItem(event, 'Weapons')">
                                                 <img src="https://www.tibiawiki.com.br/images/1/1f/Sword.gif"
                                                     class="slot-img img-grayscale">
                                                 <span class="slot-tier"></span>
                                             </div>
-                                            <div class="slot" id="slot-Armors" onclick="abrirBusca('Armors')" oncontextmenu="removerItem(event, 'Armors')">
+                                            <div class="slot" id="slot-Armors" onclick="abrirBusca('Armors')"
+                                                oncontextmenu="removerItem(event, 'Armors')">
                                                 <img src="https://www.tibiawiki.com.br/images/0/0d/Leather_Armor.gif"
                                                     class="slot-img img-grayscale">
                                                 <span class="slot-tier"></span>
                                             </div>
-                                            <div class="slot" id="slot-Shields" onclick="abrirBusca('Shields')" oncontextmenu="removerItem(event, 'Shields')">
+                                            <div class="slot" id="slot-Shields" onclick="abrirBusca('Shields')"
+                                                oncontextmenu="removerItem(event, 'Shields')">
                                                 <img src="https://www.tibiawiki.com.br/images/2/2d/Wooden_Shield.gif"
                                                     class="slot-img img-grayscale">
                                                 <span class="slot-tier"></span>
@@ -411,17 +412,20 @@
                                         </div>
 
                                         <div class="d-flex gap-2">
-                                            <div class="slot" id="slot-Rings" onclick="abrirBusca('Rings')" oncontextmenu="removerItem(event, 'Rings')">
+                                            <div class="slot" id="slot-Rings" onclick="abrirBusca('Rings')"
+                                                oncontextmenu="removerItem(event, 'Rings')">
                                                 <img src="https://www.tibiawiki.com.br/images/d/db/Axe_Ring.gif"
                                                     class="slot-img img-grayscale">
                                                 <span class="slot-tier"></span>
                                             </div>
-                                            <div class="slot" id="slot-Legs" onclick="abrirBusca('Legs')" oncontextmenu="removerItem(event, 'Legs')">
+                                            <div class="slot" id="slot-Legs" onclick="abrirBusca('Legs')"
+                                                oncontextmenu="removerItem(event, 'Legs')">
                                                 <img src="https://www.tibiawiki.com.br/images/0/07/Leather_Legs.gif"
                                                     class="slot-img img-grayscale">
                                                 <span class="slot-tier"></span>
                                             </div>
-                                            <div class="slot" id="slot-ExtraSlot" onclick="abrirBusca('ExtraSlot')" oncontextmenu="removerItem(event, 'ExtraSlot')">
+                                            <div class="slot" id="slot-ExtraSlot" onclick="abrirBusca('ExtraSlot')"
+                                                oncontextmenu="removerItem(event, 'ExtraSlot')">
                                                 <img src="https://www.tibiawiki.com.br/images/4/46/Moon_Mirror.gif"
                                                     class="slot-img img-grayscale">
                                                 <span class="slot-tier"></span>
@@ -430,7 +434,8 @@
 
                                         <div class="d-flex gap-2">
                                             <div style="width: 64px;"></div>
-                                            <div class="slot" id="slot-Boots" onclick="abrirBusca('Boots')" oncontextmenu="removerItem(event, 'Boots')">
+                                            <div class="slot" id="slot-Boots" onclick="abrirBusca('Boots')"
+                                                oncontextmenu="removerItem(event, 'Boots')">
                                                 <img src="https://www.tibiawiki.com.br/images/9/94/Leather_Boots.gif"
                                                     class="slot-img img-grayscale">
                                                 <span class="slot-tier"></span>
@@ -442,7 +447,8 @@
                                             * clique com o botão direito para remover um equipamento
                                         </small>
 
-                                        <button class="btn btn-sm btn-success mt-3 w-100 fw-bold" onclick="salvarSetsNoBanco()">
+                                        <button class="btn btn-sm btn-success mt-3 w-100 fw-bold"
+                                            onclick="salvarSetsNoBanco()">
                                             <i class="fa-solid fa-save me-1"></i> Salvar Equipamentos
                                         </button>
                                     </div>
@@ -464,14 +470,70 @@
 
                         <div class="tab-pane fade" id="pills-skills" role="tabpanel" tabindex="0">
                             <div class="row g-3">
-                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="magicLevel" th:data-base-value="${usuario.magicLevel != null ? usuario.magicLevel : 0}"><small class="text-secondary d-block">Magic</small><span class="fw-bold text-info fs-5 skill-val-text" th:text="${usuario.magicLevel != null ? usuario.magicLevel : 0}">0</span></div></div>
-                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="fistSkill" th:data-base-value="${usuario.fistSkill != null ? usuario.fistSkill : 10}"><small class="text-secondary d-block">Fist</small><span class="fw-bold text-light fs-5 skill-val-text" th:text="${usuario.fistSkill != null ? usuario.fistSkill : 10}">10</span></div></div>
-                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="clubSkill" th:data-base-value="${usuario.clubSkill != null ? usuario.clubSkill : 10}"><small class="text-secondary d-block">Club</small><span class="fw-bold text-light fs-5 skill-val-text" th:text="${usuario.clubSkill != null ? usuario.clubSkill : 10}">10</span></div></div>
-                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="swordSkill" th:data-base-value="${usuario.swordSkill != null ? usuario.swordSkill : 10}"><small class="text-secondary d-block">Sword</small><span class="fw-bold text-light fs-5 skill-val-text" th:text="${usuario.swordSkill != null ? usuario.swordSkill : 10}">10</span></div></div>
-                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="axeSkill" th:data-base-value="${usuario.axeSkill != null ? usuario.axeSkill : 10}"><small class="text-secondary d-block">Axe</small><span class="fw-bold text-light fs-5 skill-val-text" th:text="${usuario.axeSkill != null ? usuario.axeSkill : 10}">10</span></div></div>
-                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="distanceSkill" th:data-base-value="${usuario.distanceSkill != null ? usuario.distanceSkill : 10}"><small class="text-secondary d-block">Distance</small><span class="fw-bold text-light fs-5 skill-val-text" th:text="${usuario.distanceSkill != null ? usuario.distanceSkill : 10}">10</span></div></div>
-                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="shieldingSkill" th:data-base-value="${usuario.shieldingSkill != null ? usuario.shieldingSkill : 10}"><small class="text-secondary d-block">Shield</small><span class="fw-bold text-warning fs-5 skill-val-text" th:text="${usuario.shieldingSkill != null ? usuario.shieldingSkill : 10}">10</span></div></div>
-                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="fishingSkill" th:data-base-value="${usuario.fishingSkill != null ? usuario.fishingSkill : 10}"><small class="text-secondary d-block">Fishing</small><span class="fw-bold text-light fs-5 skill-val-text" th:text="${usuario.fishingSkill != null ? usuario.fishingSkill : 10}">10</span></div></div>
+                                <div class="col-4 col-md-2">
+                                    <div class="skill-box" data-skill="magicLevel"
+                                        th:data-base-value="${usuario.magicLevel != null ? usuario.magicLevel : 0}">
+                                        <small class="text-secondary d-block">Magic</small><span
+                                            class="fw-bold text-info fs-5 skill-val-text"
+                                            th:text="${usuario.magicLevel != null ? usuario.magicLevel : 0}">0</span>
+                                    </div>
+                                </div>
+                                <div class="col-4 col-md-2">
+                                    <div class="skill-box" data-skill="fistSkill"
+                                        th:data-base-value="${usuario.fistSkill != null ? usuario.fistSkill : 10}">
+                                        <small class="text-secondary d-block">Fist</small><span
+                                            class="fw-bold text-light fs-5 skill-val-text"
+                                            th:text="${usuario.fistSkill != null ? usuario.fistSkill : 10}">10</span>
+                                    </div>
+                                </div>
+                                <div class="col-4 col-md-2">
+                                    <div class="skill-box" data-skill="clubSkill"
+                                        th:data-base-value="${usuario.clubSkill != null ? usuario.clubSkill : 10}">
+                                        <small class="text-secondary d-block">Club</small><span
+                                            class="fw-bold text-light fs-5 skill-val-text"
+                                            th:text="${usuario.clubSkill != null ? usuario.clubSkill : 10}">10</span>
+                                    </div>
+                                </div>
+                                <div class="col-4 col-md-2">
+                                    <div class="skill-box" data-skill="swordSkill"
+                                        th:data-base-value="${usuario.swordSkill != null ? usuario.swordSkill : 10}">
+                                        <small class="text-secondary d-block">Sword</small><span
+                                            class="fw-bold text-light fs-5 skill-val-text"
+                                            th:text="${usuario.swordSkill != null ? usuario.swordSkill : 10}">10</span>
+                                    </div>
+                                </div>
+                                <div class="col-4 col-md-2">
+                                    <div class="skill-box" data-skill="axeSkill"
+                                        th:data-base-value="${usuario.axeSkill != null ? usuario.axeSkill : 10}"><small
+                                            class="text-secondary d-block">Axe</small><span
+                                            class="fw-bold text-light fs-5 skill-val-text"
+                                            th:text="${usuario.axeSkill != null ? usuario.axeSkill : 10}">10</span>
+                                    </div>
+                                </div>
+                                <div class="col-4 col-md-2">
+                                    <div class="skill-box" data-skill="distanceSkill"
+                                        th:data-base-value="${usuario.distanceSkill != null ? usuario.distanceSkill : 10}">
+                                        <small class="text-secondary d-block">Distance</small><span
+                                            class="fw-bold text-light fs-5 skill-val-text"
+                                            th:text="${usuario.distanceSkill != null ? usuario.distanceSkill : 10}">10</span>
+                                    </div>
+                                </div>
+                                <div class="col-4 col-md-2">
+                                    <div class="skill-box" data-skill="shieldingSkill"
+                                        th:data-base-value="${usuario.shieldingSkill != null ? usuario.shieldingSkill : 10}">
+                                        <small class="text-secondary d-block">Shield</small><span
+                                            class="fw-bold text-warning fs-5 skill-val-text"
+                                            th:text="${usuario.shieldingSkill != null ? usuario.shieldingSkill : 10}">10</span>
+                                    </div>
+                                </div>
+                                <div class="col-4 col-md-2">
+                                    <div class="skill-box" data-skill="fishingSkill"
+                                        th:data-base-value="${usuario.fishingSkill != null ? usuario.fishingSkill : 10}">
+                                        <small class="text-secondary d-block">Fishing</small><span
+                                            class="fw-bold text-light fs-5 skill-val-text"
+                                            th:text="${usuario.fishingSkill != null ? usuario.fishingSkill : 10}">10</span>
+                                    </div>
+                                </div>
                             </div>
                             <div class="text-end mt-4">
                                 <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal"
@@ -625,7 +687,7 @@
                 "Rings": null, "Legs": null, "ExtraSlot": null, "Boots": null
             };
         }
-        
+
         let sets = {
             1: criarSetVazio(),
             2: criarSetVazio(),
@@ -651,10 +713,10 @@
         function salvarSetsNoBanco() {
             const charNameElement = document.querySelector('.char-header h2');
             const charName = charNameElement ? charNameElement.innerText : 'Desconhecido';
-            
+
             const payload = {
                 personagem: charName,
-                sets: sets 
+                sets: sets
             };
 
             fetch('/api/equipamentos/salvar-sets', {
@@ -664,21 +726,21 @@
                 },
                 body: JSON.stringify(payload)
             })
-            .then(response => {
-                if (response.ok) {
-                    alert("Equipamentos atualizados com sucesso!");
-                } else {
-                    alert("Erro ao salvar os equipamentos.");
-                }
-            })
-            .catch(error => {
-                console.error("Erro ao salvar sets:", error);
-                alert("Erro de conexão ao tentar salvar.");
-            });
+                .then(response => {
+                    if (response.ok) {
+                        alert("Equipamentos atualizados com sucesso!");
+                    } else {
+                        alert("Erro ao salvar os equipamentos.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Erro ao salvar sets:", error);
+                    alert("Erro de conexão ao tentar salvar.");
+                });
         }
 
         function removerItem(event, categoria) {
-            event.preventDefault(); 
+            event.preventDefault();
             if (sets[currentSetIndex][categoria]) {
                 sets[currentSetIndex][categoria] = null;
                 atualizarVisualSet();
@@ -822,10 +884,9 @@
             }
 
             const todosSelects = document.querySelectorAll('.select-imbuement-tipo');
-            
-            // Lista com todos os tipos de danos elementais do Tibia
+
             const danosElementais = [
-                "Fire Damage (Scorch)", "Earth Damage (Venom)", "Ice Damage (Frost)", 
+                "Fire Damage (Scorch)", "Earth Damage (Venom)", "Ice Damage (Frost)",
                 "Energy Damage (Electrify)", "Death Damage (Reap)"
             ];
 
@@ -833,12 +894,12 @@
                 const outrosValoresSelecionados = Array.from(todosSelects)
                     .filter(s => s !== select && s.value !== "")
                     .map(s => s.value);
-                
+
                 const algumOutroTemElemental = outrosValoresSelecionados.some(v => danosElementais.includes(v));
 
                 Array.from(select.options).forEach(option => {
                     if (option.value === "") return;
-                    
+
                     const isElementoConflitante = algumOutroTemElemental && danosElementais.includes(option.value);
                     const isJaSelecionadoEmOutro = outrosValoresSelecionados.includes(option.value);
 
@@ -1025,11 +1086,27 @@
 
         function recalcularAtributosGlobais() {
             let baseStats = { magicLevel: 0, fistSkill: 0, clubSkill: 0, swordSkill: 0, axeSkill: 0, distanceSkill: 0, shieldingSkill: 0, fishingSkill: 0 };
-            
-            let extraStats = { critDamage: 10.0, critChance: 5.0, manaLeech: 0, lifeLeech: 0, fireDmg: 0, earthDmg: 0, iceDmg: 0, energyDmg: 0, deathDmg: 0, speed: 0, capacity: 0 };
-            
+
+            let extraStats = {
+                critDamage: 0.0,
+                critChance: 0.0,
+                manaLeechAmount: 0,
+                manaLeechChance: 0,
+                lifeLeechAmount: 0,
+                lifeLeechChance: 0,
+                fireDmg: 0,
+                earthDmg: 0,
+                iceDmg: 0,
+                energyDmg: 0,
+                deathDmg: 0,
+                speed: 0,
+                capacity: 0,
+                mantra: 0,
+                elementalMagicLevels: {}
+            };
+
             let protMultipliers = { physical: 1, fire: 1, earth: 1, ice: 1, energy: 1, death: 1, holy: 1 };
-            
+
             let totalArmor = 0;
             let weaponAtk = 0;
             let weaponDef = 0;
@@ -1041,17 +1118,17 @@
                 const dados = sets[currentSetIndex][slot];
                 if (dados && dados.item) {
                     const item = dados.item;
-                    
+
                     if (item.armadura) totalArmor += parseInt(item.armadura) || 0;
-                    
+
                     if (slot === 'Weapons') {
                         weaponAtk = parseInt(item.ataque) || 0;
                         weaponDef = parseInt(item.defesa) || 0;
                         if (item.modDefesa) weaponMod = parseInt(item.modDefesa) || 0;
-                        
-                        if (item.danoElemental && 
-                            item.danoElemental.toLowerCase() !== 'nenhum' && 
-                            item.danoElemental.toLowerCase() !== 'nenhuma' && 
+
+                        if (item.danoElemental &&
+                            item.danoElemental.toLowerCase() !== 'nenhum' &&
+                            item.danoElemental.toLowerCase() !== 'nenhuma' &&
                             item.danoElemental.trim() !== '') {
                             eleDmgText.push(item.danoElemental);
                         }
@@ -1060,21 +1137,33 @@
                         shieldDef = parseInt(item.defesa) || 0;
                     }
 
-                    if (item.bonusSkill) {
-                        let parts = String(item.bonusSkill).toLowerCase().split(',');
+                    if (item.criticalChance) extraStats.critChance += parseInt(item.criticalChance);
+                    if (item.criticalDamage) extraStats.critDamage += parseInt(item.criticalDamage);
+                    if (item.manaLeechChance) extraStats.manaLeechChance += parseInt(item.manaLeechChance);
+                    if (item.manaLeechAmount) extraStats.manaLeechAmount += parseInt(item.manaLeechAmount);
+                    if (item.lifeLeechChance) extraStats.lifeLeechChance += parseInt(item.lifeLeechChance);
+                    if (item.lifeLeechAmount) extraStats.lifeLeechAmount += parseInt(item.lifeLeechAmount);
+                    if (item.mantra) extraStats.mantra += parseInt(item.mantra);
+
+                    if (item.atributos) {
+                        let parts = String(item.atributos).toLowerCase().split(',');
                         parts.forEach(p => {
                             let match = p.match(/([a-z\s]+)\s*([+-]\s*\d+)/);
-                            if(match) {
+                            if (match) {
                                 let attr = match[1].trim();
                                 let val = parseInt(match[2].replace(/\s/g, ''));
-                                if(attr.includes('magic level')) baseStats.magicLevel += val;
-                                else if(attr.includes('sword fighting')) baseStats.swordSkill += val;
-                                else if(attr.includes('axe fighting')) baseStats.axeSkill += val;
-                                else if(attr.includes('club fighting')) baseStats.clubSkill += val;
-                                else if(attr.includes('distance fighting')) baseStats.distanceSkill += val;
-                                else if(attr.includes('shielding')) baseStats.shieldingSkill += val;
-                                else if(attr.includes('fist')) baseStats.fistSkill += val;
-                                else if(attr.includes('speed')) extraStats.speed += val;
+
+                                if (attr === 'magic level') {
+                                    baseStats.magicLevel += val;
+                                } else if (attr.includes('magic level')) {
+                                    extraStats.elementalMagicLevels[attr] = (extraStats.elementalMagicLevels[attr] || 0) + val;
+                                } else if (attr.includes('sword fighting')) baseStats.swordSkill += val;
+                                else if (attr.includes('axe fighting')) baseStats.axeSkill += val;
+                                else if (attr.includes('club fighting')) baseStats.clubSkill += val;
+                                else if (attr.includes('distance fighting')) baseStats.distanceSkill += val;
+                                else if (attr.includes('shielding')) baseStats.shieldingSkill += val;
+                                else if (attr.includes('fist')) baseStats.fistSkill += val;
+                                else if (attr.includes('speed')) extraStats.speed += val;
                             }
                         });
                     }
@@ -1083,18 +1172,18 @@
                         let parts = String(item.protecao).toLowerCase().split(',');
                         parts.forEach(p => {
                             let match = p.match(/([a-z\s]+)\s*([+-]\s*\d+)\s*%/);
-                            if(match) {
+                            if (match) {
                                 let element = match[1].trim();
                                 let val = parseInt(match[2].replace(/\s/g, ''));
                                 let factor = 1 - (val / 100);
-                                
-                                if(element.includes('physical')) protMultipliers.physical *= factor;
-                                else if(element.includes('fire')) protMultipliers.fire *= factor;
-                                else if(element.includes('earth')) protMultipliers.earth *= factor;
-                                else if(element.includes('ice')) protMultipliers.ice *= factor;
-                                else if(element.includes('energy')) protMultipliers.energy *= factor;
-                                else if(element.includes('death')) protMultipliers.death *= factor;
-                                else if(element.includes('holy')) protMultipliers.holy *= factor;
+
+                                if (element.includes('physical')) protMultipliers.physical *= factor;
+                                else if (element.includes('fire')) protMultipliers.fire *= factor;
+                                else if (element.includes('earth')) protMultipliers.earth *= factor;
+                                else if (element.includes('ice')) protMultipliers.ice *= factor;
+                                else if (element.includes('energy')) protMultipliers.energy *= factor;
+                                else if (element.includes('death')) protMultipliers.death *= factor;
+                                else if (element.includes('holy')) protMultipliers.holy *= factor;
                             }
                         });
                     }
@@ -1105,69 +1194,37 @@
                             if (imbDetails) {
                                 const val = imbDetails.bonus[imb.tier];
 
-                                if (imbDetails.stat) {
-                                    baseStats[imbDetails.stat] += val; 
-                                }
-                                if (imbDetails.extraStat) {
-                                    extraStats[imbDetails.extraStat] += val;
-                                }
-                                if (imbDetails.protElement) { 
+                                if (imbDetails.stat) baseStats[imbDetails.stat] += val;
+
+                                if (imbDetails.protElement) {
                                     let factor = 1 - (val / 100);
                                     protMultipliers[imbDetails.protElement] *= factor;
                                 }
-                                
+
                                 if (imb.tipo.includes("Strike")) {
                                     extraStats.critChance += 10.0;
+                                    extraStats.critDamage += val;
                                 }
+                                if (imb.tipo.includes("Void")) {
+                                    extraStats.manaLeechChance += 100;
+                                    extraStats.manaLeechAmount += val;
+                                }
+                                if (imb.tipo.includes("Vampirism")) {
+                                    extraStats.lifeLeechChance += 100;
+                                    extraStats.lifeLeechAmount += val;
+                                }
+                                if (imb.tipo.includes("Featherweight")) extraStats.capacity += val;
+                                if (imb.tipo.includes("Swiftness")) extraStats.speed += val;
+                                if (imb.tipo.includes("Scorch")) extraStats.fireDmg += val;
+                                if (imb.tipo.includes("Venom")) extraStats.earthDmg += val;
+                                if (imb.tipo.includes("Frost")) extraStats.iceDmg += val;
+                                if (imb.tipo.includes("Electrify")) extraStats.energyDmg += val;
+                                if (imb.tipo.includes("Reap")) extraStats.deathDmg += val;
                             }
                         });
                     }
                 }
             }
-
-            let atkDisp = weaponAtk > 0 ? weaponAtk.toString() : "0";
-            let eleDmgStr = "";
-            if (eleDmgText.length > 0) {
-                eleDmgStr = ` <span class="text-warning" style="font-size: 0.9em;">(${eleDmgText.join(', ')})</span>`;
-            }
-            document.getElementById('atk-value-text').innerHTML = atkDisp + eleDmgStr;
-
-            let conversionHtml = '';
-            const mapElementsConversion = [
-                { key: 'fireDmg', label: 'Fire' },
-                { key: 'earthDmg', label: 'Earth' },
-                { key: 'iceDmg', label: 'Ice' },
-                { key: 'energyDmg', label: 'Energy' },
-                { key: 'deathDmg', label: 'Death' }
-            ];
-
-            mapElementsConversion.forEach(el => {
-                if (extraStats[el.key] > 0) {
-                    conversionHtml += `
-                        <div class="d-flex justify-content-between px-1 text-secondary">
-                            <span>Converted into ${el.label} damage</span>
-                            <span style="color: #00b900;">+${extraStats[el.key]}%</span>
-                        </div>
-                    `;
-                }
-            });
-            document.getElementById('elemental-conversion-container').innerHTML = conversionHtml;   
-            
-            let defenseValue = Math.max(weaponDef, shieldDef);
-            if (weaponMod < 0) {
-                defenseValue += weaponMod; 
-            } else if (weaponMod > 0 && shieldDef >= weaponDef) {
-                defenseValue += weaponMod;
-            } else if (weaponMod > 0 && weaponDef > shieldDef) {
-                defenseValue += weaponMod;
-            }
-            
-            if (defenseValue < 0) defenseValue = 0;
-
-            document.getElementById('def-value-text').innerText = defenseValue > 0 ? defenseValue.toString() : "0";
-            document.getElementById('def-value-text').style.color = '#00b900';
-            
-            document.getElementById('armor-value-text').innerText = totalArmor > 0 ? totalArmor.toString() : "0";
 
             const skillsAlvo = ['magicLevel', 'fistSkill', 'clubSkill', 'swordSkill', 'axeSkill', 'distanceSkill', 'shieldingSkill', 'fishingSkill'];
             skillsAlvo.forEach(skill => {
@@ -1190,51 +1247,153 @@
                 });
             });
 
-            let htmlExtras = '';
+            let htmlAtributos = '';
 
-            htmlExtras += `
-                <div class="mb-2">
-                    <div class="text-white px-1">Critical Hit:</div>
-                    <div class="d-flex justify-content-between px-1 ps-3 text-secondary"><span>Chance</span> <span style="color: #00b900;">+${extraStats.critChance.toFixed(1)}%</span></div>
-                    <div class="d-flex justify-content-between px-1 ps-3 text-secondary"><span>Extra Damage</span> <span style="color: #00b900;">+${extraStats.critDamage.toFixed(1)}%</span></div>
+            let atkDisp = weaponAtk > 0 ? weaponAtk.toString() : "0";
+            let eleDmgStr = "";
+            if (eleDmgText.length > 0) {
+                eleDmgStr = ` <span class="text-warning" style="font-size: 0.9em;">(${eleDmgText.join(', ')})</span>`;
+            }
+
+            htmlAtributos += `
+                <div class="d-flex justify-content-between px-1">
+                    <span>Attack Value</span>
+                    <span class="text-white">${atkDisp}${eleDmgStr}</span>
                 </div>
             `;
-            
-            if (extraStats.manaLeech > 0) {
-                htmlExtras += `
-                    <div class="mb-2">
-                        <div class="text-white px-1">Mana Leech:</div>
-                        <div class="d-flex justify-content-between px-1 ps-3 text-secondary"><span>Chance</span> <span style="color: #00b900;">100%</span></div>
-                        <div class="d-flex justify-content-between px-1 ps-3 text-secondary"><span>Amount</span> <span style="color: #00b900;">+${extraStats.manaLeech}%</span></div>
-                    </div>
-                `;
-            }
-            if (extraStats.lifeLeech > 0) {
-                htmlExtras += `
-                    <div class="mb-2">
-                        <div class="text-white px-1">Life Leech:</div>
-                        <div class="d-flex justify-content-between px-1 ps-3 text-secondary"><span>Chance</span> <span style="color: #00b900;">100%</span></div>
-                        <div class="d-flex justify-content-between px-1 ps-3 text-secondary"><span>Amount</span> <span style="color: #00b900;">+${extraStats.lifeLeech}%</span></div>
+
+            for (let attr in extraStats.elementalMagicLevels) {
+                let val = extraStats.elementalMagicLevels[attr];
+                let nameTitleCase = attr.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                htmlAtributos += `
+                    <div class="d-flex justify-content-between px-1">
+                        <span>${nameTitleCase}</span>
+                        <span style="color: #00b900;">+${val}</span>
                     </div>
                 `;
             }
 
-            const mapElements = [
-                { key: 'speed', label: 'Speed' },
-                { key: 'capacity', label: 'Capacity' }
+            const mapElementsConversion = [
+                { key: 'fireDmg', label: 'Fire' },
+                { key: 'earthDmg', label: 'Earth' },
+                { key: 'iceDmg', label: 'Ice' },
+                { key: 'energyDmg', label: 'Energy' },
+                { key: 'deathDmg', label: 'Death' }
             ];
 
-            mapElements.forEach(el => {
+            mapElementsConversion.forEach(el => {
                 if (extraStats[el.key] > 0) {
-                    htmlExtras += `
-                        <div class="d-flex justify-content-between px-1 mb-1">
-                            <span class="text-white">${el.label}</span>
-                            <span style="color: #00b900;">+${extraStats[el.key]}%</span>
+                    htmlAtributos += `
+                        <div class="d-flex justify-content-between px-1">
+                            <span>Converted to ${el.label}</span>
+                            <span class="text-white">+${extraStats[el.key]}%</span>
                         </div>
                     `;
                 }
             });
 
+            if (extraStats.critChance > 100) extraStats.critChance = 100;
+            if (extraStats.manaLeechChance > 100) extraStats.manaLeechChance = 100;
+            if (extraStats.lifeLeechChance > 100) extraStats.lifeLeechChance = 100;
+
+            if (extraStats.critChance > 0) {
+                htmlAtributos += `
+                    <div class="px-1 mt-1 text-white">Critical Hit:</div>
+                    <div class="d-flex justify-content-between px-1 ms-2">
+                        <span class="text-secondary">Chance</span> 
+                        <span class="text-white">${extraStats.critChance.toFixed(0)}%</span>
+                    </div>
+                    <div class="d-flex justify-content-between px-1 ms-2">
+                        <span class="text-secondary">Extra Damage</span> 
+                        <span class="text-white">+${extraStats.critDamage.toFixed(0)}%</span>
+                    </div>
+                `;
+            }
+
+            if (extraStats.lifeLeechChance > 0) {
+                htmlAtributos += `
+                    <div class="px-1 mt-1 text-white">Life Leech:</div>
+                    <div class="d-flex justify-content-between px-1 ms-2">
+                        <span class="text-secondary">Chance</span> 
+                        <span class="text-white">${extraStats.lifeLeechChance}%</span>
+                    </div>
+                    <div class="d-flex justify-content-between px-1 ms-2">
+                        <span class="text-secondary">Amount</span> 
+                        <span class="text-white">+${extraStats.lifeLeechAmount}%</span>
+                    </div>
+                `;
+            }
+
+            if (extraStats.manaLeechChance > 0) {
+                htmlAtributos += `
+                    <div class="px-1 mt-1 text-white">Mana Leech:</div>
+                    <div class="d-flex justify-content-between px-1 ms-2">
+                        <span class="text-secondary">Chance</span> 
+                        <span class="text-white">${extraStats.manaLeechChance}%</span>
+                    </div>
+                    <div class="d-flex justify-content-between px-1 ms-2">
+                        <span class="text-secondary">Amount</span> 
+                        <span class="text-white">+${extraStats.manaLeechAmount}%</span>
+                    </div>
+                `;
+            }
+
+            htmlAtributos += `<div class="mt-2 pt-2 border-top border-secondary"></div>`;
+
+            let defenseValue = Math.max(weaponDef, shieldDef);
+            if (weaponMod < 0) {
+                defenseValue += weaponMod;
+            } else if (weaponMod > 0 && shieldDef >= weaponDef) {
+                defenseValue += weaponMod;
+            } else if (weaponMod > 0 && weaponDef > shieldDef) {
+                defenseValue += weaponMod;
+            }
+            if (defenseValue < 0) defenseValue = 0;
+
+            htmlAtributos += `
+                <div class="d-flex justify-content-between px-1">
+                    <span>Defense Value</span>
+                    <span class="text-white">${defenseValue > 0 ? defenseValue : "0"}</span>
+                </div>
+                <div class="d-flex justify-content-between px-1">
+                    <span>Armor Value</span>
+                    <span class="text-white">${totalArmor > 0 ? totalArmor : "0"}</span>
+                </div>
+            `;
+
+            if (extraStats.speed > 0) {
+                htmlAtributos += `
+                    <div class="d-flex justify-content-between px-1">
+                        <span>Speed</span>
+                        <span class="text-white">+${extraStats.speed}</span>
+                    </div>
+                `;
+            }
+
+            let hasBonus = extraStats.capacity > 0 || extraStats.mantra > 0;
+            if (hasBonus) {
+                htmlAtributos += `<div class="mt-2 pt-2 border-top border-secondary"></div>`;
+
+                if (extraStats.capacity > 0) {
+                    htmlAtributos += `
+                        <div class="d-flex justify-content-between px-1">
+                            <span>Capacity</span>
+                            <span class="text-white">+${extraStats.capacity}%</span>
+                        </div>
+                    `;
+                }
+
+                if (extraStats.mantra > 0) {
+                    htmlAtributos += `
+                        <div class="d-flex justify-content-between px-1 text-white">
+                            <span>Mantra</span> 
+                            <span class="text-white">+${extraStats.mantra}</span>
+                        </div>
+                    `;
+                }
+            }
+
+            let protectionsHtml = '';
             const mapProtections = [
                 { key: 'physical', label: 'Physical Protection' },
                 { key: 'fire', label: 'Fire Protection' },
@@ -1245,23 +1404,30 @@
                 { key: 'holy', label: 'Holy Protection' }
             ];
 
+            let hasProtections = false;
             mapProtections.forEach(el => {
                 let protValue = (1 - protMultipliers[el.key]) * 100;
-                if (Math.abs(protValue) > 0.01) { 
+                if (Math.abs(protValue) > 0.01) {
+                    hasProtections = true;
                     let sign = protValue > 0 ? '+' : '';
                     let colorAttr = protValue > 0 ? 'style="color: #00b900;"' : 'class="text-danger"';
-                    htmlExtras += `
-                        <div class="d-flex justify-content-between px-1 mb-1">
-                            <span class="text-white">${el.label}</span>
+                    protectionsHtml += `
+                        <div class="d-flex justify-content-between px-1">
+                            <span>${el.label}</span>
                             <span ${colorAttr}>${sign}${protValue.toFixed(2)}%</span>
                         </div>
                     `;
                 }
             });
 
-            const extraContainer = document.getElementById('extra-stats-container');
-            extraContainer.innerHTML = htmlExtras;
-            extraContainer.classList.remove('d-none');
+            if (hasProtections) {
+                htmlAtributos += `<div class="mt-2 pt-2 border-top border-secondary"></div>` + protectionsHtml;
+            }
+
+            const containerMaster = document.getElementById('painel-atributos-master');
+            if (containerMaster) {
+                containerMaster.innerHTML = htmlAtributos;
+            }
         }
 
         function atualizarVisualSet() {
@@ -1286,7 +1452,7 @@
 
                         htmlDetalhesItem += `
                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span class="text-info" style="font-size: 0.85em;"><i class="fa-solid fa-fw"></i> ${dados.efeito}</span>
+                                <span class="text-info" style="font-size: 0.85em;"> ${dados.efeito}</span>
                                 <span class="badge bg-info text-dark">+ ${dados.bonus}%</span>
                             </div>
                         `;
