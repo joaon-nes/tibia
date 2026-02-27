@@ -284,8 +284,8 @@
                             aria-labelledby="dropdownUser">
                             <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item text-warning" href="/admin"><i
                                         class="fa-solid fa-gear me-2"></i> Painel Admin</a></li>
-                            <li><a class="dropdown-item text-light" href="/perfil"><i
-                                        class="fa-solid fa-user-pen me-2 text-warning"></i> Editar Perfil</a></li>
+                            <li><a class="dropdown-item text-light" href="/personagem"> Personagem</a></li>
+                            <li><a class="dropdown-item text-light" href="/perfil"> Editar Perfil</a></li>
                             <li>
                                 <hr class="dropdown-divider border-secondary opacity-50">
                             </li>
@@ -391,7 +391,7 @@
 
             <div class="col-lg-6 col-xl-8 order-3 order-lg-2">
                 <div class="row g-3 h-100">
-                    
+
                     <div class="col-lg-7 d-flex flex-column">
                         <div class="tibiadata-card pb-0 flex-grow-1" id="card-news">
                             <div class="tibiadata-header d-flex justify-content-between align-items-center">
@@ -411,56 +411,76 @@
                     </div>
 
                     <div class="col-lg-5 d-flex flex-column gap-3">
-                        
+
                         <div class="d-flex flex-column gap-2">
                             <h6 class="text-secondary fw-bold mb-0 ps-1" style="font-size: 0.85em;">
                                 <i class="fa-solid fa-comments me-1"></i> Últimos Tópicos
                             </h6>
-                            
-                            <div class="p-2 rounded" style="background-color: #1a1a1a; border: 1px solid #333; transition: border-color 0.2s;">
-                                <a href="#" class="text-info fw-bold text-decoration-none d-block text-truncate" style="font-size: 0.9em;" title="[Tutorial] Hunt EK + ED Asuras Palace">[Tutorial] Hunt EK + ED Asuras...</a>
-                                <div class="d-flex justify-content-between mt-1" style="font-size: 0.75em; color: #888;">
+
+                            <div class="p-2 rounded"
+                                style="background-color: #1a1a1a; border: 1px solid #333; transition: border-color 0.2s;">
+                                <a href="#" class="text-info fw-bold text-decoration-none d-block text-truncate"
+                                    style="font-size: 0.9em;" title="[Tutorial] Hunt EK + ED Asuras Palace">[Tutorial]
+                                    Hunt EK + ED Asuras...</a>
+                                <div class="d-flex justify-content-between mt-1"
+                                    style="font-size: 0.75em; color: #888;">
                                     <span>Por: <i class="text-light">Admin</i></span>
                                     <span>Há 2 horas</span>
                                 </div>
                             </div>
-                            
-                            <div class="p-2 rounded" style="background-color: #1a1a1a; border: 1px solid #333; transition: border-color 0.2s;">
-                                <a href="#" class="text-info fw-bold text-decoration-none d-block text-truncate" style="font-size: 0.9em;" title="Dúvida sobre Imbuements">Dúvida sobre Imbuements Tier 3...</a>
-                                <div class="d-flex justify-content-between mt-1" style="font-size: 0.75em; color: #888;">
+
+                            <div class="p-2 rounded"
+                                style="background-color: #1a1a1a; border: 1px solid #333; transition: border-color 0.2s;">
+                                <a href="#" class="text-info fw-bold text-decoration-none d-block text-truncate"
+                                    style="font-size: 0.9em;" title="Dúvida sobre Imbuements">Dúvida sobre Imbuements
+                                    Tier 3...</a>
+                                <div class="d-flex justify-content-between mt-1"
+                                    style="font-size: 0.75em; color: #888;">
                                     <span>Por: <i class="text-light">Draq Paladino</i></span>
                                     <span>Há 5 horas</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="tibiadata-card p-2 position-relative d-flex align-items-center" style="background-color: #1a1a1a;">
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-1" style="font-size: 0.5em; letter-spacing: 0.5px;">EM CONSTRUÇÃO</span>
-                            <div class="bg-black rounded p-2 me-3 border border-secondary text-center d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                        <div class="tibiadata-card p-2 position-relative d-flex align-items-center"
+                            style="background-color: #1a1a1a;">
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-1"
+                                style="font-size: 0.5em; letter-spacing: 0.5px;">EM CONSTRUÇÃO</span>
+                            <div class="bg-black rounded p-2 me-3 border border-secondary text-center d-flex align-items-center justify-content-center"
+                                style="width: 45px; height: 45px;">
                                 <i class="fa-solid fa-users-viewfinder text-primary fs-5"></i>
                             </div>
                             <div class="overflow-hidden">
                                 <h6 class="fw-bold text-primary mb-0" style="font-size: 0.85em;">Última Party</h6>
-                                <span class="text-secondary d-block text-truncate" style="font-size: 0.75em;">Elite Knight (Lvl 250+) - Cobra Bastion</span>
+                                <span class="text-secondary d-block text-truncate" style="font-size: 0.75em;">Elite
+                                    Knight (Lvl 250+) - Cobra Bastion</span>
                             </div>
                         </div>
 
-                        <div class="tibiadata-card p-3 position-relative flex-grow-1 d-flex flex-column justify-content-center align-items-center text-center transition" 
-                             style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.05) 0%, rgba(0,0,0,0.8) 100%); cursor: pointer;">
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-2" style="font-size: 0.55em; letter-spacing: 0.5px;">EM CONSTRUÇÃO</span>
-                            <i class="fa-solid fa-handshake text-warning mb-2" style="font-size: 1.8em; filter: drop-shadow(0 0 8px rgba(255,193,7,0.4));"></i>
-                            <h6 class="fw-bold text-warning mb-1 text-shadow-heavy" style="font-size: 0.95em;">Trade Market</h6>
-                            <span class="text-secondary" style="font-size: 0.75em;">Compre e venda com a comunidade</span>
+                        <div class="tibiadata-card p-3 position-relative flex-grow-1 d-flex flex-column justify-content-center align-items-center text-center transition"
+                            style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.05) 0%, rgba(0,0,0,0.8) 100%); cursor: pointer;">
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-2"
+                                style="font-size: 0.55em; letter-spacing: 0.5px;">EM CONSTRUÇÃO</span>
+                            <i class="fa-solid fa-handshake text-warning mb-2"
+                                style="font-size: 1.8em; filter: drop-shadow(0 0 8px rgba(255,193,7,0.4));"></i>
+                            <h6 class="fw-bold text-warning mb-1 text-shadow-heavy" style="font-size: 0.95em;">Trade
+                                Market</h6>
+                            <span class="text-secondary" style="font-size: 0.75em;">Compre e venda com a
+                                comunidade</span>
                         </div>
 
-                        <div class="tibiadata-card p-2 position-relative d-flex align-items-center" style="background-color: #1a1a1a;">
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-1" style="font-size: 0.5em; letter-spacing: 0.5px;">EM CONSTRUÇÃO</span>
-                            <div class="bg-black rounded p-2 me-3 border border-secondary text-center d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                        <div class="tibiadata-card p-2 position-relative d-flex align-items-center"
+                            style="background-color: #1a1a1a;">
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-1"
+                                style="font-size: 0.5em; letter-spacing: 0.5px;">EM CONSTRUÇÃO</span>
+                            <div class="bg-black rounded p-2 me-3 border border-secondary text-center d-flex align-items-center justify-content-center"
+                                style="width: 45px; height: 45px;">
                                 <i class="fa-solid fa-trophy text-success fs-5"></i>
                             </div>
                             <div class="overflow-hidden">
                                 <h6 class="fw-bold text-success mb-0" style="font-size: 0.85em;">Eventos Ativos</h6>
-                                <span class="text-secondary d-block text-truncate" style="font-size: 0.75em;">Nenhum evento global ocorrendo.</span>
+                                <span class="text-secondary d-block text-truncate" style="font-size: 0.75em;">Nenhum
+                                    evento global ocorrendo.</span>
                             </div>
                         </div>
 
@@ -602,7 +622,7 @@
     <div class="modal fade" id="mapaGlobalModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content bg-transparent border-0 position-relative">
-                
+
                 <div class="modal-body p-0 bg-dark position-relative shadow-lg"
                     style="height: 500px; border-radius: 12px; overflow: hidden; border: 2px solid #444;">
 
@@ -644,7 +664,7 @@
 
             const rashidData = {
                 1: { city: "Svargrond", bg: "https://www.tibiawiki.com.br/images/3/34/Rashid_Svargrond.png", coords: "32210,31158,7", desc: "Em Svargrond, na Taverna Dankwart, sul do templo." },
-                2: { city: "Liberty Bay", bg: "https://www.tibiawiki.com.br/images/2/22/Rashid_Liberty_Bay.png", coords: "32301,32837,7", desc: "Na taverna de Lyonel ao oeste do depot, Liberty Bay" },
+                2: { city: "Liberty Bay", bg: "https://www.tibiawiki.com.br/images/3/33/Rashid_Liberty_Bay.png", coords: "32301,32837,7", desc: "Na taverna de Lyonel ao oeste do depot, Liberty Bay" },
                 3: { city: "Port Hope", bg: "https://www.tibiawiki.com.br/images/4/4e/Rashid_Port_Hope.png", coords: "32578,32754,7", desc: "Na taverna de Clyde ao norte do barco, em Port Hope." },
                 4: { city: "Ankrahmun", bg: "https://www.tibiawiki.com.br/images/d/dd/Rashid_Ankrahmun.png", coords: "33070,32882,6", desc: "Em Ankhramun, na taverna de Arito, acima do post office." },
                 5: { city: "Darashia", bg: "https://www.tibiawiki.com.br/images/a/ab/Rashid_Darashia.png", coords: "33235,32485,7", desc: "Na cidade de Darashia, na taverna de Miraia, a oeste do barco." },

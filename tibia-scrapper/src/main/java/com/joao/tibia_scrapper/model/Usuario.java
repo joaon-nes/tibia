@@ -43,6 +43,33 @@ public class Usuario implements UserDetails {
     private String charWorld;
     private String charResidence;
 
+    @Column(columnDefinition = "TEXT")
+    private String setsEquipamentos;
+
+    @Column(name = "magic_level")
+    private Integer magicLevel = 0;
+
+    @Column(name = "fist_skill")
+    private Integer fistSkill = 10;
+
+    @Column(name = "club_skill")
+    private Integer clubSkill = 10;
+
+    @Column(name = "sword_skill")
+    private Integer swordSkill = 10;
+
+    @Column(name = "axe_skill")
+    private Integer axeSkill = 10;
+
+    @Column(name = "distance_skill")
+    private Integer distanceSkill = 10;
+
+    @Column(name = "shielding_skill")
+    private Integer shieldingSkill = 10;
+
+    @Column(name = "fishing_skill")
+    private Integer fishingSkill = 10;
+
     public Usuario(String username, String password, String role, String nome, String email) {
         this.username = username;
         this.password = password;
@@ -102,5 +129,13 @@ public class Usuario implements UserDetails {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public String getSetsEquipamentos() {
+        return setsEquipamentos;
+    }
+
+    public void setSetsEquipamentos(String setsEquipamentos) {
+        this.setsEquipamentos = setsEquipamentos;
     }
 }

@@ -16,6 +16,8 @@ public interface EquipamentoRepository extends JpaRepository<Equipamento, Long> 
 
         List<Equipamento> findByCategoriaIgnoreCase(String categoria);
 
+        List<Equipamento> findByNomeContainingIgnoreCase(String nome);
+
         @Query("SELECT e FROM Equipamento e WHERE " +
                         "(:categorias IS NULL OR e.categoria IN :categorias) AND " +
                         "(:level IS NULL OR e.levelMinimo <= :level) AND " +
@@ -39,4 +41,11 @@ public interface EquipamentoRepository extends JpaRepository<Equipamento, Long> 
                         @Param("range") Integer range,
                         @Param("slots") Integer slots,
                         @Param("tier") Integer tier);
+
+        @Query("SELECT e FROM Equipamento e WHERE LOWER(e.nome) LIKE LOWER(CONCAT('%', :termo, '%')) " +
+               "AND (:levelUser = 0 OR e.levelMinimo IS NULL OR e.levelMinimo <= :levelUser) " +
+               "AND (:vocUser = '' OR e.vocacoes IS NULL OR e.vocacoes = '' OR LOWER(e.vocacoes) LIKE '%todas%' OR LOWER(e.vocacoes) LIKE LOWER(CONCAT('%', :vocUser, '%')))")
+        List<Equipamento> findFiltrado(@Param("termo") String termo, 
+                                       @Param("levelUser") int levelUser, 
+                                       @Param("vocUser") String vocUser);
 }

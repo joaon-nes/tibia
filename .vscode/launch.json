@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "TibiaScrapperApplication",
+            "request": "launch",
+            "mainClass": "com.joao.tibia_scrapper.TibiaScrapperApplication",
+            "projectName": ""
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
@@ -18,7 +25,7 @@
             "projectName": "tibia-scrapper",
             "args": "--spring.profiles.active=dev",
             "serverReadyAction": {
-            "action": "openExternally",
+                "action": "openExternally"
             }
         }
     ]

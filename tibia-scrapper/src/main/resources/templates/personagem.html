@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TibiaBuilder - Meu Personagem</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .char-card {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .char-header {
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.4)), url('https://www.tibiawiki.com.br/images/b/b0/Background_Artwork_13.20.13560.jpg');
+            background-size: cover;
+            background-position: center 20%;
+            border-bottom: 2px solid #444;
+            padding: 30px 20px;
+        }
+
+        .skill-box {
+            background-color: #111;
+            border: 1px solid #222;
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .slot {
+            width: 64px;
+            height: 64px;
+            background-color: #222;
+            border: 2px solid #444;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .slot:hover {
+            border-color: #00b7ff;
+            background-color: #2a2a2a;
+        }
+
+        .slot-img {
+            max-width: 48px;
+            max-height: 48px;
+            object-fit: contain;
+            transition: filter 0.2s, opacity 0.2s;
+        }
+
+        .img-grayscale {
+            filter: grayscale(100%);
+            opacity: 0.5;
+        }
+
+        .slot-tier {
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            background-color: #f19c2b;
+            color: #000;
+            font-size: 0.65rem;
+            padding: 0px 3px;
+            border: 1px solid #333;
+            font-weight: bold;
+            z-index: 5;
+            line-height: 1.2;
+            display: none;
+        }
+
+        .slot:hover {
+            border-color: #f19c2b;
+            box-shadow: inset 0 0 10px rgba(241, 156, 43, 0.2);
+        }
+
+        .disabled-slot {
+            opacity: 0.3;
+            pointer-events: none;
+            border-color: #ff3333 !important;
+            background-color: #3a1111 !important;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-dark text-white"
+    th:data-vocation="${usuario != null ? usuario.charVocation : ''}"
+    th:data-sets="${usuario != null ? usuario.setsEquipamentos : ''}">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-secondary mb-4 position-relative">
+        <div class="container-fluid px-lg-5 d-flex justify-content-between align-items-center">
+            <div style="flex: 1;"></div>
+            <div class="position-absolute top-50 start-50 translate-middle text-center" style="z-index: 10;">
+                <a class="navbar-brand fw-bold text-warning fs-3 m-0" href="/">
+                    <i class="fa-solid fa-dragon"></i> TibiaBuilder
+                </a>
+            </div>
+            <div class="d-flex align-items-center justify-content-end" style="flex: 1;">
+                <a href="/" class="btn btn-sm btn-outline-light"><i class="fa-solid fa-arrow-left me-1"></i> Voltar à
+                    Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mb-5 flex-grow-1" style="max-width: 900px;">
+
+        <div th:if="${sucesso}" class="alert alert-success border-success text-success bg-dark" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i> <span th:text="${sucesso}"></span>
+        </div>
+        <div th:if="${erro}" class="alert alert-danger border-danger text-danger bg-dark" role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${erro}"></span>
+        </div>
+
+        <div th:if="${!temPersonagem}" class="char-card p-5 text-center shadow-lg mt-4">
+            <i class="fa-solid fa-id-card text-secondary mb-3" style="font-size: 4rem;"></i>
+            <h4 class="fw-bold text-light">Nenhum Personagem Vinculado</h4>
+            <p class="text-secondary mb-4">Vincule o seu personagem do Tibia para configurar os seus equipamentos,
+                skills e mostrar no seu perfil.</p>
+
+            <form th:action="@{/personagem/vincular}" method="post" class="d-flex justify-content-center">
+                <div class="input-group" style="max-width: 400px;">
+                    <span class="input-group-text bg-black border-secondary text-secondary"><i
+                            class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="nomePersonagem" class="form-control bg-dark text-white border-secondary"
+                        placeholder="Nome do personagem" required>
+                    <button class="btn btn-info fw-bold" type="submit">Vincular</button>
+                </div>
+            </form>
+        </div>
+
+        <div th:if="${temPersonagem}" class="mt-4">
+            <div class="char-card shadow-lg mb-4">
+
+                <div class="char-header position-relative">
+                    <form th:action="@{/personagem/desvincular}" method="post" class="position-absolute top-0 end-0 m-3"
+                        onsubmit="return confirm('Tem certeza que deseja desvincular o personagem?');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Desvincular"><i
+                                class="fa-solid fa-link-slash"></i></button>
+                    </form>
+
+                    <h2 class="fw-bold text-warning mb-1" style="text-shadow: 2px 2px 4px #000;"
+                        th:text="${usuario.charName}">Nome do Char</h2>
+                    <h5 class="text-light fw-bold" style="text-shadow: 1px 1px 2px #000;">
+                        Level <span th:text="${usuario.charLevel}">0</span> - <span
+                            th:text="${usuario.charVocation}">Vocação</span>
+                    </h5>
+
+                    <div class="d-flex gap-3 mt-3">
+                        <span class="badge bg-dark border border-secondary p-2"><i
+                                class="fa-solid fa-globe text-primary me-1"></i> <span
+                                th:text="${usuario.charWorld}">Mundo</span></span>
+                        <span class="badge bg-dark border border-secondary p-2"><i
+                                class="fa-solid fa-house text-success me-1"></i> <span
+                                th:text="${usuario.charResidence}">Cidade</span></span>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-black border-top border-secondary">
+                    <ul class="nav nav-pills mb-4 gap-2" id="pills-tab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active btn-sm" id="pills-equip-tab" data-bs-toggle="pill"
+                                data-bs-target="#pills-equip" type="button" role="tab"><i
+                                    class="fa-solid fa-shield-halved me-1"></i> Meu Personagem</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link btn-sm" id="pills-skills-tab" data-bs-toggle="pill"
+                                data-bs-target="#pills-skills" type="button" role="tab"><i
+                                    class="fa-solid fa-khanda me-1"></i> Minhas Skills</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="pills-tabContent">
+
+                        <div class="tab-pane fade show active" id="pills-equip" role="tabpanel">
+                            <div class="row g-3">
+
+                                <div class="col-lg-3">
+                                    <div class="skills-window p-2 shadow-lg"
+                                        style="background-color: #363636; border: 2px solid #555; border-radius: 4px; font-family: 'Verdana', sans-serif;">
+                                        <div class="skill-header mb-2 border-bottom border-dark pb-1">
+                                            <span class="fw-bold" style="font-size: 11px; color: #dfdfdf;">Skills</span>
+                                        </div>
+
+                                        <div class="mb-2 skill-container" id="level-container"
+                                            th:data-value="${usuario.charLevel != null ? usuario.charLevel : 0}">
+                                            <div class="d-flex justify-content-between px-1">
+                                                <span style="color: #ccc; font-size: 11px;">Level</span>
+                                                <span style="color: #fff; font-size: 11px;"
+                                                    th:text="${usuario.charLevel != null ? usuario.charLevel : 0}">0</span>
+                                            </div>
+                                            <div class="progress mt-1"
+                                                style="height: 4px; background-color: #111; border-radius: 0;">
+                                                <div class="progress-bar bg-danger"
+                                                    style="width: 0%; transition: width 1s ease-out;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div id="skills-list">
+                                            <div class="mb-2 skill-container" data-skill="magicLevel"
+                                                th:data-base-value="${usuario.magicLevel != null ? usuario.magicLevel : 0}"
+                                                th:data-value="${usuario.magicLevel != null ? usuario.magicLevel : 0}">
+                                                <div class="d-flex justify-content-between px-1">
+                                                    <span style="color: #ccc; font-size: 11px;">Magic Level</span>
+                                                    <span class="skill-val-text text-white fw-bold"
+                                                        style="font-size: 11px;"
+                                                        th:text="${usuario.magicLevel != null ? usuario.magicLevel : 0}">0</span>
+                                                </div>
+                                                <div class="progress mt-1"
+                                                    style="height: 4px; background-color: #111; border-radius: 0;">
+                                                    <div class="progress-bar"
+                                                        style="width: 0%; background-color: #00ff00; transition: width 1s ease-out;">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-2 skill-container" data-skill="fistSkill"
+                                                th:data-base-value="${usuario.fistSkill != null ? usuario.fistSkill : 10}"
+                                                th:data-value="${usuario.fistSkill != null ? usuario.fistSkill : 10}">
+                                                <div class="d-flex justify-content-between px-1">
+                                                    <span style="color: #ccc; font-size: 11px;">Fist Fighting</span>
+                                                    <span class="skill-val-text text-white fw-bold"
+                                                        style="font-size: 11px;"
+                                                        th:text="${usuario.fistSkill != null ? usuario.fistSkill : 10}">10</span>
+                                                </div>
+                                                <div class="progress mt-1"
+                                                    style="height: 4px; background-color: #111; border-radius: 0;">
+                                                    <div class="progress-bar"
+                                                        style="width: 0%; transition: width 1s ease-out;"></div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-2 skill-container" data-skill="clubSkill"
+                                                th:data-base-value="${usuario.clubSkill != null ? usuario.clubSkill : 10}"
+                                                th:data-value="${usuario.clubSkill != null ? usuario.clubSkill : 10}">
+                                                <div class="d-flex justify-content-between px-1">
+                                                    <span style="color: #ccc; font-size: 11px;">Club Fighting</span>
+                                                    <span class="skill-val-text text-white fw-bold"
+                                                        style="font-size: 11px;"
+                                                        th:text="${usuario.clubSkill != null ? usuario.clubSkill : 10}">10</span>
+                                                </div>
+                                                <div class="progress mt-1"
+                                                    style="height: 4px; background-color: #111; border-radius: 0;">
+                                                    <div class="progress-bar"
+                                                        style="width: 0%; transition: width 1s ease-out;"></div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-2 skill-container" data-skill="swordSkill"
+                                                th:data-base-value="${usuario.swordSkill != null ? usuario.swordSkill : 10}"
+                                                th:data-value="${usuario.swordSkill != null ? usuario.swordSkill : 10}">
+                                                <div class="d-flex justify-content-between px-1">
+                                                    <span style="color: #ccc; font-size: 11px;">Sword Fighting</span>
+                                                    <span class="skill-val-text text-white fw-bold"
+                                                        style="font-size: 11px;"
+                                                        th:text="${usuario.swordSkill != null ? usuario.swordSkill : 10}">10</span>
+                                                </div>
+                                                <div class="progress mt-1"
+                                                    style="height: 4px; background-color: #111; border-radius: 0;">
+                                                    <div class="progress-bar"
+                                                        style="width: 0%; transition: width 1s ease-out;"></div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-2 skill-container" data-skill="axeSkill"
+                                                th:data-base-value="${usuario.axeSkill != null ? usuario.axeSkill : 10}"
+                                                th:data-value="${usuario.axeSkill != null ? usuario.axeSkill : 10}">
+                                                <div class="d-flex justify-content-between px-1">
+                                                    <span style="color: #ccc; font-size: 11px;">Axe Fighting</span>
+                                                    <span class="skill-val-text text-white fw-bold"
+                                                        style="font-size: 11px;"
+                                                        th:text="${usuario.axeSkill != null ? usuario.axeSkill : 10}">10</span>
+                                                </div>
+                                                <div class="progress mt-1"
+                                                    style="height: 4px; background-color: #111; border-radius: 0;">
+                                                    <div class="progress-bar"
+                                                        style="width: 0%; transition: width 1s ease-out;"></div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-2 skill-container" data-skill="distanceSkill"
+                                                th:data-base-value="${usuario.distanceSkill != null ? usuario.distanceSkill : 10}"
+                                                th:data-value="${usuario.distanceSkill != null ? usuario.distanceSkill : 10}">
+                                                <div class="d-flex justify-content-between px-1">
+                                                    <span style="color: #ccc; font-size: 11px;">Distance Fighting</span>
+                                                    <span class="skill-val-text text-white fw-bold"
+                                                        style="font-size: 11px;"
+                                                        th:text="${usuario.distanceSkill != null ? usuario.distanceSkill : 10}">10</span>
+                                                </div>
+                                                <div class="progress mt-1"
+                                                    style="height: 4px; background-color: #111; border-radius: 0;">
+                                                    <div class="progress-bar"
+                                                        style="width: 0%; transition: width 1s ease-out;"></div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-2 skill-container" data-skill="shieldingSkill"
+                                                th:data-base-value="${usuario.shieldingSkill != null ? usuario.shieldingSkill : 10}"
+                                                th:data-value="${usuario.shieldingSkill != null ? usuario.shieldingSkill : 10}">
+                                                <div class="d-flex justify-content-between px-1">
+                                                    <span style="color: #ccc; font-size: 11px;">Shielding</span>
+                                                    <span class="skill-val-text text-white fw-bold"
+                                                        style="font-size: 11px;"
+                                                        th:text="${usuario.shieldingSkill != null ? usuario.shieldingSkill : 10}">10</span>
+                                                </div>
+                                                <div class="progress mt-1"
+                                                    style="height: 4px; background-color: #111; border-radius: 0;">
+                                                    <div class="progress-bar"
+                                                        style="width: 0%; transition: width 1s ease-out;"></div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-2 skill-container" data-skill="fishingSkill"
+                                                th:data-base-value="${usuario.fishingSkill != null ? usuario.fishingSkill : 10}"
+                                                th:data-value="${usuario.fishingSkill != null ? usuario.fishingSkill : 10}">
+                                                <div class="d-flex justify-content-between px-1">
+                                                    <span style="color: #ccc; font-size: 11px;">Fishing</span>
+                                                    <span class="skill-val-text text-white fw-bold"
+                                                        style="font-size: 11px;"
+                                                        th:text="${usuario.fishingSkill != null ? usuario.fishingSkill : 10}">10</span>
+                                                </div>
+                                                <div class="progress mt-1"
+                                                    style="height: 4px; background-color: #111; border-radius: 0;">
+                                                    <div class="progress-bar"
+                                                        style="width: 0%; transition: width 1s ease-out;"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-3 pt-2 border-top border-dark"
+                                            style="font-size: 11px; color: #ccc; line-height: 1.6;">
+                                            <div class="d-flex justify-content-between px-1">
+                                                <span>Attack Value</span>
+                                                <span id="atk-value-text" class="text-white">0</span>
+                                            </div>
+                                            <div id="elemental-conversion-container"></div>
+                                            
+                                            <div class="d-flex justify-content-between px-1">
+                                                <span>Defense Value</span>
+                                                <span id="def-value-text" style="color: #00b900;">0</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between px-1 mb-2">
+                                                <span>Armor Value</span>
+                                                <span id="armor-value-text" style="color: #00b900;">0</span>
+                                            </div>
+
+                                            <div id="extra-stats-container"
+                                                class="border-top border-secondary pt-2 mt-2">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-5">
+                                    <div class="inventory-container p-3 rounded d-flex flex-column align-items-center gap-2"
+                                        style="background-color: #1a1a1a; border: 1px solid #333;">
+                                        
+                                        <div class="d-flex justify-content-center gap-2 mb-2 w-100 border-bottom border-dark pb-3">
+                                            <input type="radio" class="btn-check" name="set-options" id="set1" autocomplete="off" checked onchange="trocarSet(1)">
+                                            <label class="btn btn-outline-info btn-sm flex-grow-1" for="set1">Set 1</label>
+                                
+                                            <input type="radio" class="btn-check" name="set-options" id="set2" autocomplete="off" onchange="trocarSet(2)">
+                                            <label class="btn btn-outline-info btn-sm flex-grow-1" for="set2">Set 2</label>
+                                
+                                            <input type="radio" class="btn-check" name="set-options" id="set3" autocomplete="off" onchange="trocarSet(3)">
+                                            <label class="btn btn-outline-info btn-sm flex-grow-1" for="set3">Set 3</label>
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            <div class="slot" id="slot-Amulets" onclick="abrirBusca('Amulets')" oncontextmenu="removerItem(event, 'Amulets')">
+                                                <img src="https://www.tibiawiki.com.br/images/3/3e/Crystal_Necklace.gif"
+                                                    class="slot-img img-grayscale">
+                                                <span class="slot-tier"></span>
+                                            </div>
+                                            <div class="slot" id="slot-Helmets" onclick="abrirBusca('Helmets')" oncontextmenu="removerItem(event, 'Helmets')">
+                                                <img src="https://www.tibiawiki.com.br/images/2/29/Leather_Helmet.gif"
+                                                    class="slot-img img-grayscale">
+                                                <span class="slot-tier"></span>
+                                            </div>
+                                            <div class="slot" id="slot-Backpacks" onclick="abrirBusca('Backpacks')" oncontextmenu="removerItem(event, 'Backpacks')">
+                                                <img src="https://www.tibiawiki.com.br/images/9/9a/Backpack.gif"
+                                                    class="slot-img img-grayscale">
+                                                <span class="slot-tier"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            <div class="slot" id="slot-Weapons" onclick="abrirBusca('Weapons')" oncontextmenu="removerItem(event, 'Weapons')">
+                                                <img src="https://www.tibiawiki.com.br/images/1/1f/Sword.gif"
+                                                    class="slot-img img-grayscale">
+                                                <span class="slot-tier"></span>
+                                            </div>
+                                            <div class="slot" id="slot-Armors" onclick="abrirBusca('Armors')" oncontextmenu="removerItem(event, 'Armors')">
+                                                <img src="https://www.tibiawiki.com.br/images/0/0d/Leather_Armor.gif"
+                                                    class="slot-img img-grayscale">
+                                                <span class="slot-tier"></span>
+                                            </div>
+                                            <div class="slot" id="slot-Shields" onclick="abrirBusca('Shields')" oncontextmenu="removerItem(event, 'Shields')">
+                                                <img src="https://www.tibiawiki.com.br/images/2/2d/Wooden_Shield.gif"
+                                                    class="slot-img img-grayscale">
+                                                <span class="slot-tier"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            <div class="slot" id="slot-Rings" onclick="abrirBusca('Rings')" oncontextmenu="removerItem(event, 'Rings')">
+                                                <img src="https://www.tibiawiki.com.br/images/d/db/Axe_Ring.gif"
+                                                    class="slot-img img-grayscale">
+                                                <span class="slot-tier"></span>
+                                            </div>
+                                            <div class="slot" id="slot-Legs" onclick="abrirBusca('Legs')" oncontextmenu="removerItem(event, 'Legs')">
+                                                <img src="https://www.tibiawiki.com.br/images/0/07/Leather_Legs.gif"
+                                                    class="slot-img img-grayscale">
+                                                <span class="slot-tier"></span>
+                                            </div>
+                                            <div class="slot" id="slot-ExtraSlot" onclick="abrirBusca('ExtraSlot')" oncontextmenu="removerItem(event, 'ExtraSlot')">
+                                                <img src="https://www.tibiawiki.com.br/images/4/46/Moon_Mirror.gif"
+                                                    class="slot-img img-grayscale">
+                                                <span class="slot-tier"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            <div style="width: 64px;"></div>
+                                            <div class="slot" id="slot-Boots" onclick="abrirBusca('Boots')" oncontextmenu="removerItem(event, 'Boots')">
+                                                <img src="https://www.tibiawiki.com.br/images/9/94/Leather_Boots.gif"
+                                                    class="slot-img img-grayscale">
+                                                <span class="slot-tier"></span>
+                                            </div>
+                                            <div style="width: 64px;"></div>
+                                        </div>
+
+                                        <small class="text-secondary mt-2" style="font-size: 0.75em;">
+                                            * clique com o botão direito para remover um equipamento
+                                        </small>
+
+                                        <button class="btn btn-sm btn-success mt-3 w-100 fw-bold" onclick="salvarSetsNoBanco()">
+                                            <i class="fa-solid fa-save me-1"></i> Salvar Equipamentos
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <div class="p-3 rounded h-100"
+                                        style="background-color: #0d0d0d; border: 1px solid #222;">
+                                        <h6 class="text-warning fw-bold border-bottom border-secondary pb-2 mb-3"
+                                            style="font-size: 0.9em;">Bônus e Melhorias</h6>
+                                        <div id="painel-bonus" class="d-flex flex-column gap-2">
+                                            <p class="text-secondary small">Equipe itens com atributos para calcular...
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="pills-skills" role="tabpanel" tabindex="0">
+                            <div class="row g-3">
+                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="magicLevel" th:data-base-value="${usuario.magicLevel != null ? usuario.magicLevel : 0}"><small class="text-secondary d-block">Magic</small><span class="fw-bold text-info fs-5 skill-val-text" th:text="${usuario.magicLevel != null ? usuario.magicLevel : 0}">0</span></div></div>
+                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="fistSkill" th:data-base-value="${usuario.fistSkill != null ? usuario.fistSkill : 10}"><small class="text-secondary d-block">Fist</small><span class="fw-bold text-light fs-5 skill-val-text" th:text="${usuario.fistSkill != null ? usuario.fistSkill : 10}">10</span></div></div>
+                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="clubSkill" th:data-base-value="${usuario.clubSkill != null ? usuario.clubSkill : 10}"><small class="text-secondary d-block">Club</small><span class="fw-bold text-light fs-5 skill-val-text" th:text="${usuario.clubSkill != null ? usuario.clubSkill : 10}">10</span></div></div>
+                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="swordSkill" th:data-base-value="${usuario.swordSkill != null ? usuario.swordSkill : 10}"><small class="text-secondary d-block">Sword</small><span class="fw-bold text-light fs-5 skill-val-text" th:text="${usuario.swordSkill != null ? usuario.swordSkill : 10}">10</span></div></div>
+                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="axeSkill" th:data-base-value="${usuario.axeSkill != null ? usuario.axeSkill : 10}"><small class="text-secondary d-block">Axe</small><span class="fw-bold text-light fs-5 skill-val-text" th:text="${usuario.axeSkill != null ? usuario.axeSkill : 10}">10</span></div></div>
+                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="distanceSkill" th:data-base-value="${usuario.distanceSkill != null ? usuario.distanceSkill : 10}"><small class="text-secondary d-block">Distance</small><span class="fw-bold text-light fs-5 skill-val-text" th:text="${usuario.distanceSkill != null ? usuario.distanceSkill : 10}">10</span></div></div>
+                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="shieldingSkill" th:data-base-value="${usuario.shieldingSkill != null ? usuario.shieldingSkill : 10}"><small class="text-secondary d-block">Shield</small><span class="fw-bold text-warning fs-5 skill-val-text" th:text="${usuario.shieldingSkill != null ? usuario.shieldingSkill : 10}">10</span></div></div>
+                                <div class="col-4 col-md-2"><div class="skill-box" data-skill="fishingSkill" th:data-base-value="${usuario.fishingSkill != null ? usuario.fishingSkill : 10}"><small class="text-secondary d-block">Fishing</small><span class="fw-bold text-light fs-5 skill-val-text" th:text="${usuario.fishingSkill != null ? usuario.fishingSkill : 10}">10</span></div></div>
+                            </div>
+                            <div class="text-end mt-4">
+                                <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal"
+                                    data-bs-target="#modalEditarSkills">
+                                    <i class="fa-solid fa-pen me-1"></i> Editar Skills
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="modal fade" id="modalAdicionarItem" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary text-white">
+                <div class="modal-header border-secondary bg-black">
+                    <h5 class="modal-title fw-bold text-warning"><i class="fa-solid fa-magnifying-glass me-2"></i>
+                        Buscar Item</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 bg-black">
+
+                    <input type="text" id="inputBuscaItem" class="form-control bg-dark text-white border-secondary mb-3"
+                        placeholder="Procurar equipamento" onkeyup="buscarItemApi(this.value)">
+
+                    <div id="listaResultadosItem" class="list-group mb-3" style="max-height: 200px; overflow-y: auto;">
+                    </div>
+
+                    <div id="areaExaltationForge" class="p-3 border border-secondary rounded bg-dark d-none">
+                    </div>
+
+                </div>
+                <div class="modal-footer border-secondary bg-black d-none" id="footerConfirmarItem">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success btn-sm fw-bold" onclick="salvarItemNoSet()"><i
+                            class="fa-solid fa-check me-1"></i> Equipar Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalEditarSkills" tabindex="-1" aria-hidden="true">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+        const exaltationForgeData = {
+            "Weapons": { efeito: "Onslaught", percentuais: [0, 0.50, 1.05, 1.70, 2.45, 3.30, 4.25, 5.30, 6.45, 7.70, 9.05] },
+            "Armors": { efeito: "Ruse", percentuais: [0, 0.50, 1.03, 1.62, 2.28, 3.00, 3.78, 4.62, 5.52, 6.48, 7.51] },
+            "Helmets": { efeito: "Momentum", percentuais: [0, 2.00, 4.05, 6.20, 8.45, 10.80, 13.25, 15.80, 18.45, 21.20, 24.05] },
+            "Legs": { efeito: "Transcendence", percentuais: [0, 0.13, 0.27, 0.44, 0.64, 0.86, 1.11, 1.38, 1.68, 2.00, 2.35] },
+            "Boots": { efeito: "Amplification", percentuais: [0, 2.50, 5.40, 9.10, 13.60, 18.90, 25.00, 31.90, 39.60, 48.10, 57.40] }
+        };
+
+        const imbuementsList = {
+            "Weapons_Melee": [
+                "Critical Hit (Strike)", "Mana Leech (Void)", "Life Leech (Vampirism)",
+                "Sword Skill (Slash)", "Axe Skill (Chop)", "Club Skill (Bash)",
+                "Fire Damage (Scorch)", "Earth Damage (Venom)", "Ice Damage (Frost)",
+                "Energy Damage (Electrify)", "Death Damage (Reap)"
+            ],
+            "Weapons_Distance": [
+                "Critical Hit (Strike)", "Mana Leech (Void)", "Life Leech (Vampirism)",
+                "Distance Skill (Precision)",
+                "Fire Damage (Scorch)", "Earth Damage (Venom)", "Ice Damage (Frost)",
+                "Energy Damage (Electrify)", "Death Damage (Reap)"
+            ],
+            "Weapons_Magic": [
+                "Critical Hit (Strike)", "Mana Leech (Void)", "Life Leech (Vampirism)",
+                "Magic Level (Epiphany)"
+            ],
+            "Armors": [
+                "Life Leech (Vampirism)",
+                "Fire Protection (Dragon Hide)", "Earth Protection (Lich Shroud)",
+                "Ice Protection (Quagmire)", "Energy Protection (Cloud Fabric)",
+                "Death Protection (Demon Presence)", "Holy Protection (Fairy Wings)"
+            ],
+            "Helmets": [
+                "Mana Leech (Void)", "Magic Level (Epiphany)", "Distance Skill (Precision)",
+                "Sword Skill (Slash)", "Axe Skill (Chop)", "Club Skill (Bash)", "Shielding (Blockade)"
+            ],
+            "Shields": [
+                "Shielding (Blockade)",
+                "Fire Protection (Dragon Hide)", "Earth Protection (Lich Shroud)",
+                "Ice Protection (Quagmire)", "Energy Protection (Cloud Fabric)",
+                "Death Protection (Demon Presence)", "Holy Protection (Fairy Wings)"
+            ],
+            "Boots": [
+                "Speed (Swiftness)", "Paralysis Deflection (Vibrancy)"
+            ],
+            "Backpacks": [
+                "Capacity (Featherweight)"
+            ]
+        };
+
+        const imbuementsStatsData = {
+            "Magic Level (Epiphany)": { stat: "magicLevel", bonus: [1, 2, 4], label: " magic level" },
+            "Distance Skill (Precision)": { stat: "distanceSkill", bonus: [1, 2, 4], label: " distance" },
+            "Sword Skill (Slash)": { stat: "swordSkill", bonus: [1, 2, 4], label: " sword" },
+            "Axe Skill (Chop)": { stat: "axeSkill", bonus: [1, 2, 4], label: " axe" },
+            "Club Skill (Bash)": { stat: "clubSkill", bonus: [1, 2, 4], label: " club" },
+            "Shielding (Blockade)": { stat: "shieldingSkill", bonus: [1, 2, 4], label: " shielding" },
+            "Critical Hit (Strike)": { extraStat: "critDamage", bonus: [10, 25, 50], label: "% critical damage" },
+            "Mana Leech (Void)": { extraStat: "manaLeech", bonus: [3, 5, 8], label: "% mana leech" },
+            "Life Leech (Vampirism)": { extraStat: "lifeLeech", bonus: [5, 10, 25], label: "% life leech" },
+            "Speed (Swiftness)": { extraStat: "speed", bonus: [10, 15, 20], label: " speed" },
+            "Capacity (Featherweight)": { extraStat: "capacity", bonus: [3, 8, 15], label: "% capacity" },
+            "Fire Damage (Scorch)": { extraStat: "fireDmg", bonus: [10, 25, 50], label: "% fire damage" },
+            "Earth Damage (Venom)": { extraStat: "earthDmg", bonus: [10, 25, 50], label: "% earth damage" },
+            "Ice Damage (Frost)": { extraStat: "iceDmg", bonus: [10, 25, 50], label: "% ice damage" },
+            "Energy Damage (Electrify)": { extraStat: "energyDmg", bonus: [10, 25, 50], label: "% energy damage" },
+            "Death Damage (Reap)": { extraStat: "deathDmg", bonus: [10, 25, 50], label: "% death damage" },
+            "Fire Protection (Dragon Hide)": { protElement: "fire", bonus: [3, 8, 15], label: "% fire protection" },
+            "Earth Protection (Lich Shroud)": { protElement: "earth", bonus: [3, 8, 15], label: "% earth protection" },
+            "Ice Protection (Quagmire)": { protElement: "ice", bonus: [3, 8, 15], label: "% ice protection" },
+            "Energy Protection (Cloud Fabric)": { protElement: "energy", bonus: [3, 8, 15], label: "% energy protection" },
+            "Death Protection (Demon Presence)": { protElement: "death", bonus: [2, 5, 10], label: "% death protection" },
+            "Holy Protection (Fairy Wings)": { protElement: "holy", bonus: [3, 8, 15], label: "% holy protection" }
+        };
+
+        const limiteClasse = { 0: 0, 1: 1, 2: 2, 3: 3, 4: 10 };
+        const tierNames = ["Basic", "Intricate", "Powerful"];
+
+        const imagensPadrao = {
+            "Amulets": "https://www.tibiawiki.com.br/images/3/3e/Crystal_Necklace.gif",
+            "Helmets": "https://www.tibiawiki.com.br/images/2/29/Leather_Helmet.gif",
+            "Backpacks": "https://www.tibiawiki.com.br/images/9/9a/Backpack.gif",
+            "Weapons": "https://www.tibiawiki.com.br/images/1/1f/Sword.gif",
+            "Armors": "https://www.tibiawiki.com.br/images/0/0d/Leather_Armor.gif",
+            "Shields": "https://www.tibiawiki.com.br/images/2/2d/Wooden_Shield.gif",
+            "Rings": "https://www.tibiawiki.com.br/images/d/db/Axe_Ring.gif",
+            "Legs": "https://www.tibiawiki.com.br/images/0/07/Leather_Legs.gif",
+            "ExtraSlot": "https://www.tibiawiki.com.br/images/4/46/Moon_Mirror.gif",
+            "Boots": "https://www.tibiawiki.com.br/images/9/94/Leather_Boots.gif"
+        };
+
+        let itemSelecionado = null;
+        let charVocationJs = "None";
+
+        function criarSetVazio() {
+            return {
+                "Amulets": null, "Helmets": null, "Backpacks": null,
+                "Weapons": null, "Armors": null, "Shields": null,
+                "Rings": null, "Legs": null, "ExtraSlot": null, "Boots": null
+            };
+        }
+        
+        let sets = {
+            1: criarSetVazio(),
+            2: criarSetVazio(),
+            3: criarSetVazio()
+        };
+
+        const savedSetsJson = document.body.getAttribute('data-sets');
+        if (savedSetsJson && savedSetsJson.trim() !== '') {
+            try {
+                sets = JSON.parse(savedSetsJson);
+            } catch (e) {
+                console.error("Erro ao carregar sets salvos:", e);
+            }
+        }
+
+        let currentSetIndex = 1;
+
+        function trocarSet(index) {
+            currentSetIndex = index;
+            atualizarVisualSet();
+        }
+
+        function salvarSetsNoBanco() {
+            const charNameElement = document.querySelector('.char-header h2');
+            const charName = charNameElement ? charNameElement.innerText : 'Desconhecido';
+            
+            const payload = {
+                personagem: charName,
+                sets: sets 
+            };
+
+            fetch('/api/equipamentos/salvar-sets', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Equipamentos atualizados com sucesso!");
+                } else {
+                    alert("Erro ao salvar os equipamentos.");
+                }
+            })
+            .catch(error => {
+                console.error("Erro ao salvar sets:", error);
+                alert("Erro de conexão ao tentar salvar.");
+            });
+        }
+
+        function removerItem(event, categoria) {
+            event.preventDefault(); 
+            if (sets[currentSetIndex][categoria]) {
+                sets[currentSetIndex][categoria] = null;
+                atualizarVisualSet();
+            }
+        }
+
+        function isDuasMaos(item) {
+            if (!item) return false;
+            const qtdMaos = item.maos || item.mãos || item['Mãos'] || "";
+            const valorString = String(qtdMaos).toLowerCase().trim();
+            if (valorString === 'duas' || valorString === '2') return true;
+            const textoBusca = `${item.nome || ''} ${item.atributos || ''} ${item.propriedades || ''}`.toLowerCase();
+            return textoBusca.includes('duas mãos') || textoBusca.includes('two-handed') || textoBusca.includes('duas');
+        }
+
+        function verificarVocacaoCompativel(itemVocacao, charVoc) {
+            if (!itemVocacao) return true;
+            if (!charVoc || charVoc === 'None') return true;
+            const vocItem = String(itemVocacao).toLowerCase();
+            const vocChar = String(charVoc).toLowerCase();
+            if (vocItem.includes('all') || vocItem.includes('todas')) return true;
+
+            let baseVoc = "";
+            if (vocChar.includes('knight')) baseVoc = 'knight';
+            else if (vocChar.includes('paladin')) baseVoc = 'paladin';
+            else if (vocChar.includes('sorcerer')) baseVoc = 'sorcerer';
+            else if (vocChar.includes('druid')) baseVoc = 'druid';
+            else if (vocChar.includes('monk')) baseVoc = 'monk';
+            else return true;
+            return vocItem.includes(baseVoc);
+        }
+
+        function verificarCategoriaCompativel(categoriaDB, slotAtual) {
+            if (!categoriaDB) return false;
+            const cat = String(categoriaDB).toLowerCase();
+            const vocChar = String(charVocationJs).toLowerCase();
+
+            if (slotAtual === 'Amulets') return cat.includes('amulet') || cat.includes('necklace');
+            if (slotAtual === 'Helmets') return cat.includes('helmet');
+            if (slotAtual === 'Armors') return cat.includes('armor');
+            if (slotAtual === 'Rings') return cat.includes('ring');
+            if (slotAtual === 'Legs') return cat.includes('legs');
+            if (slotAtual === 'Boots') return cat.includes('boots');
+            if (slotAtual === 'Backpacks') return cat.includes('backpack') || cat.includes('container');
+            if (slotAtual === 'ExtraSlot') return cat.includes('ammunition') || cat.includes('extra') || cat.includes('light');
+
+            if (slotAtual === 'Weapons') {
+                const tiposArma = ['sword', 'axe', 'club', 'distance', 'wand', 'rod', 'bow', 'crossbow', 'weapon', 'fist'];
+                return tiposArma.some(tipo => cat.includes(tipo));
+            }
+
+            if (slotAtual === 'Shields') {
+                const wpn = sets[currentSetIndex]['Weapons'] ? sets[currentSetIndex]['Weapons'].item : null;
+                const isKnightOrMonk = vocChar.includes('knight') || vocChar.includes('monk');
+                const isPaladin = vocChar.includes('paladin');
+
+                if (wpn && isDuasMaos(wpn)) {
+                    if (isKnightOrMonk) return false;
+                    if (isPaladin) return cat.includes('quiver');
+                    return cat.includes('shield') || cat.includes('spellbook');
+                }
+
+                if (isPaladin) return cat.includes('shield') || cat.includes('quiver');
+                return cat.includes('shield') || cat.includes('spellbook');
+            }
+            return false;
+        }
+
+        function mapearCategoriaImbuement(categoria) {
+            const cat = String(categoria || "").toLowerCase();
+            if (cat.includes('sword') || cat.includes('axe') || cat.includes('club') || cat.includes('fist')) return "Weapons_Melee";
+            if (cat.includes('distance') || cat.includes('bow') || cat.includes('crossbow')) return "Weapons_Distance";
+            if (cat.includes('wand') || cat.includes('rod')) return "Weapons_Magic";
+            if (cat.includes('weapon')) return "Weapons_Melee";
+
+            if (cat.includes('armor')) return "Armors";
+            if (cat.includes('helmet')) return "Helmets";
+            if (cat.includes('shield') || cat.includes('spellbook') || cat.includes('quiver')) return "Shields";
+            if (cat.includes('boots')) return "Boots";
+            if (cat.includes('backpack')) return "Backpacks";
+            return null;
+        }
+
+        async function buscarItemApi(termo) {
+            const lista = document.getElementById('listaResultadosItem');
+            if (termo.length < 3) {
+                lista.innerHTML = ''; return;
+            }
+            try {
+                const response = await fetch(`/api/equipamentos/buscar?termo=${termo}`);
+                const itens = await response.json();
+                lista.innerHTML = '';
+
+                const itensFiltrados = itens.filter(item => {
+                    const vocacaoDB = item.vocacao || item.vocation || "";
+                    return verificarCategoriaCompativel(item.categoria, slotAlvo) && verificarVocacaoCompativel(vocacaoDB, charVocationJs);
+                });
+
+                if (itensFiltrados.length === 0) {
+                    lista.innerHTML = '<div class="text-secondary text-center p-3 small">Nenhum item compatível encontrado.</div>';
+                    return;
+                }
+
+                itensFiltrados.forEach(item => {
+                    const btn = document.createElement('button');
+                    btn.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary d-flex align-items-center gap-3 py-2';
+                    const vocLabel = item.vocacao || item.vocation || 'Todas';
+
+                    btn.innerHTML = `
+                        <img src="${item.imagemUrl || 'https://www.tibiawiki.com.br/images/b/b4/Unknown_Item.gif'}" width="32" height="32" style="object-fit: contain;"> 
+                        <div class="d-flex flex-column text-start">
+                            <span class="fw-bold" style="font-size: 0.85em;">${item.nome}</span>
+                            <small class="text-secondary" style="font-size: 0.7em;">Level ${item.levelMinimo || 0} | Voc: ${vocLabel}</small>
+                        </div>`;
+                    btn.onclick = () => selecionarItemParaForja(item);
+                    lista.appendChild(btn);
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function mapearCategoriaForja(categoria) {
+            const cat = String(categoria || "").toLowerCase();
+            if (['swords', 'axes', 'clubs', 'distance', 'wands', 'rods'].includes(cat)) return "Weapons";
+            if (cat === 'armors') return "Armors";
+            if (cat === 'helmets') return "Helmets";
+            if (cat === 'legs') return "Legs";
+            if (cat === 'boots') return "Boots";
+            return null;
+        }
+
+        function mudarTipoImbuement(index) {
+            const typeSelect = document.getElementById(`selectImbuementType${index}`);
+            const tierSelect = document.getElementById(`selectImbuementTier${index}`);
+            if (typeSelect.value !== "") {
+                tierSelect.classList.remove('d-none');
+            } else {
+                tierSelect.classList.add('d-none');
+                tierSelect.value = "0";
+            }
+
+            const todosSelects = document.querySelectorAll('.select-imbuement-tipo');
+            
+            // Lista com todos os tipos de danos elementais do Tibia
+            const danosElementais = [
+                "Fire Damage (Scorch)", "Earth Damage (Venom)", "Ice Damage (Frost)", 
+                "Energy Damage (Electrify)", "Death Damage (Reap)"
+            ];
+
+            todosSelects.forEach(select => {
+                const outrosValoresSelecionados = Array.from(todosSelects)
+                    .filter(s => s !== select && s.value !== "")
+                    .map(s => s.value);
+                
+                const algumOutroTemElemental = outrosValoresSelecionados.some(v => danosElementais.includes(v));
+
+                Array.from(select.options).forEach(option => {
+                    if (option.value === "") return;
+                    
+                    const isElementoConflitante = algumOutroTemElemental && danosElementais.includes(option.value);
+                    const isJaSelecionadoEmOutro = outrosValoresSelecionados.includes(option.value);
+
+                    if (isJaSelecionadoEmOutro || isElementoConflitante) {
+                        option.disabled = true;
+                        option.style.display = 'none';
+                    } else {
+                        option.disabled = false;
+                        option.style.display = '';
+                    }
+                });
+            });
+        }
+
+        const forgeDescriptions = {
+            "Weapons": "Tier for Onslaught (Adds 60% extra damage):",
+            "Armors": "Tier for Ruse (Dodge):",
+            "Helmets": "Tier for Momentum (Decreases spells in -2 cooldown):",
+            "Legs": "Tier for Transcendence (Avatar for 7 seconds. 15% damage reduction and all attacks are critical hit with 15% critical extra damage):",
+            "Boots": "Tier for Amplification (Amplifies the effect of tiered items, increasing their activation chance):"
+        };
+
+        function selecionarItemParaForja(item) {
+            itemSelecionado = item;
+            document.getElementById('listaResultadosItem').innerHTML = '';
+            document.getElementById('inputBuscaItem').value = '';
+
+            const area = document.getElementById('areaExaltationForge');
+            const footer = document.getElementById('footerConfirmarItem');
+
+            const maxTier = limiteClasse[item.tier || 0] || 0;
+            const forjaCat = mapearCategoriaForja(item.categoria);
+            const vocLabel = item.vocacao || item.vocation || 'Todas';
+
+            let htmlForge = '';
+            if (maxTier > 0 && forjaCat) {
+                const forjaInfo = exaltationForgeData[forjaCat];
+                const descricaoTier = forgeDescriptions[forjaCat] || `Tier for ${forjaInfo.efeito}:`;
+
+                let htmlSelect = `<select id="selectTierForge" class="form-select bg-black text-white border-secondary mt-1">`;
+                htmlSelect += `<option value="0">Tier 0 (Activation chance 0%)</option>`;
+                for (let i = 1; i <= maxTier; i++) {
+                    htmlSelect += `<option value="${i}">Tier ${i} (Activation chance ${forjaInfo.percentuais[i]}%)</option>`;
+                }
+                htmlSelect += `</select>`;
+
+                htmlForge = `
+                    <div class="mt-3">
+                        <label class="text-warning fw-bold mb-0" style="font-size: 0.85em;"> Tier</label>
+                        <small class="text-secondary d-block mb-1" style="font-size: 0.75em;">${descricaoTier}</small>
+                        ${htmlSelect}
+                    </div>
+                `;
+            } else {
+                htmlForge = `<input type="hidden" id="selectTierForge" value="0">`;
+            }
+
+            const imbuementCat = mapearCategoriaImbuement(item.categoria);
+            let htmlImbuements = '';
+
+            let qtdSlots = item.slots !== undefined && item.slots !== null ? item.slots : 0;
+
+            if (qtdSlots > 0 && imbuementCat && imbuementsList[imbuementCat]) {
+                htmlImbuements += `<div class="mt-3 border-top border-secondary pt-3">
+                                      <label class="text-info fw-bold mb-2" style="font-size: 0.85em;"> Imbuement slots: ${qtdSlots}</label>`;
+
+                const vocChar = String(charVocationJs).toLowerCase();
+                const isKnightOrPaladin = vocChar.includes('knight') || vocChar.includes('paladin');
+
+                for (let i = 1; i <= qtdSlots; i++) {
+                    htmlImbuements += `<div class="d-flex gap-2 mb-2">`;
+                    htmlImbuements += `<select id="selectImbuementType${i}" onchange="mudarTipoImbuement(${i})" class="form-select form-select-sm bg-black text-white border-secondary select-imbuement-tipo" style="flex: 1;">`;
+                    htmlImbuements += `<option value="">-- Slot ${i} Vazio --</option>`;
+
+                    imbuementsList[imbuementCat].forEach(imb => {
+                        if (imbuementCat === 'Helmets' && imb.includes('Epiphany') && isKnightOrPaladin) {
+                            return;
+                        }
+                        htmlImbuements += `<option value="${imb}">${imb}</option>`;
+                    });
+
+                    htmlImbuements += `</select>`;
+
+                    htmlImbuements += `<select id="selectImbuementTier${i}" class="form-select form-select-sm bg-black text-white border-secondary select-imbuement-tier d-none" style="width: 100px;">`;
+                    htmlImbuements += `<option value="0" selected>Basic</option>`;
+                    htmlImbuements += `<option value="1">Intricate</option>`;
+                    htmlImbuements += `<option value="2">Powerful</option>`;
+                    htmlImbuements += `</select>`;
+                    htmlImbuements += `</div>`;
+                }
+                htmlImbuements += `</div>`;
+            }
+            area.innerHTML = `
+                <div class="d-flex align-items-center gap-3 ${htmlForge !== '' || htmlImbuements !== '' ? 'border-bottom border-secondary pb-3' : ''}">
+                    <img src="${item.imagemUrl || 'https://www.tibiawiki.com.br/images/b/b4/Unknown_Item.gif'}" width="48" height="48" class="bg-black p-1 rounded border border-secondary">
+                    <div>
+                        <h5 class="mb-0 text-info fw-bold">${item.nome}</h5>
+                        <small class="text-secondary">Categoria: ${item.categoria} | Voc: ${vocLabel} | Classe: ${item.tier || 0}</small>
+                    </div>
+                </div>
+                ${htmlForge}
+                ${htmlImbuements}
+            `;
+
+            area.classList.remove('d-none');
+            footer.classList.remove('d-none');
+        }
+
+        let slotAlvo = "";
+
+        function abrirBusca(categoria) {
+            slotAlvo = categoria;
+            const vocChar = String(charVocationJs).toLowerCase();
+
+            if (slotAlvo === 'Shields' && sets[currentSetIndex]['Weapons']) {
+                const wpn = sets[currentSetIndex]['Weapons'].item;
+                const isKnightOrMonk = vocChar.includes('knight') || vocChar.includes('monk');
+                if (isKnightOrMonk && isDuasMaos(wpn)) return;
+            }
+
+            document.getElementById('inputBuscaItem').value = '';
+            document.getElementById('listaResultadosItem').innerHTML = '';
+            document.getElementById('areaExaltationForge').classList.add('d-none');
+            document.getElementById('footerConfirmarItem').classList.add('d-none');
+            itemSelecionado = null;
+
+            const modal = new bootstrap.Modal(document.getElementById('modalAdicionarItem'));
+            modal.show();
+        }
+
+        function salvarItemNoSet() {
+            const selectTier = document.getElementById('selectTierForge');
+            const tierEscolhido = selectTier ? parseInt(selectTier.value) : 0;
+            const forjaCat = mapearCategoriaForja(itemSelecionado.categoria);
+
+            let bonusAtivo = 0;
+            let efeitoAtivo = null;
+
+            if (forjaCat && exaltationForgeData[forjaCat]) {
+                efeitoAtivo = exaltationForgeData[forjaCat].efeito;
+                if (tierEscolhido > 0) {
+                    bonusAtivo = exaltationForgeData[forjaCat].percentuais[tierEscolhido];
+                }
+            }
+
+            let imbuementsSelecionados = [];
+            const selectBoxesTipo = document.querySelectorAll('.select-imbuement-tipo');
+            selectBoxesTipo.forEach((box, idx) => {
+                if (box.value !== "") {
+                    const tierBox = document.getElementById(`selectImbuementTier${idx + 1}`);
+                    imbuementsSelecionados.push({
+                        tipo: box.value,
+                        tier: tierBox ? parseInt(tierBox.value) : 0
+                    });
+                }
+            });
+
+            sets[currentSetIndex][slotAlvo] = {
+                item: itemSelecionado,
+                tier: tierEscolhido,
+                bonus: bonusAtivo,
+                efeito: efeitoAtivo,
+                imbuements: imbuementsSelecionados
+            };
+
+            if (slotAlvo === 'Weapons' && isDuasMaos(itemSelecionado)) {
+                const vocChar = String(charVocationJs).toLowerCase();
+                const isKnightOrMonk = vocChar.includes('knight') || vocChar.includes('monk');
+                const isPaladin = vocChar.includes('paladin');
+
+                if (isKnightOrMonk) {
+                    sets[currentSetIndex]['Shields'] = null;
+                } else if (isPaladin) {
+                    if (sets[currentSetIndex]['Shields'] && !String(sets[currentSetIndex]['Shields'].item.categoria).toLowerCase().includes('quiver')) {
+                        sets[currentSetIndex]['Shields'] = null;
+                    }
+                }
+            }
+
+            atualizarVisualSet();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalAdicionarItem'));
+            modal.hide();
+        }
+
+        function recalcularAtributosGlobais() {
+            let baseStats = { magicLevel: 0, fistSkill: 0, clubSkill: 0, swordSkill: 0, axeSkill: 0, distanceSkill: 0, shieldingSkill: 0, fishingSkill: 0 };
+            
+            let extraStats = { critDamage: 10.0, critChance: 5.0, manaLeech: 0, lifeLeech: 0, fireDmg: 0, earthDmg: 0, iceDmg: 0, energyDmg: 0, deathDmg: 0, speed: 0, capacity: 0 };
+            
+            let protMultipliers = { physical: 1, fire: 1, earth: 1, ice: 1, energy: 1, death: 1, holy: 1 };
+            
+            let totalArmor = 0;
+            let weaponAtk = 0;
+            let weaponDef = 0;
+            let weaponMod = 0;
+            let shieldDef = 0;
+            let eleDmgText = [];
+
+            for (let slot in sets[currentSetIndex]) {
+                const dados = sets[currentSetIndex][slot];
+                if (dados && dados.item) {
+                    const item = dados.item;
+                    
+                    if (item.armadura) totalArmor += parseInt(item.armadura) || 0;
+                    
+                    if (slot === 'Weapons') {
+                        weaponAtk = parseInt(item.ataque) || 0;
+                        weaponDef = parseInt(item.defesa) || 0;
+                        if (item.modDefesa) weaponMod = parseInt(item.modDefesa) || 0;
+                        
+                        if (item.danoElemental && 
+                            item.danoElemental.toLowerCase() !== 'nenhum' && 
+                            item.danoElemental.toLowerCase() !== 'nenhuma' && 
+                            item.danoElemental.trim() !== '') {
+                            eleDmgText.push(item.danoElemental);
+                        }
+                    }
+                    if (slot === 'Shields') {
+                        shieldDef = parseInt(item.defesa) || 0;
+                    }
+
+                    if (item.bonusSkill) {
+                        let parts = String(item.bonusSkill).toLowerCase().split(',');
+                        parts.forEach(p => {
+                            let match = p.match(/([a-z\s]+)\s*([+-]\s*\d+)/);
+                            if(match) {
+                                let attr = match[1].trim();
+                                let val = parseInt(match[2].replace(/\s/g, ''));
+                                if(attr.includes('magic level')) baseStats.magicLevel += val;
+                                else if(attr.includes('sword fighting')) baseStats.swordSkill += val;
+                                else if(attr.includes('axe fighting')) baseStats.axeSkill += val;
+                                else if(attr.includes('club fighting')) baseStats.clubSkill += val;
+                                else if(attr.includes('distance fighting')) baseStats.distanceSkill += val;
+                                else if(attr.includes('shielding')) baseStats.shieldingSkill += val;
+                                else if(attr.includes('fist')) baseStats.fistSkill += val;
+                                else if(attr.includes('speed')) extraStats.speed += val;
+                            }
+                        });
+                    }
+
+                    if (item.protecao) {
+                        let parts = String(item.protecao).toLowerCase().split(',');
+                        parts.forEach(p => {
+                            let match = p.match(/([a-z\s]+)\s*([+-]\s*\d+)\s*%/);
+                            if(match) {
+                                let element = match[1].trim();
+                                let val = parseInt(match[2].replace(/\s/g, ''));
+                                let factor = 1 - (val / 100);
+                                
+                                if(element.includes('physical')) protMultipliers.physical *= factor;
+                                else if(element.includes('fire')) protMultipliers.fire *= factor;
+                                else if(element.includes('earth')) protMultipliers.earth *= factor;
+                                else if(element.includes('ice')) protMultipliers.ice *= factor;
+                                else if(element.includes('energy')) protMultipliers.energy *= factor;
+                                else if(element.includes('death')) protMultipliers.death *= factor;
+                                else if(element.includes('holy')) protMultipliers.holy *= factor;
+                            }
+                        });
+                    }
+
+                    if (dados.imbuements) {
+                        dados.imbuements.forEach(imb => {
+                            const imbDetails = imbuementsStatsData[imb.tipo];
+                            if (imbDetails) {
+                                const val = imbDetails.bonus[imb.tier];
+
+                                if (imbDetails.stat) {
+                                    baseStats[imbDetails.stat] += val; 
+                                }
+                                if (imbDetails.extraStat) {
+                                    extraStats[imbDetails.extraStat] += val;
+                                }
+                                if (imbDetails.protElement) { 
+                                    let factor = 1 - (val / 100);
+                                    protMultipliers[imbDetails.protElement] *= factor;
+                                }
+                                
+                                if (imb.tipo.includes("Strike")) {
+                                    extraStats.critChance += 10.0;
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+
+            let atkDisp = weaponAtk > 0 ? weaponAtk.toString() : "0";
+            let eleDmgStr = "";
+            if (eleDmgText.length > 0) {
+                eleDmgStr = ` <span class="text-warning" style="font-size: 0.9em;">(${eleDmgText.join(', ')})</span>`;
+            }
+            document.getElementById('atk-value-text').innerHTML = atkDisp + eleDmgStr;
+
+            let conversionHtml = '';
+            const mapElementsConversion = [
+                { key: 'fireDmg', label: 'Fire' },
+                { key: 'earthDmg', label: 'Earth' },
+                { key: 'iceDmg', label: 'Ice' },
+                { key: 'energyDmg', label: 'Energy' },
+                { key: 'deathDmg', label: 'Death' }
+            ];
+
+            mapElementsConversion.forEach(el => {
+                if (extraStats[el.key] > 0) {
+                    conversionHtml += `
+                        <div class="d-flex justify-content-between px-1 text-secondary">
+                            <span>Converted into ${el.label} damage</span>
+                            <span style="color: #00b900;">+${extraStats[el.key]}%</span>
+                        </div>
+                    `;
+                }
+            });
+            document.getElementById('elemental-conversion-container').innerHTML = conversionHtml;   
+            
+            let defenseValue = Math.max(weaponDef, shieldDef);
+            if (weaponMod < 0) {
+                defenseValue += weaponMod; 
+            } else if (weaponMod > 0 && shieldDef >= weaponDef) {
+                defenseValue += weaponMod;
+            } else if (weaponMod > 0 && weaponDef > shieldDef) {
+                defenseValue += weaponMod;
+            }
+            
+            if (defenseValue < 0) defenseValue = 0;
+
+            document.getElementById('def-value-text').innerText = defenseValue > 0 ? defenseValue.toString() : "0";
+            document.getElementById('def-value-text').style.color = '#00b900';
+            
+            document.getElementById('armor-value-text').innerText = totalArmor > 0 ? totalArmor.toString() : "0";
+
+            const skillsAlvo = ['magicLevel', 'fistSkill', 'clubSkill', 'swordSkill', 'axeSkill', 'distanceSkill', 'shieldingSkill', 'fishingSkill'];
+            skillsAlvo.forEach(skill => {
+                const containers = document.querySelectorAll(`[data-skill="${skill}"]`);
+                containers.forEach(container => {
+                    const baseStr = container.getAttribute('data-base-value');
+                    const baseVal = parseInt(baseStr) || 0;
+                    const bonusVal = baseStats[skill] || 0;
+                    const finalVal = baseVal + bonusVal;
+
+                    const valElement = container.querySelector('.skill-val-text');
+                    if (valElement) {
+                        valElement.innerText = finalVal;
+                        if (finalVal > baseVal) {
+                            valElement.style.setProperty('color', '#00ff00', 'important');
+                        } else {
+                            valElement.style.removeProperty('color');
+                        }
+                    }
+                });
+            });
+
+            let htmlExtras = '';
+
+            htmlExtras += `
+                <div class="mb-2">
+                    <div class="text-white px-1">Critical Hit:</div>
+                    <div class="d-flex justify-content-between px-1 ps-3 text-secondary"><span>Chance</span> <span style="color: #00b900;">+${extraStats.critChance.toFixed(1)}%</span></div>
+                    <div class="d-flex justify-content-between px-1 ps-3 text-secondary"><span>Extra Damage</span> <span style="color: #00b900;">+${extraStats.critDamage.toFixed(1)}%</span></div>
+                </div>
+            `;
+            
+            if (extraStats.manaLeech > 0) {
+                htmlExtras += `
+                    <div class="mb-2">
+                        <div class="text-white px-1">Mana Leech:</div>
+                        <div class="d-flex justify-content-between px-1 ps-3 text-secondary"><span>Chance</span> <span style="color: #00b900;">100%</span></div>
+                        <div class="d-flex justify-content-between px-1 ps-3 text-secondary"><span>Amount</span> <span style="color: #00b900;">+${extraStats.manaLeech}%</span></div>
+                    </div>
+                `;
+            }
+            if (extraStats.lifeLeech > 0) {
+                htmlExtras += `
+                    <div class="mb-2">
+                        <div class="text-white px-1">Life Leech:</div>
+                        <div class="d-flex justify-content-between px-1 ps-3 text-secondary"><span>Chance</span> <span style="color: #00b900;">100%</span></div>
+                        <div class="d-flex justify-content-between px-1 ps-3 text-secondary"><span>Amount</span> <span style="color: #00b900;">+${extraStats.lifeLeech}%</span></div>
+                    </div>
+                `;
+            }
+
+            const mapElements = [
+                { key: 'speed', label: 'Speed' },
+                { key: 'capacity', label: 'Capacity' }
+            ];
+
+            mapElements.forEach(el => {
+                if (extraStats[el.key] > 0) {
+                    htmlExtras += `
+                        <div class="d-flex justify-content-between px-1 mb-1">
+                            <span class="text-white">${el.label}</span>
+                            <span style="color: #00b900;">+${extraStats[el.key]}%</span>
+                        </div>
+                    `;
+                }
+            });
+
+            const mapProtections = [
+                { key: 'physical', label: 'Physical Protection' },
+                { key: 'fire', label: 'Fire Protection' },
+                { key: 'earth', label: 'Earth Protection' },
+                { key: 'ice', label: 'Ice Protection' },
+                { key: 'energy', label: 'Energy Protection' },
+                { key: 'death', label: 'Death Protection' },
+                { key: 'holy', label: 'Holy Protection' }
+            ];
+
+            mapProtections.forEach(el => {
+                let protValue = (1 - protMultipliers[el.key]) * 100;
+                if (Math.abs(protValue) > 0.01) { 
+                    let sign = protValue > 0 ? '+' : '';
+                    let colorAttr = protValue > 0 ? 'style="color: #00b900;"' : 'class="text-danger"';
+                    htmlExtras += `
+                        <div class="d-flex justify-content-between px-1 mb-1">
+                            <span class="text-white">${el.label}</span>
+                            <span ${colorAttr}>${sign}${protValue.toFixed(2)}%</span>
+                        </div>
+                    `;
+                }
+            });
+
+            const extraContainer = document.getElementById('extra-stats-container');
+            extraContainer.innerHTML = htmlExtras;
+            extraContainer.classList.remove('d-none');
+        }
+
+        function atualizarVisualSet() {
+            const painelBonus = document.getElementById('painel-bonus');
+            painelBonus.innerHTML = '';
+            let temAprimoramento = false;
+
+            for (let slot in sets[currentSetIndex]) {
+                const dados = sets[currentSetIndex][slot];
+                const slotEl = document.getElementById(`slot-${slot}`);
+                const imgEl = slotEl.querySelector('.slot-img');
+
+                if (dados) {
+                    imgEl.src = dados.item.imagemUrl || 'https://www.tibiawiki.com.br/images/b/b4/Unknown_Item.gif';
+                    imgEl.classList.remove('img-grayscale');
+
+                    let htmlDetalhesItem = '';
+
+                    if (dados.tier > 0) {
+                        slotEl.querySelector('.slot-tier').innerText = `T${dados.tier}`;
+                        slotEl.querySelector('.slot-tier').style.display = 'block';
+
+                        htmlDetalhesItem += `
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="text-info" style="font-size: 0.85em;"><i class="fa-solid fa-fw"></i> ${dados.efeito}</span>
+                                <span class="badge bg-info text-dark">+ ${dados.bonus}%</span>
+                            </div>
+                        `;
+                    } else {
+                        slotEl.querySelector('.slot-tier').style.display = 'none';
+                    }
+
+                    if (dados.imbuements && dados.imbuements.length > 0) {
+                        dados.imbuements.forEach(imb => {
+                            const statData = imbuementsStatsData[imb.tipo];
+                            const nomeCurto = imb.tipo.match(/\(([^)]+)\)/)[1];
+                            const tierNome = tierNames[imb.tier];
+                            const valExtra = statData ? `(+${statData.bonus[imb.tier]}${statData.label})` : "";
+
+                            htmlDetalhesItem += `
+                                <div class="d-flex align-items-center mb-1">
+                                    <span class="text-light" style="font-size: 0.8em;"> ${tierNome} ${nomeCurto} <span class="text-secondary">${valExtra}</span></span>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    if (htmlDetalhesItem !== '') {
+                        temAprimoramento = true;
+                        painelBonus.innerHTML += `
+                            <div class="bg-black p-2 rounded border-start border-3 border-info mb-2 shadow-sm">
+                                <span class="text-warning fw-bold d-block small mb-2 border-bottom border-dark pb-1">${dados.item.nome}</span>
+                                ${htmlDetalhesItem}
+                            </div>
+                        `;
+                    }
+                } else {
+                    imgEl.src = imagensPadrao[slot];
+                    imgEl.classList.add('img-grayscale');
+                    slotEl.querySelector('.slot-tier').style.display = 'none';
+                }
+            }
+
+            const shieldSlot = document.getElementById('slot-Shields');
+            const imgShield = shieldSlot.querySelector('.slot-img');
+            const wpn = sets[currentSetIndex]['Weapons'] ? sets[currentSetIndex]['Weapons'].item : null;
+            const vocChar = String(charVocationJs).toLowerCase();
+            const isKnightOrMonk = vocChar.includes('knight') || vocChar.includes('monk');
+            const isPaladin = vocChar.includes('paladin');
+
+            if (wpn && isDuasMaos(wpn)) {
+                if (isKnightOrMonk) {
+                    shieldSlot.classList.add('disabled-slot');
+                    imgShield.src = 'https://www.tibiawiki.com.br/images/2/2d/Wooden_Shield.gif';
+                    imgShield.classList.add('img-grayscale');
+                    shieldSlot.querySelector('.slot-tier').style.display = 'none';
+                } else if (isPaladin) {
+                    shieldSlot.classList.remove('disabled-slot');
+                    if (!sets[currentSetIndex]['Shields']) {
+                        imgShield.src = 'https://www.tibiawiki.com.br/images/6/63/Blue_Quiver.gif';
+                        imgShield.classList.add('img-grayscale');
+                    }
+                } else {
+                    shieldSlot.classList.remove('disabled-slot');
+                    if (!sets[currentSetIndex]['Shields']) {
+                        imgShield.src = 'https://www.tibiawiki.com.br/images/2/2d/Wooden_Shield.gif';
+                        imgShield.classList.add('img-grayscale');
+                    }
+                }
+            } else {
+                shieldSlot.classList.remove('disabled-slot');
+                if (!sets[currentSetIndex]['Shields']) {
+                    imgShield.src = 'https://www.tibiawiki.com.br/images/2/2d/Wooden_Shield.gif';
+                    imgShield.classList.add('img-grayscale');
+                }
+            }
+
+            if (!temAprimoramento) {
+                painelBonus.innerHTML = '<p class="text-secondary small">Nenhum bônus ou imbuement ativo no momento.</p>';
+            }
+
+            recalcularAtributosGlobais();
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const bodyVocation = document.body.getAttribute('data-vocation');
+            charVocationJs = bodyVocation ? bodyVocation : 'None';
+
+            const skillContainers = document.querySelectorAll('.skill-container');
+
+            skillContainers.forEach(container => {
+                const skillValue = parseInt(container.getAttribute('data-value')) || 0;
+                const progressBar = container.querySelector('.progress-bar');
+
+                let percentualVisual = 0;
+                if (skillValue > 0) {
+                    percentualVisual = (skillValue * 17) % 100;
+                    if (skillValue === 10) percentualVisual = 0;
+                }
+
+                setTimeout(() => {
+                    if (progressBar) progressBar.style.width = percentualVisual + '%';
+                }, 200);
+            });
+
+            atualizarVisualSet();
+        });
+    </script>
+</body>
+
+</html>
