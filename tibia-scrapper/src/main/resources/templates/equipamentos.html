@@ -36,7 +36,6 @@
             color: #fff !important;
         }
 
-        /* Estilos da Sidebar importados da Home */
         .sidebar-menu {
             display: flex;
             flex-direction: column;
@@ -495,103 +494,103 @@
                                             th:text="${v}"></span>
                                     </div>
 
-                                    <div class="desc-box">
-                                        <div class="attr-row" th:if="${item.armadura != null and item.armadura > 0}"
-                                            th:text="'Armadura: ' + ${item.armadura}">
-                                        </div>
-                                        <div class="attr-row" th:if="${item.maos != null and item.maos != ''}"
-                                            th:text="'Mãos: ' + ${#strings.capitalizeWords(item.maos)}">
-                                        </div>
-                                        <div class="attr-row" th:if="${item.ataque != null and item.ataque > 0}"
-                                            th:text="'Atk: ' + ${item.ataque}">
-                                        </div>
-                                        <div class="attr-row" th:if="${item.defesa != null and item.defesa > 0}"
-                                            th:text="'Def: ' + ${item.defesa}">
-                                        </div>
-                                        <div class="attr-row"
-                                            th:if="${item.modDefesa != null and item.modDefesa != '0' and item.modDefesa != ''}"
-                                            th:text="'Mod. Defesa: ' + ${item.modDefesa}">
-                                        </div>
-                                        <div class="attr-row" th:if="${item.alcance != null and item.alcance > 0}"
-                                            th:text="'Range: ' + ${item.alcance}">
-                                        </div>
+                                    <div class="desc-box" style="line-height: 1.2; font-size: 0.85em;"
+                                        th:with="temAtributos=${(item.armadura != null and item.armadura > 0) or (item.maos != null and item.maos != '') or (item.ataque != null and item.ataque > 0) or (item.defesa != null and item.defesa > 0) or (item.modDefesa != null and item.modDefesa != '0' and item.modDefesa != '') or (item.alcance != null and item.alcance > 0) or (item.danoElemental != null and item.danoElemental != '') or (item.elementalBond != null and item.elementalBond != '') or (item.protecao != null and item.protecao != '') or (item.criticalChance != null and item.criticalChance > 0) or (item.lifeLeechChance != null and item.lifeLeechChance > 0) or (item.manaLeechChance != null and item.manaLeechChance > 0) or (item.mantra != null and item.mantra > 0) or (item.atributos != null and item.atributos != '') or (item.slots != null and item.slots > 0) or (item.tier != null and item.tier > 0)}">
 
-                                        <div th:classappend="${(item.armadura != null and item.armadura > 0) or (item.maos != null and item.maos != '') or (item.ataque != null and item.ataque > 0) or (item.defesa != null and item.defesa > 0) or (item.alcance != null and item.alcance > 0)} ? 'border-top border-secondary pt-1 mt-1' : ''"
-                                            th:if="${(item.danoElemental != null and item.danoElemental != '') or (item.elementalBond != null and item.elementalBond != '') or (item.criticalChance != null and item.criticalChance > 0) or (item.lifeLeechChance != null and item.lifeLeechChance > 0) or (item.manaLeechChance != null and item.manaLeechChance > 0)}">
+                                        <th:block th:if="${temAtributos}">
+                                            <div class="mb-1" th:if="${item.armadura != null and item.armadura > 0}"
+                                                th:text="'Arm: ' + ${item.armadura}">
+                                            </div>
+                                            <div class="mb-1" th:if="${item.maos != null and item.maos != ''}"
+                                                th:text="'Mãos: ' + ${#strings.capitalizeWords(item.maos)}">
+                                            </div>
+                                            <div class="mb-1" th:if="${item.ataque != null and item.ataque > 0}"
+                                                th:text="'Atk: ' + ${item.ataque}">
+                                            </div>
+                                            <div class="mb-1" th:if="${item.defesa != null and item.defesa > 0}"
+                                                th:text="'Def: ' + ${item.defesa}">
+                                            </div>
+                                            <div class="mb-1"
+                                                th:if="${item.modDefesa != null and item.modDefesa != '0' and item.modDefesa != ''}"
+                                                th:text="'Mod. Defesa: ' + ${item.modDefesa}">
+                                            </div>
+                                            <div class="mb-1" th:if="${item.alcance != null and item.alcance > 0}"
+                                                th:text="'Range: ' + ${item.alcance}">
+                                            </div>
 
-                                            <div class="attr-row text-white"
+                                            <div class="mb-1 text-white"
                                                 th:if="${item.danoElemental != null and item.danoElemental != ''}"
                                                 th:text="'Dano Elemental: +' + ${#strings.capitalizeWords(item.danoElemental)}">
                                             </div>
-                                            <div class="attr-row text-white"
+                                            <div class="mb-1 text-white"
                                                 th:if="${item.elementalBond != null and item.elementalBond != ''}"
                                                 th:text="'Elemental Bond: ' + ${#strings.capitalizeWords(item.elementalBond)}">
                                             </div>
 
-                                            <div th:if="${item.criticalChance != null and item.criticalChance > 0}">
-                                                <div class="attr-row text-white mt-1">Critical Hit:</div>
-                                                <div class="attr-row text-white ms-2 d-flex justify-content-between">
+                                            <div class="mb-1 text-white"
+                                                th:if="${item.protecao != null and item.protecao != ''}"
+                                                th:text="'Protection: ' + ${#strings.capitalizeWords(item.protecao)}">
+                                            </div>
+
+                                            <div class="mb-1"
+                                                th:if="${item.criticalChance != null and item.criticalChance > 0}">
+                                                <div class="text-white">Critical Hit:</div>
+                                                <div class="text-white ms-2 d-flex justify-content-between">
                                                     <span class="text-secondary">Chance</span>
                                                     <span th:text="${item.criticalChance} + '%'"></span>
                                                 </div>
-                                                <div class="attr-row text-white ms-2 d-flex justify-content-between">
+                                                <div class="text-white ms-2 d-flex justify-content-between">
                                                     <span class="text-secondary">Extra Damage</span>
                                                     <span th:text="'+' + ${item.criticalDamage} + '%'"></span>
                                                 </div>
                                             </div>
 
-                                            <div th:if="${item.lifeLeechChance != null and item.lifeLeechChance > 0}">
-                                                <div class="attr-row text-white mt-1">Life Leech:</div>
-                                                <div class="attr-row text-white ms-2 d-flex justify-content-between">
+                                            <div class="mb-1"
+                                                th:if="${item.lifeLeechChance != null and item.lifeLeechChance > 0}">
+                                                <div class="text-white">Life Leech:</div>
+                                                <div class="text-white ms-2 d-flex justify-content-between">
                                                     <span class="text-secondary">Chance</span>
                                                     <span th:text="${item.lifeLeechChance} + '%'"></span>
                                                 </div>
-                                                <div class="attr-row text-white ms-2 d-flex justify-content-between">
+                                                <div class="text-white ms-2 d-flex justify-content-between">
                                                     <span class="text-secondary">Amount</span>
                                                     <span th:text="'+' + ${item.lifeLeechAmount} + '%'"></span>
                                                 </div>
                                             </div>
 
-                                            <div th:if="${item.manaLeechChance != null and item.manaLeechChance > 0}">
-                                                <div class="attr-row text-white mt-1">Mana Leech:</div>
-                                                <div class="attr-row text-white ms-2 d-flex justify-content-between">
+                                            <div class="mb-1"
+                                                th:if="${item.manaLeechChance != null and item.manaLeechChance > 0}">
+                                                <div class="text-white">Mana Leech:</div>
+                                                <div class="text-white ms-2 d-flex justify-content-between">
                                                     <span class="text-secondary">Chance</span>
                                                     <span th:text="${item.manaLeechChance} + '%'"></span>
                                                 </div>
-                                                <div class="attr-row text-white ms-2 d-flex justify-content-between">
+                                                <div class="text-white ms-2 d-flex justify-content-between">
                                                     <span class="text-secondary">Amount</span>
                                                     <span th:text="'+' + ${item.manaLeechAmount} + '%'"></span>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <div th:classappend="${(item.armadura != null and item.armadura > 0) or (item.danoElemental != null and item.danoElemental != '') or (item.criticalChance != null and item.criticalChance > 0)} ? 'border-top border-secondary pt-1 mt-1' : ''"
-                                            th:if="${(item.mantra != null and item.mantra > 0) or (item.atributos != null and item.atributos != '')}">
-
-                                            <div class="attr-row text-white"
+                                            <div class="mb-1 text-white"
                                                 th:if="${item.mantra != null and item.mantra > 0}"
                                                 th:text="'Mantra: +' + ${item.mantra}">
                                             </div>
-                                            <div class="attr-row text-white"
+                                            <div class="mb-1 text-white"
                                                 th:if="${item.atributos != null and item.atributos != ''}"
                                                 th:text="'Bônus: ' + ${#strings.capitalizeWords(item.atributos)}">
                                             </div>
-                                        </div>
 
-                                        <div th:classappend="${(item.armadura != null and item.armadura > 0) or (item.atributos != null and item.atributos != '') or (item.criticalChance != null and item.criticalChance > 0)} ? 'border-top border-secondary pt-1 mt-1' : ''"
-                                            th:if="${(item.slots != null and item.slots > 0) or (item.tier != null and item.tier > 0)}">
-
-                                            <div class="attr-row text-white"
+                                            <div class="mb-1 text-white"
                                                 th:if="${item.slots != null and item.slots > 0}"
                                                 th:text="'Imbuement slots: ' + ${item.slots}">
                                             </div>
-                                            <div class="attr-row text-white"
-                                                th:if="${item.tier != null and item.tier > 0}"
+                                            <div class="mb-1 text-white" th:if="${item.tier != null and item.tier > 0}"
                                                 th:text="'Tier: ' + ${item.tier}">
                                             </div>
-                                        </div>
+                                        </th:block>
 
-                                        <div class="mt-3 text-center border-secondary pt-2">
+                                        <div class="text-center"
+                                            th:classappend="${temAtributos} ? 'mt-3 border-top border-secondary pt-2' : ''">
                                             <a th:href="'https://www.tibiawiki.com.br/wiki/' + ${#strings.replace(item.nome, ' ', '_')}"
                                                 target="_blank" class="text-warning small text-decoration-none">Ver no
                                                 TibiaWiki

@@ -3,6 +3,8 @@ package com.joao.tibia_scrapper.controller;
 import com.joao.tibia_scrapper.dto.EquipamentoFilterDTO;
 import com.joao.tibia_scrapper.model.Equipamento;
 import com.joao.tibia_scrapper.repository.EquipamentoRepository;
+import com.joao.tibia_scrapper.model.HuntRecord;
+import com.joao.tibia_scrapper.repository.HuntRecordRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,8 +20,15 @@ public class EquipamentoViewController {
     @Autowired
     private EquipamentoRepository repository;
 
+    @Autowired
+    private HuntRecordRepository huntRecordRepository;
+
     @GetMapping({ "/", "/home" })
-    public String home() {
+    public String home(Model model) {
+        HuntRecord ultimaHunt = huntRecordRepository.findFirstByOrderByDataRegistroDesc();
+        
+        model.addAttribute("ultimaHunt", ultimaHunt);
+        
         return "home";
     }
 
@@ -50,8 +59,8 @@ public class EquipamentoViewController {
         return "equipamentos";
     }
 
-    @GetMapping("set-builder")
+    @GetMapping("/builder")
     public String abrirMontarSet(HttpSession session, Model model) {
-        return "montar-set";
+        return "builder";
     }
 }

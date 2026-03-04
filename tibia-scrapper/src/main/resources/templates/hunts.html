@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TibiaBuilder - Hunt Sessions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        /* CSS do Menu */
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #aaa;
+            transition: all 0.2s ease;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .menu-item:hover,
+        .menu-item[aria-expanded="true"] {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .menu-icon {
+            width: 24px;
+            text-align: center;
+            margin-right: 12px;
+            font-size: 1.1em;
+        }
+
+        .menu-text {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .menu-title {
+            font-size: 0.95em;
+            font-weight: 500;
+            line-height: 1.2;
+            color: #dfdfdf;
+            transition: color 0.2s;
+        }
+
+        .menu-subtitle {
+            font-size: 0.75em;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .menu-item:hover .menu-title {
+            color: #fff;
+        }
+
+        .chevron-icon {
+            font-size: 0.75rem;
+            transition: transform 0.3s ease;
+            color: #666;
+        }
+
+        .menu-item[aria-expanded="true"] .chevron-icon {
+            transform: rotate(180deg);
+            color: #fff;
+        }
+
+        .submenu-container {
+            padding-left: 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 4px;
+            margin-bottom: 8px;
+            border-left: 1px solid #333;
+            margin-left: 23px;
+        }
+
+        .submenu-item {
+            font-size: 0.85em;
+            color: #888;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .submenu-item:hover {
+            color: #00b7ff;
+            background-color: rgba(0, 183, 255, 0.05);
+        }
+
+        /* CSS das Hunts */
+        .hunt-hub {
+            font-family: 'Verdana', sans-serif;
+        }
+
+        .arcane-panel {
+            background-color: #121212;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .json-textarea {
+            resize: none;
+            font-family: monospace;
+            font-size: 0.85em;
+        }
+
+        .json-textarea:focus {
+            box-shadow: 0 0 10px rgba(226, 193, 79, 0.3);
+        }
+
+        .stat-box {
+            background-color: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .profit-text {
+            color: #00b900 !important;
+        }
+
+        .waste-text {
+            color: #ff3333 !important;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #111;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+
+        .card-hover-effect {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+
+        .card-hover-effect:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7) !important;
+            cursor: pointer;
+        }
+
+        .entity-count-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            transform: translate(30%, -30%);
+            font-size: 0.65em;
+            z-index: 2;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .mini-equip-slot {
+            width: 34px;
+            height: 34px;
+            background-color: #050505;
+            border: 1px solid #333;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .mini-equip-slot img {
+            max-width: 24px;
+            max-height: 24px;
+            object-fit: contain;
+        }
+
+        .coin-icon {
+            width: 14px;
+            height: 14px;
+            margin-right: 4px;
+            vertical-align: text-bottom;
+        }
+
+        #hunts-tab .nav-link {
+            color: #aaa !important;
+            border: 1px solid #444 !important;
+            background-color: transparent;
+            transition: all 0.2s ease;
+        }
+
+        #hunts-tab .nav-link:hover {
+            color: #fff !important;
+            border-color: #666 !important;
+        }
+
+        #hunts-tab .nav-link.active {
+            color: #fff !important;
+            background-color: #333 !important;
+            border-color: #e2c14f !important;
+        }
+
+        .invisible-scroll {
+            max-height: 245px !important;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .invisible-scroll::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-dark text-white">
+
+    <div th:replace="~{fragments :: header}"></div>
+
+    <main class="container-fluid px-lg-5 mb-5 flex-grow-1 mt-2">
+        <div class="row g-4">
+
+            <div th:replace="~{fragments :: sidebar}"></div>
+
+            <div class="col-md-9 col-lg-9 col-xl-10 order-2">
+
+                <div th:if="${huntData == null}" class="hunt-hub w-100">
+                    <div
+                        class="d-flex justify-content-between align-items-center border-bottom border-dark pb-3 mb-4 mt-1">
+                        <div>
+                            <h2 class="m-0" style="font-family: 'Cinzel', serif;">Hunt Sessions
+                            </h2>
+                            <p class="text-secondary m-0 small mt-1">Explore as expedições da comunidade e registe as
+                                suas.</p>
+                        </div>
+                    </div>
+
+                    <div th:if="${param.erro}"
+                        class="alert alert-danger bg-black border-danger text-danger text-center">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Ocorreu um erro ao processar. Tente novamente.
+                    </div>
+
+                    <ul class="nav nav-pills mb-4 gap-2 border-bottom border-dark pb-3" id="hunts-tab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active btn-sm" id="todas-tab" data-bs-toggle="pill"
+                                data-bs-target="#todas" type="button" role="tab">
+                                Todas as Hunts
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link btn-sm" id="minhas-tab" data-bs-toggle="pill"
+                                data-bs-target="#minhas" type="button" role="tab">
+                                Minhas Hunts
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="hunts-tabContent">
+
+                        <div class="tab-pane fade show active" id="todas" role="tabpanel">
+                            <div th:if="${todasHunts == null or todasHunts.isEmpty()}" class="text-center py-5">
+                                <i class="fa-solid fa-ghost text-secondary mb-3" style="font-size: 3rem;"></i>
+                                <h5 class="text-secondary">a sessão de hunts está vazia.</h5>
+                            </div>
+                            <div class="row g-4">
+                                <div class="col-12 col-md-6 col-lg-4" th:each="hunt : ${todasHunts}">
+                                    <div class="card h-100 shadow-sm border-secondary position-relative card-hover-effect"
+                                        style="background-color: #1a1a1a; border-radius: 10px; overflow: hidden;">
+                                        <a th:href="@{/hunts/{slug}/{nome}(slug=${hunt.slug != null ? hunt.slug : hunt.id}, nome=${#strings.replace(#strings.toLowerCase(hunt.titulo), ' ', '-')})}"
+                                            class="stretched-link"></a>
+                                        <div class="position-absolute top-0 start-0 w-100 h-100"
+                                            th:classappend="${hunt.isWaste} ? 'bg-danger' : 'bg-success'"
+                                            style="opacity: 0.04; pointer-events: none;"></div>
+
+                                        <div class="card-body d-flex flex-column p-3">
+                                            <h5 class="mb-1 text-warning text-truncate"
+                                                style="text-shadow: 1px 1px 2px #000;" th:text="${hunt.titulo}">Título
+                                            </h5>
+                                            <div class="text-secondary mb-3 party-info-header d-flex justify-content-between align-items-center"
+                                                style="font-size: 0.70rem;"
+                                                th:attr="data-snapshot=${hunt.partySnapshot}, data-criacao=${#temporals.format(hunt.dataRegistro, 'dd/MM/yyyy HH:mm')}">
+                                                <span class="time-text"></span>
+                                                <span
+                                                    class="party-size-text badge bg-dark border border-secondary text-info"
+                                                    style="font-size: 0.9em; font-weight: 400;">Solo</span>
+                                            </div>
+                                            <div class="card border-dark mb-3"
+                                                style="background-color: #050505; border-radius: 8px;">
+                                                <div class="card-body p-2" style="font-family: 'Verdana', sans-serif;">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center px-2 mb-1 mt-1">
+                                                        <small class="text-secondary text-uppercase"
+                                                            style="font-size: 0.65em; letter-spacing: 0.5px;">Exp
+                                                            Gain</small>
+                                                        <span style="color: #dfdfdf; font-size: 0.85em;"
+                                                            th:text="${hunt.xpGain}">0</span>
+                                                    </div>
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center px-2 mb-2">
+                                                        <small class="text-secondary text-uppercase"
+                                                            style="font-size: 0.65em; letter-spacing: 0.5px;">Balance</small>
+                                                        <div class="d-flex align-items-center">
+                                                            <img src="https://www.tibiawiki.com.br/images/5/55/Crystal_Coin.gif"
+                                                                class="coin-icon" alt="Gold">
+                                                            <span style="font-size: 0.85em;"
+                                                                th:classappend="${hunt.isWaste} ? 'text-danger' : 'text-success'"
+                                                                th:text="${hunt.balance}">0</span>
+                                                        </div>
+                                                    </div>
+                                                    <hr class="border-secondary opacity-50 m-0 mb-2">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center px-2 mb-2">
+                                                        <small class="text-secondary text-uppercase"
+                                                            style="font-size: 0.65em; letter-spacing: 0.5px;">Exp/H</small>
+                                                        <span class="exp-hour-render"
+                                                            style="color: #dfdfdf; font-size: 0.85em;"
+                                                            th:attr="data-json=${hunt.huntJsonOriginal}">...</span>
+                                                    </div>
+                                                    <hr class="border-secondary opacity-50 m-0 mb-2">
+                                                    <div class="px-2 mb-1">
+                                                        <div class="party-vocations-render text-start"
+                                                            style="color: #dfdfdf;"
+                                                            th:attr="data-snapshot=${hunt.partySnapshot}"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-auto text-end text-secondary" style="font-size: 0.7rem;">
+                                                postado por <span style="color: #bbb;"
+                                                    th:text="${hunt.usuario.charName != null ? hunt.usuario.charName : hunt.usuario.username}">Personagem</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="minhas" role="tabpanel">
+
+                            <div class="d-flex justify-content-between align-items-center mb-4 pt-2">
+                                <h5 class="text-secondary m-0" style="font-size: 1rem;">Seu histórico pessoal</h5>
+                                <button class="btn btn-warning shadow-sm" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#formCollapse" aria-expanded="false"
+                                    style="font-size: 0.9em; font-weight: 500;">Nova Hunt
+                                </button>
+                            </div>
+
+                            <div class="collapse mb-5" id="formCollapse">
+                                <div class="arcane-panel p-4 border-warning">
+                                    <form th:action="@{/hunts/adicionar}" method="post" class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="text-warning small mb-1">Hunt</label>
+                                            <input type="text" name="nomeHunt"
+                                                class="form-control form-control-sm bg-dark text-white border-secondary mb-3"
+                                                placeholder="Ex: Roshamuul Bones" required>
+
+                                            <label class="text-warning small mb-1"
+                                                th:if="${usuario.charName != null}">Minha build</label>
+                                            <select name="meuSetId"
+                                                class="form-select form-select-sm bg-dark text-white border-secondary"
+                                                th:if="${usuario.charName != null}">
+                                                <option value="1">Configuração 1</option>
+                                                <option value="2">Configuração 2</option>
+                                                <option value="3">Configuração 3</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="text-warning small mb-1 d-flex align-items-center">
+                                                <i class="fa-solid fa-circle-info me-2 text-info"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Em hunting session analyser, export o Json, copie o conteúdo e cole no campo abaixo."
+                                                    style="cursor: help; font-size: 1.1em;"></i>
+                                                Dados da Sessão
+                                            </label>
+                                            <textarea name="jsonText"
+    class="form-control bg-dark text-white border-secondary json-textarea h-100"
+    style="min-height: 300px; font-size: 0.80rem;" required
+    placeholder='{
+    "Balance": "800,000",
+    "Damage": "5,600,000",
+    "Damage/h": "4,200,000",
+    "Healing": "1,100,000",
+    "Healing/h": "825,000",
+    "Killed Monsters": [
+        {
+            "Count": 450,
+            "Name": "dawn asura"
+        },
+        {
+            "Count": 420,
+            "Name": "midnight asura"
+        }
+    ],
+    "Loot": "1,250,000",
+    "Looted Items": [
+        {
+            "Count": 145,
+            "Name": "platinum coin"
+        },
+        {
+            "Count": 85,
+            "Name": "demonic essence"
+        }
+    ],
+    "Raw XP Gain": "3,000,000",
+    "Raw XP/h": "2,250,000",
+    "Session end": "2026-03-03, 15:20:00",
+    "Session length": "01:20h",
+    "Session start": "2026-03-03, 14:00:00",
+    "Supplies": "450,000",
+    "XP Gain": "4,500,100",
+    "XP/h": "3,375,000"
+}'></textarea>
+                                        </div>
+                                        <div class="col-md-3 d-flex flex-column">
+                                            <label class="text-warning small mb-1">Party Members</label>
+                                            <div class="input-group input-group-sm mb-2">
+                                                <input type="text" id="partyMemberInput"
+                                                    class="form-control bg-dark text-white border-secondary"
+                                                    placeholder="Nome">
+                                                <button type="button" class="btn btn-secondary"
+                                                    onclick="addPartyMember()"><i class="fa-solid fa-plus"></i></button>
+                                            </div>
+                                            <div id="partyMembersContainer"
+                                                class="d-flex flex-wrap gap-1 custom-scrollbar"
+                                                style="max-height: 60px; overflow-y: auto;"></div>
+                                        </div>
+                                        <div class="col-12 mt-3 pt-3 border-top border-dark text-end">
+                                            <button type="submit" class="btn btn-warning px-5"
+                                                style="font-weight: 500;"><i class="fa-solid fa-save me-1"></i> Salvar
+                                                no Histórico</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div th:if="${minhasHunts == null or minhasHunts.isEmpty()}" class="text-center py-5">
+                                <i class="fa-solid fa-scroll text-secondary mb-3" style="font-size: 3rem;"></i>
+                                <h5 class="text-secondary">Você ainda não postou nenhuma hunt.</h5>
+                            </div>
+
+                            <div class="row g-4">
+                                <div class="col-12 col-md-6 col-lg-4" th:each="hunt : ${minhasHunts}">
+                                    <div class="card h-100 shadow-sm border-secondary position-relative card-hover-effect"
+                                        style="background-color: #1a1a1a; border-radius: 10px; overflow: hidden;">
+                                        <a th:href="@{/hunts/{slug}/{nome}(slug=${hunt.slug != null ? hunt.slug : hunt.id}, nome=${#strings.replace(#strings.toLowerCase(hunt.titulo), ' ', '-')})}"
+                                            class="stretched-link"></a>
+
+                                        <div class="position-absolute top-0 end-0 m-2" style="z-index: 10;">
+                                            <form th:action="@{/hunts/excluir/{id}(id=${hunt.id})}" method="post"
+                                                onsubmit="return confirm('Você tem a certeza que quer apagar esta hunt permanentemente?');">
+                                                <button type="submit"
+                                                    class="btn btn-sm btn-danger border border-dark rounded shadow"
+                                                    title="Excluir Hunt">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <div class="position-absolute top-0 start-0 w-100 h-100"
+                                            th:classappend="${hunt.isWaste} ? 'bg-danger' : 'bg-success'"
+                                            style="opacity: 0.04; pointer-events: none;"></div>
+
+                                        <div class="card-body d-flex flex-column p-3">
+                                            <h5 class="mb-1 text-warning text-truncate pe-4"
+                                                style="text-shadow: 1px 1px 2px #000;" th:text="${hunt.titulo}">Título
+                                            </h5>
+                                            <div class="text-secondary mb-3 party-info-header d-flex justify-content-between align-items-center"
+                                                style="font-size: 0.70rem;"
+                                                th:attr="data-snapshot=${hunt.partySnapshot}, data-criacao=${#temporals.format(hunt.dataRegistro, 'dd/MM/yyyy HH:mm')}">
+                                                <span class="time-text"></span>
+                                                <span
+                                                    class="party-size-text badge bg-dark border border-secondary text-info"
+                                                    style="font-size: 0.9em; font-weight: 400;">Solo</span>
+                                            </div>
+                                            <div class="card border-dark mb-3 summary-stats-card"
+                                                style="background-color: #050505; border-radius: 8px;"
+                                                th:attr="data-json=${hunt.huntJsonOriginal}">
+                                                <div class="card-body p-2" style="font-family: 'Verdana', sans-serif;">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center px-2 mb-1 mt-1">
+                                                        <small class="text-secondary text-uppercase"
+                                                            style="font-size: 0.65em; letter-spacing: 0.5px;">Exp
+                                                            Gain</small>
+                                                        <span class="render-xp-gain"
+                                                            style="color: #dfdfdf; font-size: 0.85em;">...</span>
+                                                    </div>
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center px-2 mb-2">
+                                                        <small class="text-secondary text-uppercase"
+                                                            style="font-size: 0.65em; letter-spacing: 0.5px;">Balance</small>
+                                                        <div class="d-flex align-items-center gap-1">
+                                                            <span class="render-balance"
+                                                                style="font-size: 0.85em;">...</span>
+                                                            <img src="https://www.tibiawiki.com.br/images/b/b0/Gold_Coin.gif"
+                                                                class="coin-icon m-0" alt="Gold">
+                                                        </div>
+                                                    </div>
+                                                    <hr class="border-secondary opacity-50 m-0 mb-2">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center px-2 mb-2">
+                                                        <small class="text-secondary text-uppercase"
+                                                            style="font-size: 0.65em; letter-spacing: 0.5px;">Exp/H</small>
+                                                        <span class="render-xp-hour"
+                                                            style="color: #dfdfdf; font-size: 0.85em;">...</span>
+                                                    </div>
+                                                    <hr class="border-secondary opacity-50 m-0 mb-2">
+                                                    <div class="px-2 mb-1">
+                                                        <div class="party-vocations-render text-start"
+                                                            style="color: #dfdfdf;"
+                                                            th:attr="data-snapshot=${hunt.partySnapshot}"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-auto text-end text-secondary" style="font-size: 0.7rem;">
+                                                Postada por você
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div th:if="${huntData != null}" class="hunt-hub w-100">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+                        <div>
+                            <h3 class="m-0" style="text-shadow: 1px 1px 2px #000; font-family: 'Cinzel', serif;"
+                                th:text="${nomeHunt}">Nome da Hunt</h3>
+                            <div class="text-secondary mt-1" style="font-size: 0.85em;">
+                                Criado em <span th:text="${dataCriacao}">--</span> por <span style="color: #dfdfdf;"
+                                    th:text="${autorHunt}">Autor</span>
+                            </div>
+                        </div>
+                        <div>
+                            <a href="/hunts" class="btn btn-sm text-light border-0"
+                                style="text-decoration: none; font-family: 'Cinzel', serif; font-size: 1.1em; letter-spacing: 0.5px; background: transparent;">
+                                Back to hunt sessions
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="arcane-panel p-0 overflow-hidden mb-4 position-relative">
+                        <div class="position-absolute top-0 start-0 w-100 h-100"
+                            th:classappend="${isWaste} ? 'bg-danger' : 'bg-success'"
+                            style="opacity: 0.05; pointer-events: none;"></div>
+
+                        <div class="p-4 position-relative">
+                            <h5 class="border-bottom border-dark pb-2 mb-3 text-white">Hunt Info</h5>
+
+                            <div class="row g-3" style="font-family: 'Verdana', sans-serif; font-size: 0.9em;">
+                                <div class="col-md-4 d-flex flex-column justify-content-between gap-2"
+                                    style="padding-right: 1.5rem!important;">
+                                    <div class="d-flex justify-content-between border-secondary pb-1">
+                                        <span class="text-secondary">Session duration:</span>
+                                        <span class="text-white" th:text="${huntData.sessionLength}">00:00h</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between border-secondary pb-1">
+                                        <span class="text-secondary">Exp Gain:</span>
+                                        <span th:text="${huntData.xpGain}">0</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between border-secondary pb-1">
+                                        <span class="text-secondary">Exp/h:</span>
+                                        <span th:text="${huntData.xpGainHour}">0</span>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="col-md-4 d-flex flex-column justify-content-between gap-2 border-start border-end border-dark px-md-4">
+                                    <div class="d-flex justify-content-between border-secondary pb-1">
+                                        <span class="text-secondary">Loot:</span>
+                                        <span class="d-flex align-items-center gap-1">
+                                            <span th:text="${huntData.loot}">0</span>
+                                        </span>
+                                    </div>
+                                    <div class="d-flex justify-content-between border-secondary pb-1">
+                                        <span class="text-secondary">Balance:</span>
+                                        <span class="d-flex align-items-center gap-1"
+                                            th:classappend="${isWaste} ? 'text-danger' : 'text-success'">
+                                            <span th:text="${balanceCalculado}">0</span>
+                                            <img src="https://www.tibiawiki.com.br/images/b/b0/Gold_Coin.gif"
+                                                class="coin-icon m-0" alt="Gold">
+                                        </span>
+                                    </div>
+                                    <div class="d-flex justify-content-between border-secondary pb-1">
+                                        <span class="text-secondary">Supplies:</span>
+                                        <span class="text-danger d-flex align-items-center gap-1">
+                                            <span th:text="${huntData.supplies}">0</span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 d-flex flex-column justify-content-between gap-2"
+                                    style="padding-left: 1.5rem!important;">
+                                    <div class=" d-flex justify-content-between border-secondary pb-1">
+                                        <span class="text-secondary">Damage:</span>
+                                        <span class="text-white" th:text="${huntData.damage}">0</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between border-secondary pb-1">
+                                        <span class="text-secondary">Healing:</span>
+                                        <span class="text-white" th:text="${huntData.healing}">0</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between border-secondary pb-1">
+                                        <span class="text-secondary">Raw XP:</span>
+                                        <span th:text="${huntData.rawXpGain}">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <div class="arcane-panel p-0 h-100 d-flex flex-column overflow-hidden position-relative">
+                                <div class="position-absolute top-0 start-0 w-100 h-100"
+                                    th:classappend="${isWaste} ? 'bg-danger' : 'bg-success'"
+                                    style="opacity: 0.05; pointer-events: none; z-index: 0;"></div>
+
+                                <div class="bg-black p-3 border-bottom border-dark position-relative"
+                                    style="z-index: 1;">
+                                    <h5 class="mb-0" style="font-size: 1.1em;">Criaturas Mortas</h5>
+                                </div>
+                                <div class="table-responsive invisible-scroll flex-grow-1 position-relative"
+                                    style="z-index: 1;">
+                                    <th:block th:with="totalKills=${#aggregates.sum(huntData.killedMonsters.![count])}">
+                                        <table class="table table-dark table-hover table-sm align-middle mb-0"
+                                            style="font-size: 0.85em; --bs-table-bg: transparent;">
+                                            <thead
+                                                style="position: sticky; top: 0; z-index: 10; background-color: #121212;">
+                                                <tr class="text-secondary border-secondary">
+                                                    <th scope="col" class="text-center" style="width: 10%;">#</th>
+                                                    <th scope="col" class="text-start">Monster</th>
+                                                    <th scope="col" class="text-center" style="width: 25%;">%</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="monster, stat : ${huntData.killedMonsters}">
+                                                    <td class="text-center text-secondary" th:text="${stat.count}">1
+                                                    </td>
+                                                    <td class="text-start">
+                                                        <img th:src="'https://www.tibiawiki.com.br/wiki/Special:FilePath/' + ${#strings.replace(#strings.capitalizeWords(monster.name), ' ', '_')} + '.gif'"
+                                                            style="max-width: 48px; max-height: 48px; object-fit: contain; margin-right: 8px;"
+                                                            onerror="this.src='https://www.tibiawiki.com.br/images/b/b4/Unknown_Item.gif'">
+                                                        <span class="text-light"
+                                                            th:text="${monster.name}">Monster</span>
+                                                        <span class="text-danger small ms-1">(<span
+                                                                th:text="${monster.count}"></span>)</span>
+                                                    </td>
+                                                    <td class="text-center"
+                                                        th:text="${totalKills != null and totalKills > 0 ? #numbers.formatDecimal((monster.count * 100.0) / totalKills, 1, 1) + '%' : '0%'}">
+                                                        0%</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="arcane-panel p-0 h-100 d-flex flex-column overflow-hidden position-relative">
+                                <div class="position-absolute top-0 start-0 w-100 h-100"
+                                    th:classappend="${isWaste} ? 'bg-danger' : 'bg-success'"
+                                    style="opacity: 0.05; pointer-events: none; z-index: 0;"></div>
+
+                                <div class="bg-black p-3 border-bottom border-dark position-relative"
+                                    style="z-index: 1;">
+                                    <h5 class="mb-0" style="font-size: 1.1em;">Loot</h5>
+                                </div>
+                                <div class="table-responsive invisible-scroll flex-grow-1 position-relative"
+                                    style="z-index: 1;">
+                                    <table class="table table-dark table-hover table-sm align-middle mb-0"
+                                        style="font-size: 0.85em; --bs-table-bg: transparent;">
+                                        <thead
+                                            style="position: sticky; top: 0; z-index: 10; background-color: #121212;">
+                                            <tr class="text-secondary border-secondary">
+                                                <th scope="col" class="text-center" style="width: 10%;">#</th>
+                                                <th scope="col" class="text-start">Item</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="item, stat : ${huntData.lootedItems}">
+                                                <td class="text-center text-secondary" th:text="${stat.count}">1
+                                                </td>
+                                                <td class="text-start text-capitalize">
+                                                    <img th:src="'https://www.tibiawiki.com.br/wiki/Special:FilePath/' + ${#strings.replace(#strings.capitalizeWords(item.name), ' ', '_')} + '.gif'"
+                                                        style="max-width: 48px; max-height: 48px; object-fit: contain; margin-right: 8px;"
+                                                        onerror="this.src='https://www.tibiawiki.com.br/images/b/b4/Unknown_Item.gif'">
+                                                    <span class="me-1" th:text="${item.count} + 'x'"></span>
+                                                    <span class="text-light" th:text="${item.name}">Item</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arcane-panel p-0 mb-5 position-relative" style="overflow: hidden; border-radius: 8px;">
+                        <div class="position-absolute top-0 start-0 w-100 h-100"
+                            th:classappend="${isWaste} ? 'bg-danger' : 'bg-success'"
+                            style="opacity: 0.05; pointer-events: none; z-index: 0;"></div>
+
+                        <div class="bg-black p-3 border-bottom border-dark position-relative" style="z-index: 1;">
+                            <h5 class="mb-0" style="font-size: 1.1em;">Team</h5>
+                        </div>
+
+                        <div class="p-4 position-relative" style="z-index: 1;">
+                            <div id="full-snapshot-render" class="row row-cols-1 row-cols-xl-2 g-4"
+                                th:attr="data-snapshot=${partySnapshot}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function addPartyMember() {
+            const input = document.getElementById('partyMemberInput');
+            const name = input.value.trim();
+            if (name) {
+                const container = document.getElementById('partyMembersContainer');
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden'; hiddenInput.name = 'partyMembers'; hiddenInput.value = name;
+
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-secondary border border-dark d-flex align-items-center gap-2 p-2';
+                badge.innerHTML = `${name} <i class="fa-solid fa-xmark text-danger" style="cursor:pointer; z-index:10;" onclick="this.parentElement.remove();"></i>`;
+                badge.appendChild(hiddenInput);
+
+                container.appendChild(badge);
+                input.value = '';
+            }
+        }
+
+        function abreviarVocacao(vocacaoStr) {
+            if (!vocacaoStr) return '?';
+            const v = String(vocacaoStr).toLowerCase();
+            if (v.includes('royal paladin')) return 'RP';
+            if (v.includes('paladin')) return 'P';
+            if (v.includes('elite knight')) return 'EK';
+            if (v.includes('knight')) return 'K';
+            if (v.includes('master sorcerer')) return 'MS';
+            if (v.includes('sorcerer')) return 'S';
+            if (v.includes('elder druid')) return 'ED';
+            if (v.includes('druid')) return 'D';
+            if (v.includes('exalted monk')) return 'EM';
+            if (v.includes('monk')) return 'M';
+            return '?';
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            document.querySelectorAll('.party-info-header').forEach(el => {
+                const criacaoStr = el.getAttribute('data-criacao') || '';
+                const lengthStr = el.getAttribute('data-length') || '';
+                const snapshotStr = el.getAttribute('data-snapshot');
+
+                let dataExibicao = criacaoStr;
+                if (criacaoStr.includes(',')) {
+                    let parts = criacaoStr.split(', ');
+                    if (parts.length === 2) {
+                        let dParts = parts[0].split('-');
+                        let tParts = parts[1].split(':');
+                        if (dParts.length === 3 && tParts.length >= 2) {
+                            dataExibicao = `${dParts[2]}/${dParts[1]}/${dParts[0]} ${tParts[0]}:${tParts[1]}`;
+                        }
+                    }
+                }
+
+                let partySizeText = "Solo";
+                if (snapshotStr) {
+                    try {
+                        const party = JSON.parse(snapshotStr);
+                        if (party.length === 2) partySizeText = "Duo";
+                        else if (party.length >= 3) partySizeText = "PT";
+                    } catch (e) { }
+                }
+
+                el.querySelector('.time-text').innerHTML = `
+                <div class="text-secondary">Criada em: <span class="text-light">${dataExibicao}</span></div>
+                `;
+                el.querySelector('.party-size-text').innerText = partySizeText;
+            });
+
+            document.querySelectorAll('.exp-hour-render').forEach(el => {
+                const jsonStr = el.getAttribute('data-json');
+                if (jsonStr) {
+                    try {
+                        const data = JSON.parse(jsonStr);
+                        el.innerText = data['XP/h'] ? data['XP/h'] : (data.XPGainHour ? data.XPGainHour : 'N/A');
+                    } catch (e) { }
+                }
+            });
+
+            document.querySelectorAll('.party-vocations-render').forEach(el => {
+                const snapshotStr = el.getAttribute('data-snapshot');
+                if (snapshotStr) {
+                    try {
+                        const party = JSON.parse(snapshotStr);
+                        const vocStrings = party.map(m => {
+                            const abbr = abreviarVocacao(m.vocation);
+                            const lvl = m.level && m.level !== "?" ? m.level : "??";
+                            return `<span style="font-size: 0.85em;">${abbr} <span style="font-size: 0.8em;">${lvl}</span></span>`;
+                        });
+                        el.innerHTML = vocStrings.join(', ');
+                    } catch (e) { }
+                }
+            });
+
+            const fullSnapshotRender = document.getElementById('full-snapshot-render');
+            if (fullSnapshotRender) {
+                fullSnapshotRender.className = "row row-cols-1 row-cols-xl-2 g-4";
+
+                const snapshotStr = fullSnapshotRender.getAttribute('data-snapshot');
+                if (snapshotStr) {
+                    try {
+                        const party = JSON.parse(snapshotStr);
+                        const imagensPadrao = {
+                            "Amulets": "https://www.tibiawiki.com.br/images/3/3e/Crystal_Necklace.gif", "Helmets": "https://www.tibiawiki.com.br/images/2/29/Leather_Helmet.gif",
+                            "Backpacks": "https://www.tibiawiki.com.br/images/9/9a/Backpack.gif", "Weapons": "https://www.tibiawiki.com.br/images/1/1f/Sword.gif",
+                            "Armors": "https://www.tibiawiki.com.br/images/0/0d/Leather_Armor.gif", "Shields": "https://www.tibiawiki.com.br/images/2/2d/Wooden_Shield.gif",
+                            "Rings": "https://www.tibiawiki.com.br/images/d/db/Axe_Ring.gif", "Legs": "https://www.tibiawiki.com.br/images/0/07/Leather_Legs.gif",
+                            "ExtraSlot": "https://www.tibiawiki.com.br/images/4/46/Moon_Mirror.gif", "Boots": "https://www.tibiawiki.com.br/images/9/94/Leather_Boots.gif"
+                        };
+                        const slotMatrix = [
+                            ["Amulets", "Helmets", "Backpacks"], ["Weapons", "Armors", "Shields"],
+                            ["Rings", "Legs", "ExtraSlot"], [null, "Boots", null]
+                        ];
+
+                        function calcularBonus(activeData) {
+                            let bonus = { ml: 0, dist: 0, sword: 0, axe: 0, club: 0, shield: 0, fist: 0 };
+                            let protecoes = { physical: 1, fire: 1, earth: 1, ice: 1, energy: 1, death: 1, holy: 1, lifeDrain: 1, manaDrain: 1 };
+                            let specials = { crit: 0, life: 0, mana: 0 };
+
+                            if (!activeData) return { bonus, protecoes, specials };
+
+                            const imbStats = {
+                                "Magic Level (Epiphany)": { stat: "ml", bonus: [1, 2, 4] },
+                                "Distance Skill (Precision)": { stat: "dist", bonus: [1, 2, 4] },
+                                "Sword Skill (Slash)": { stat: "sword", bonus: [1, 2, 4] },
+                                "Axe Skill (Chop)": { stat: "axe", bonus: [1, 2, 4] },
+                                "Club Skill (Bash)": { stat: "club", bonus: [1, 2, 4] },
+                                "Shielding (Blockade)": { stat: "shield", bonus: [1, 2, 4] },
+                                "Fire Protection (Dragon Hide)": { protElement: "fire", bonus: [3, 8, 15] },
+                                "Earth Protection (Lich Shroud)": { protElement: "earth", bonus: [3, 8, 15] },
+                                "Ice Protection (Quagmire)": { protElement: "ice", bonus: [3, 8, 15] },
+                                "Energy Protection (Cloud Fabric)": { protElement: "energy", bonus: [3, 8, 15] },
+                                "Death Protection (Demon Presence)": { protElement: "death", bonus: [2, 5, 10] },
+                                "Holy Protection (Fairy Wings)": { protElement: "holy", bonus: [3, 8, 15] },
+                                "Critical Hit (Strike)": { special: "crit", bonus: [15, 25, 50] },
+                                "Life Leech (Vampirism)": { special: "life", bonus: [5, 10, 25] },
+                                "Mana Leech (Void)": { special: "mana", bonus: [3, 5, 8] }
+                            };
+
+                            for (let slot in activeData) {
+                                const dados = activeData[slot];
+                                if (dados && dados.item) {
+                                    const item = dados.item;
+
+                                    if (item.atributos) {
+                                        let parts = String(item.atributos).toLowerCase().split(',');
+                                        parts.forEach(p => {
+                                            let match = p.match(/([a-z\s]+)\s*([+-]\s*\d+)/);
+                                            if (match) {
+                                                let attr = match[1].trim();
+                                                let val = parseInt(match[2].replace(/\s/g, ''));
+                                                if (attr === 'magic level') bonus.ml += val;
+                                                else if (attr.includes('sword fighting')) bonus.sword += val;
+                                                else if (attr.includes('axe fighting')) bonus.axe += val;
+                                                else if (attr.includes('club fighting')) bonus.club += val;
+                                                else if (attr.includes('distance fighting')) bonus.dist += val;
+                                                else if (attr.includes('shielding')) bonus.shield += val;
+                                                else if (attr.includes('fist')) bonus.fist += val;
+                                            }
+                                        });
+                                    }
+
+                                    if (item.protecao) {
+                                        let parts = String(item.protecao).toLowerCase().split(',');
+                                        parts.forEach(p => {
+                                            let match = p.match(/([a-z\s]+)\s*([+-]\s*\d+)\s*%/);
+                                            if (match) {
+                                                let element = match[1].trim();
+                                                let val = parseInt(match[2].replace(/\s/g, ''));
+                                                let factor = 1 - (val / 100);
+                                                if (element.includes('physical')) protecoes.physical *= factor;
+                                                else if (element.includes('fire')) protecoes.fire *= factor;
+                                                else if (element.includes('earth')) protecoes.earth *= factor;
+                                                else if (element.includes('ice')) protecoes.ice *= factor;
+                                                else if (element.includes('energy')) protecoes.energy *= factor;
+                                                else if (element.includes('death')) protecoes.death *= factor;
+                                                else if (element.includes('holy')) protecoes.holy *= factor;
+                                                else if (element.includes('life drain')) protecoes.lifeDrain *= factor;
+                                                else if (element.includes('mana drain')) protecoes.manaDrain *= factor;
+                                            }
+                                        });
+                                    }
+
+                                    if (dados.imbuements) {
+                                        dados.imbuements.forEach(imb => {
+                                            const details = imbStats[imb.tipo];
+                                            if (details) {
+                                                if (details.stat) bonus[details.stat] += details.bonus[imb.tier];
+                                                if (details.protElement) {
+                                                    let factor = 1 - (details.bonus[imb.tier] / 100);
+                                                    protecoes[details.protElement] *= factor;
+                                                }
+                                                if (details.special) {
+                                                    if (details.special === 'crit') specials.crit = Math.max(specials.crit, details.bonus[imb.tier]);
+                                                    else specials[details.special] += details.bonus[imb.tier];
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                            return { bonus, protecoes, specials };
+                        }
+
+                        function renderSkillsLeft(member, dataBonus) {
+                            let voc = String(member.vocation).toLowerCase();
+                            const bonus = dataBonus.bonus;
+
+                            let html = '<div class="d-flex flex-column w-100 mt-3" style="font-family: \'Verdana\', sans-serif;">';
+                            html += `<div><span class="d-block border-bottom border-dark pb-1 mb-2 text-center" style="font-size: 11px; color: #dfdfdf;">Skills</span></div>`;
+
+                            let skillsHtml = '<div class="d-flex flex-column gap-2">';
+
+                            const renderSkillBar = (label, baseVal, bVal) => {
+                                baseVal = parseInt(baseVal);
+                                if (isNaN(baseVal)) baseVal = (label === 'ML' ? 0 : 10);
+
+                                let total = baseVal + bVal;
+                                let barColor = bVal > 0 ? '#00ff00' : (label === 'ML' ? '#0dcaf0' : '#dc3545');
+                                let textClass = bVal > 0 ? 'text-success' : 'text-white';
+
+                                let percentual = 0;
+                                if (total > 0) {
+                                    percentual = (total * 17) % 100;
+                                    if (total === 10 && label !== 'ML') percentual = 0;
+                                }
+
+                                let tooltipAttr = '';
+                                if (bVal !== 0) {
+                                    let sign = bVal > 0 ? '+ ' : '- ';
+                                    let bValAbsoluto = Math.abs(bVal);
+                                    tooltipAttr = `data-bs-toggle="tooltip" data-bs-placement="top" title="${label} ${baseVal} ${sign}${bValAbsoluto} = ${total}"`;
+                                }
+
+                                return `
+                                    <div class="mb-1 p-1 rounded" style="background-color: #111; border: 1px solid #222;" ${tooltipAttr}>
+                                        <div class="d-flex justify-content-between px-1 mb-1">
+                                            <span style="color: #ccc; font-size: 11px;">${label}</span>
+                                            <span class="${textClass}" style="font-size: 11px;">${total}</span>
+                                        </div>
+                                        <div class="progress" style="height: 4px; background-color: #000; border-radius: 0;">
+                                            <div class="progress-bar" style="width: ${percentual}%; background-color: ${barColor}; transition: width 1s ease-out;"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            };
+
+                            let sTemp = '';
+                            if (voc.includes('sorcerer') || voc.includes('druid')) {
+                                sTemp += renderSkillBar('ML', member.magicLevel, bonus.ml);
+                            } else if (voc.includes('paladin')) {
+                                sTemp += renderSkillBar('ML', member.magicLevel, bonus.ml) + renderSkillBar('Dist', member.distanceSkill, bonus.dist) + renderSkillBar('Shield', member.shieldingSkill, bonus.shield);
+                            } else if (voc.includes('knight')) {
+                                sTemp += renderSkillBar('ML', member.magicLevel, bonus.ml) + renderSkillBar('Sword', member.swordSkill, bonus.sword) + renderSkillBar('Axe', member.axeSkill, bonus.axe) + renderSkillBar('Club', member.clubSkill, bonus.club) + renderSkillBar('Shield', member.shieldingSkill, bonus.shield);
+                            } else if (voc.includes('monk')) {
+                                sTemp += renderSkillBar('ML', member.magicLevel, bonus.ml) + renderSkillBar('Fist', member.fistSkill, bonus.fist);
+                            }
+
+                            if (sTemp !== '') skillsHtml += sTemp;
+                            else skillsHtml += '<span class="text-secondary small text-center">Sem skills</span>';
+
+                            skillsHtml += '</div></div>';
+                            return html + skillsHtml;
+                        }
+
+                        function renderStatsRight(dataBonus) {
+                            const protecoes = dataBonus.protecoes;
+                            const specials = dataBonus.specials;
+
+                            let html = '<div class="d-flex flex-column gap-3 w-100" style="font-family: \'Verdana\', sans-serif;">';
+
+                            let specialHtml = '<div class="d-flex flex-column gap-1">';
+                            let hasSpecial = false;
+
+                            const renderSpecialLine = (label, val) => {
+                                if (val <= 0) return '';
+                                hasSpecial = true;
+                                return `
+                                    <div class="d-flex justify-content-between align-items-center px-1 border-secondary pb-1">
+                                        <span class="text-secondary" style="font-size: 0.85em;">${label}</span>
+                                        <span style="font-size: 0.85em;">+${val}%</span>
+                                    </div>
+                                `;
+                            };
+
+                            let spTemp = '';
+                            spTemp += renderSpecialLine('Critical hit', specials.crit);
+                            spTemp += renderSpecialLine('Life Leech amount', specials.life);
+                            spTemp += renderSpecialLine('Mana Leech amount', specials.mana);
+
+                            if (hasSpecial) specialHtml += spTemp;
+                            else specialHtml += '<span class="text-secondary small px-1">Nenhum</span>';
+
+                            specialHtml += '</div>';
+                            html += `<div><span class="d-block border-bottom border-dark pb-1 mb-2" style="font-size: 11px;">Imbuements</span>${specialHtml}</div>`;
+
+                            let protHtml = '<div class="d-flex flex-column gap-1">';
+                            const renderProtectionRow = (label, pVal, iconHtml) => {
+                                let val = Math.round((1 - pVal) * 100);
+                                if (val === 0) return '';
+                                let colorClass = val > 0 ? 'text-success' : 'text-danger';
+                                let sign = val > 0 ? '+' : '';
+
+                                return `
+                                    <div class="d-flex justify-content-between align-items-center px-1border-secondary pb-1">
+                                        <span class="text-secondary" style="font-size: 0.85em;">${label}</span>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <span class="${colorClass}" style="font-size: 0.85em;">${sign}${val}%</span>
+                                            ${iconHtml}
+                                        </div>
+                                    </div>
+                                `;
+                            };
+
+                            let pTemp = '';
+                            pTemp += renderProtectionRow('Physical', protecoes.physical, '<img src="https://www.tibiawiki.com.br/images/3/37/Physical_Damage_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
+                            pTemp += renderProtectionRow('Fire', protecoes.fire, '<img src="https://www.tibiawiki.com.br/images/f/fb/Burning_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
+                            pTemp += renderProtectionRow('Earth', protecoes.earth, '<img src="https://www.tibiawiki.com.br/images/5/5e/Poisoned_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
+                            pTemp += renderProtectionRow('Ice', protecoes.ice, '<img src="https://www.tibiawiki.com.br/images/8/88/Freezing_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
+                            pTemp += renderProtectionRow('Energy', protecoes.energy, '<img src="https://www.tibiawiki.com.br/images/3/30/Electrified_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
+                            pTemp += renderProtectionRow('Death', protecoes.death, '<img src="https://www.tibiawiki.com.br/images/9/9c/Cursed_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
+                            pTemp += renderProtectionRow('Holy', protecoes.holy, '<img src="https://www.tibiawiki.com.br/images/3/38/Dazzled_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
+                            pTemp += renderProtectionRow('Life Drain', protecoes.lifeDrain, '<img src="https://www.tibiawiki.com.br/images/f/f1/Drowning_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
+                            pTemp += renderProtectionRow('Mana Drain', protecoes.manaDrain, '<img src="https://www.tibiawiki.com.br/images/f/f1/Drowning_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
+
+                            if (pTemp !== '') protHtml += pTemp;
+                            else protHtml += '<span class="text-secondary small px-1">Nenhuma</span>';
+                            protHtml += '</div>';
+
+                            html += `<div><span class="d-block border-bottom border-dark pb-1 mb-2" style="font-size: 11px;">Proteções</span>${protHtml}</div>`;
+
+                            html += '</div>';
+                            return html;
+                        }
+
+
+                        party.forEach((member, index) => {
+                            let sets = null;
+                            let activeData = null;
+                            try {
+                                if (member.setsJson) {
+                                    sets = JSON.parse(member.setsJson);
+                                    activeData = sets[member.activeSetIndex];
+                                }
+                            } catch (e) { }
+
+                            let gridHtml = `<div class="d-flex flex-column align-items-center gap-1">`;
+                            slotMatrix.forEach(row => {
+                                gridHtml += `<div class="d-flex gap-1">`;
+                                row.forEach(slot => {
+                                    if (slot === null) {
+                                        gridHtml += `<div style="width: 34px;"></div>`;
+                                    } else {
+                                        let imgUrl = imagensPadrao[slot];
+                                        let opacityClass = 'opacity-25';
+                                        let itemName = 'Vazio';
+
+                                        if (activeData && activeData[slot] && activeData[slot].item) {
+                                            imgUrl = activeData[slot].item.imagemUrl;
+                                            opacityClass = '';
+                                            itemName = activeData[slot].item.nome;
+                                        }
+                                        gridHtml += `<div class="mini-equip-slot" data-bs-toggle="tooltip" title="${itemName}"><img src="${imgUrl}" class="${opacityClass}"></div>`;
+                                    }
+                                });
+                                gridHtml += `</div>`;
+                            });
+                            gridHtml += `</div>`;
+
+                            const dataBonus = calcularBonus(activeData);
+
+                            const htmlSkillsLeft = renderSkillsLeft(member, dataBonus);
+                            const htmlStatsRight = renderStatsRight(dataBonus);
+
+                            const charCard = document.createElement('div');
+                            charCard.className = 'col';
+                            charCard.innerHTML = `
+                                <div class="p-3 border border-dark rounded h-100 shadow-sm d-flex flex-column position-relative" style="background-color: #050505; z-index: 2;">
+                                    
+                                    <div class="mb-3 border-secondary pb-2">
+                                        <h6 class="mb-0" style="color: #dfdfdf;">${member.name}</h6>
+                                        <small class="text-secondary d-block">Level ${member.level} | ${member.vocation}</small>
+                                    </div>
+                                    
+                                    <div class="d-flex align-items-start gap-4 flex-grow-1">
+                                        <div class="flex-shrink-0" style="width: 114px;">
+                                            ${gridHtml}
+                                            ${htmlSkillsLeft}
+                                        </div>
+                                        
+                                        <div class="flex-grow-1 border-start border-dark ps-3">
+                                            ${htmlStatsRight}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            fullSnapshotRender.appendChild(charCard);
+                        });
+
+                    } catch (e) { console.error("Erro ao renderizar party snapshot completo", e); }
+                }
+            }
+
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) { return new bootstrap.Tooltip(tooltipTriggerEl); });
+        });
+
+        document.querySelectorAll('.summary-stats-card').forEach(card => {
+            const jsonStr = card.getAttribute('data-json');
+            if (jsonStr) {
+                try {
+                    const data = JSON.parse(jsonStr);
+
+                    const extractNum = (str) => {
+                        if (!str) return 0;
+                        return parseInt(str.toString().replace(/[^\d-]/g, '')) || 0;
+                    };
+
+                    const xpGain = data['XP Gain'] || data.XPGain || '0';
+                    const elXpGain = card.querySelector('.render-xp-gain');
+                    if (elXpGain) elXpGain.innerText = xpGain;
+
+                    const xpHour = data['XP/h'] || data.XPGainHour || '0';
+                    const elXpHour = card.querySelector('.render-xp-hour');
+                    if (elXpHour) elXpHour.innerText = xpHour;
+
+                    const loot = extractNum(data['Loot']);
+                    const supplies = extractNum(data['Supplies']);
+                    const balanceCalc = loot - supplies;
+
+                    const elBalance = card.querySelector('.render-balance');
+                    if (elBalance) {
+                        elBalance.innerText = balanceCalc.toLocaleString('en-US');
+                        if (balanceCalc < 0) {
+                            elBalance.classList.add('text-danger');
+                        } else {
+                            elBalance.classList.add('text-success');
+                        }
+                    }
+
+                    const outerCard = card.closest('.card-hover-effect');
+                    if (outerCard) {
+                        const overlay = outerCard.querySelector('.position-absolute.w-100');
+                        if (overlay) {
+                            if (balanceCalc < 0) {
+                                overlay.classList.remove('bg-success');
+                                overlay.classList.add('bg-danger');
+                            } else {
+                                overlay.classList.remove('bg-danger');
+                                overlay.classList.add('bg-success');
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error("Erro ao ler JSON do card resumido", e);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

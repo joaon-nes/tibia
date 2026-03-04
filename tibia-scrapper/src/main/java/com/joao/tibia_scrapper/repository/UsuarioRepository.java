@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByUsername(String username);
     Optional<Usuario> findByEmail(String email);
+    Optional<Usuario> findByCharNameIgnoreCase(String charName);
 
     @Query("SELECT COUNT(u) FROM Usuario u WHERE u.charName IS NOT NULL AND u.charName <> ''")
     long countPersonagensLinkados();

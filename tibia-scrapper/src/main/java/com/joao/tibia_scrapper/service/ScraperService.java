@@ -13,7 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+
 import java.util.List;
+import java.util.Arrays;
 
 @Service
 public class ScraperService {
@@ -101,8 +103,8 @@ public class ScraperService {
                         equip.setVocacoes(padronizarVocacao(root.get("vocrequired").asText()));
                     }
                     if (root.has("hands")) {
-                        if (!equip.getCategoria().equalsIgnoreCase("Wands")
-                                && !equip.getCategoria().equalsIgnoreCase("Rods")) {
+                        List<String> categoriasComMaos = Arrays.asList("Swords", "Axes", "Clubs", "Distance", "Fist");
+                        if (categoriasComMaos.contains(equip.getCategoria())) {
                             equip.setMaos(root.get("hands").asText());
                         }
                     }

@@ -359,11 +359,10 @@
                         </div>
                     </a>
 
-                    <a href="#" class="menu-item" style="pointer-events: none; opacity: 0.5;">
+                    <a href="/hunts" class="menu-item">
                         <i class="fa-solid fa-map-location-dot text-danger menu-icon"></i>
                         <div class="menu-text">
-                            <span class="menu-title">Hunts <span class="badge bg-danger ms-1 fw-normal"
-                                    style="font-size: 0.6em;">EM BREVE</span></span>
+                            <span class="menu-title">Hunts</span>
                             <span class="menu-subtitle">Locais de caça</span>
                         </div>
                     </a>
@@ -413,10 +412,22 @@
                     <div class="col-lg-5 d-flex flex-column gap-3">
 
                         <div class="d-flex flex-column gap-2">
+                            <div class="tibiadata-card pb-0" id="card-events" style="background-color: #111;">
+                                <div class="tibiadata-header d-flex justify-content-between align-items-center">
+                                    <h6 class="text-success fw-bold mb-0 text-shadow-heavy" style="font-size: 1em;">
+                                        <i class="fa-solid fa-calendar-days me-1"></i> Calendário de Eventos
+                                    </h6>
+                                </div>
+                                <div class="p-2" id="event-list" style="max-height: 250px; overflow-y: auto;">
+                                    <div class="text-center text-secondary py-3">
+                                        <i class="fas fa-spinner fa-spin fs-4 mb-2"></i><br>Carregando eventos...
+                                    </div>
+                                </div>
+                            </div>
+
                             <h6 class="text-secondary fw-bold mb-0 ps-1" style="font-size: 0.85em;">
                                 <i class="fa-solid fa-comments me-1"></i> Últimos Tópicos
                             </h6>
-
                             <div class="p-2 rounded"
                                 style="background-color: #1a1a1a; border: 1px solid #333; transition: border-color 0.2s;">
                                 <a href="#" class="text-info fw-bold text-decoration-none d-block text-truncate"
@@ -469,20 +480,38 @@
                                 comunidade</span>
                         </div>
 
-                        <div class="tibiadata-card p-2 position-relative d-flex align-items-center"
-                            style="background-color: #1a1a1a;">
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-1"
-                                style="font-size: 0.5em; letter-spacing: 0.5px;">EM CONSTRUÇÃO</span>
+                        <a th:href="${ultimaHunt != null} ? '/hunts/' + ${ultimaHunt.id} : '/hunts'"
+                            class="tibiadata-card p-2 position-relative d-flex align-items-center text-decoration-none"
+                            style="background-color: #1a1a1a; transition: border-color 0.2s, transform 0.2s; border: 1px solid #333;"
+                            onmouseover="this.style.borderColor='#e2c14f'; this.style.transform='translateY(-2px)';"
+                            onmouseout="this.style.borderColor='#333'; this.style.transform='translateY(0)';">
+
                             <div class="bg-black rounded p-2 me-3 border border-secondary text-center d-flex align-items-center justify-content-center"
-                                style="width: 45px; height: 45px;">
-                                <i class="fa-solid fa-trophy text-success fs-5"></i>
+                                style="width: 45px; height: 45px; flex-shrink: 0;">
+                                <i class="fa-solid fa-map-location-dot text-warning fs-5"></i>
                             </div>
-                            <div class="overflow-hidden">
-                                <h6 class="fw-bold text-success mb-0" style="font-size: 0.85em;">Eventos Ativos</h6>
-                                <span class="text-secondary d-block text-truncate" style="font-size: 0.75em;">Nenhum
-                                    evento global ocorrendo.</span>
+
+                            <div class="overflow-hidden w-100" th:if="${ultimaHunt != null}">
+                                <h6 class="fw-bold text-warning mb-1 text-truncate" style="font-size: 0.85em;">
+                                    Última hunt: <span class="text-light fw-normal"
+                                        th:text="${ultimaHunt.titulo}">Título da Hunt</span>
+                                </h6>
+                                <div class="text-secondary text-truncate" style="font-size: 0.75em;">
+                                    Postado por <span class="text-light"
+                                        th:text="${ultimaHunt.usuario.charName != null ? ultimaHunt.usuario.charName : ultimaHunt.usuario.username}">Personagem</span>,
+                                    level <span
+                                        th:text="${ultimaHunt.usuario.charLevel != null ? ultimaHunt.usuario.charLevel : '?'}">0</span>,
+                                    <span
+                                        th:text="${ultimaHunt.usuario.charVocation != null ? ultimaHunt.usuario.charVocation : '?'}">Voc</span>
+                                </div>
                             </div>
-                        </div>
+
+                            <div class="overflow-hidden" th:unless="${ultimaHunt != null}">
+                                <h6 class="fw-bold text-warning mb-0" style="font-size: 0.85em;">Última Hunt</h6>
+                                <span class="text-secondary d-block text-truncate" style="font-size: 0.75em;">Nenhuma
+                                    hunt registada na comunidade.</span>
+                            </div>
+                        </a>
 
                     </div>
                 </div>
@@ -860,7 +889,82 @@
         document.addEventListener('DOMContentLoaded', function () {
             atualizarRashid();
             fetchTibiaData();
+            fetchEventsSchedule();
         });
+        async function fetchEventsSchedule() {
+            try {
+                let eventList = [];
+
+                try {
+                    const response = await fetch('/json/eventschedule.json');
+                    if (response.ok) {
+                        const data = await response.json();
+                        eventList = data.eventlist;
+                    } else {
+                        throw new Error("Arquivo não encontrado, usando fallback.");
+                    }
+                } catch (err) {
+                    eventList = [
+                        { "colordark": "#4a1259", "colorlight": "#611a75", "description": "Ajude as bruxas a preparar a poção mágica e proteja o caldeirão!", "enddate": 1773100800, "name": "Bewitched", "startdate": 1772323200 }, // 1 a 10 de Março
+                        { "colordark": "#1d5263", "colorlight": "#24657b", "description": "Fim de semana de Double XP e Double Skill para todos os jogadores!", "enddate": 1774224000, "name": "Double XP/Skill", "startdate": 1773964800 }, // 20 a 23 de Março
+                        { "colordark": "#235c00", "colorlight": "#2d7400", "description": "A primavera chegou! Cuidado com os coelhos mutantes.", "enddate": 1776384000, "name": "Spring into Sleep", "startdate": 1775779200 }, // Abril
+                        { "colordark": "#235c00", "colorlight": "#2d7400", "description": "This is the time of witches, ghosts and vampires. Look out for the Mutated Pumpkin.", "enddate": 1793696400, "name": "Halloween Event", "startdate": 1793437200 } // Outubro
+                    ];
+                }
+
+                const container = document.getElementById('event-list');
+                const nowUnix = Math.floor(Date.now() / 1000);
+
+                container.innerHTML = '';
+
+                const futureEvents = eventList
+                    .filter(ev => ev.enddate > nowUnix)
+                    .sort((a, b) => a.startdate - b.startdate);
+
+                if (futureEvents.length === 0) {
+                    container.innerHTML = '<div class="text-center text-secondary py-3 small">Nenhum evento agendado.</div>';
+                    return;
+                }
+
+                futureEvents.slice(0, 4).forEach(ev => {
+                    const startDate = new Date(ev.startdate * 1000);
+                    const endDate = new Date(ev.enddate * 1000);
+                    const isAtivo = nowUnix >= ev.startdate && nowUnix <= ev.enddate;
+
+                    const formatOptions = { day: '2-digit', month: 'short' };
+                    const startStr = startDate.toLocaleDateString('pt-BR', formatOptions).replace('. de', '');
+                    const endStr = endDate.toLocaleDateString('pt-BR', formatOptions).replace('. de', '');
+
+                    let statusHtml = '';
+                    if (isAtivo) {
+                        statusHtml = `<span class="badge bg-success ms-2 shadow-sm" style="font-size: 0.65rem;">AGORA</span>`;
+                    } else {
+                        const diffDias = Math.ceil((ev.startdate - nowUnix) / 86400);
+                        statusHtml = `<span class="text-secondary ms-2" style="font-size: 0.75em;">em ${diffDias} dias</span>`;
+                    }
+
+                    container.innerHTML += `
+                        <div class="p-2 mb-2 rounded" style="background-color: #1a1a1a; border-left: 4px solid ${ev.colorlight};">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="mb-0 fw-bold text-light text-truncate" style="font-size: 0.85em;">${ev.name} ${statusHtml}</h6>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-secondary" style="font-size: 0.75em;"><i class="fa-regular fa-clock me-1"></i> ${startStr} - ${endStr}</span>
+                                <i class="fa-solid fa-circle-info text-secondary" style="font-size: 0.85em; cursor: help;" 
+                                   data-bs-toggle="tooltip" data-bs-placement="left" title="${ev.description}"></i>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('#event-list [data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) { return new bootstrap.Tooltip(tooltipTriggerEl); });
+
+            } catch (e) {
+                document.getElementById('event-list').innerHTML = '<div class="text-center text-danger py-3 small">Erro ao carregar calendário.</div>';
+                console.error(e);
+            }
+        }
     </script>
 </body>
 

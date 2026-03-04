@@ -28,13 +28,14 @@ public class PersonagemViewController {
 
     @GetMapping
     public String paginaPersonagem(Model model, Principal principal) {
-        if (principal == null) return "redirect:/login";
+        if (principal == null)
+            return "redirect:/login";
 
         Optional<Usuario> usuarioOpt = usuarioRepository.findByUsername(principal.getName());
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
             model.addAttribute("usuario", usuario);
-            
+
             boolean temPersonagem = usuario.getCharName() != null && !usuario.getCharName().isEmpty();
             model.addAttribute("temPersonagem", temPersonagem);
         }
@@ -43,16 +44,20 @@ public class PersonagemViewController {
     }
 
     @PostMapping("/vincular")
-    public String vincularPersonagem(@RequestParam String nomePersonagem, Principal principal, RedirectAttributes redirectAttributes) {
-        if (principal == null) return "redirect:/login";
+    public String vincularPersonagem(@RequestParam String nomePersonagem, Principal principal,
+            RedirectAttributes redirectAttributes) {
+        if (principal == null)
+            return "redirect:/login";
 
         Usuario usuario = usuarioRepository.findByUsername(principal.getName()).orElse(null);
-        if (usuario == null) return "redirect:/login";
+        if (usuario == null)
+            return "redirect:/login";
 
         CharacterDTO character = characterService.buscarPersonagem(nomePersonagem);
 
         if (character == null) {
-            redirectAttributes.addFlashAttribute("erro", "Personagem não encontrado. Verifique se o nome está correto.");
+            redirectAttributes.addFlashAttribute("erro",
+                    "Personagem não encontrado. Verifique se o nome está correto.");
             return "redirect:/personagem";
         }
 
@@ -61,7 +66,7 @@ public class PersonagemViewController {
         usuario.setCharVocation(character.vocation());
         usuario.setCharWorld(character.world());
         usuario.setCharResidence(character.residence());
-        
+
         usuarioRepository.save(usuario);
 
         redirectAttributes.addFlashAttribute("sucesso", "Personagem " + character.name() + " vinculado com sucesso!");
@@ -95,7 +100,8 @@ public class PersonagemViewController {
             @RequestParam(defaultValue = "10") Integer fishingSkill,
             Principal principal, RedirectAttributes redirectAttributes) {
 
-        if (principal == null) return "redirect:/login";
+        if (principal == null)
+            return "redirect:/login";
 
         Usuario usuario = usuarioRepository.findByUsername(principal.getName()).orElse(null);
         if (usuario != null) {

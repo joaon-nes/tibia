@@ -18,6 +18,7 @@ public class PerfilController {
 
     @Autowired
     private UsuarioRepository repository;
+    
     @Autowired
     private UsuarioService service;
 
@@ -31,21 +32,34 @@ public class PerfilController {
     }
 
     @PostMapping("/atualizar")
-    public String atualizarPerfil(@RequestParam String nome, @RequestParam(required = false) String senha,
-            @RequestParam(required = false) String charName, @RequestParam(required = false) Integer charLevel,
-            @RequestParam(required = false) String charVocation, @RequestParam(required = false) String charWorld,
-            @RequestParam(required = false) String charResidence,
+    public String atualizarPerfil(
+            @RequestParam String nome, 
+            @RequestParam(required = false) String senha,
             @RequestParam(required = false) MultipartFile imagemPerfil,
             Principal principal) {
         try {
+            Usuario usuarioAtual = repository.findByUsername(principal.getName())
+                    .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+
             String avatarBase64 = null;
             if (imagemPerfil != null && !imagemPerfil.isEmpty()) {
                 byte[] bytes = imagemPerfil.getBytes();
                 String tipo = imagemPerfil.getContentType();
                 avatarBase64 = "data:" + tipo + ";base64," + Base64.getEncoder().encodeToString(bytes);
             }
-            service.atualizarUsuarioCompleto(principal.getName(), nome, senha, charName, charLevel, charVocation,
-                    charWorld, charResidence, avatarBase64);
+
+            service.atualizarUsuarioCompleto(
+                    principal.getName(), 
+                    nome, 
+                    senha, 
+                    usuarioAtual.getCharName(), 
+                    usuarioAtual.getCharLevel(), 
+                    usuarioAtual.getCharVocation(),
+                    usuarioAtual.getCharWorld(), 
+                    usuarioAtual.getCharResidence(), 
+                    avatarBase64
+            );
+            
             return "redirect:/perfil?sucesso";
         } catch (Exception e) {
             e.printStackTrace();
