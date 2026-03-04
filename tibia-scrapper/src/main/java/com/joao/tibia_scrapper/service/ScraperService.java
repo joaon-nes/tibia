@@ -4,29 +4,36 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joao.tibia_scrapper.model.Equipamento;
 import com.joao.tibia_scrapper.repository.EquipamentoRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
+@Slf4j
 @Service
 public class ScraperService {
 
-    @Autowired
-    private EquipamentoRepository repository;
+    private final EquipamentoRepository repository;
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
 
     private static final String URL_BASE = "https://www.tibiawiki.com.br";
 
+    public ScraperService(EquipamentoRepository repository, RestTemplate restTemplate, ObjectMapper objectMapper) {
+        this.repository = repository;
+        this.restTemplate = restTemplate;
+        this.objectMapper = objectMapper;
+    }
+
     public void importarCategoria(String nomeCategoria, String subUrl) {
-        System.out.println("Iniciando busca da categoria: " + nomeCategoria);
+        log.info("Iniciando busca da categoria: {}", nomeCategoria);
         try {
             Document doc = Jsoup.connect(URL_BASE + "/" + subUrl)
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/121.0.0.0")
@@ -61,7 +68,6 @@ public class ScraperService {
 
                 if (!repository.existsByNome(nome)) {
                     Equipamento item = new Equipamento();
-
                     item.setNome(nome);
                     item.setCategoria(nomeCategoria);
 
@@ -72,22 +78,19 @@ public class ScraperService {
                     }
 
                     repository.save(item);
-                    System.out.println("Salvo (Básico): " + nome);
+                    log.debug("Salvo (Básico): {}", nome);
                 }
             }
-            System.out.println("Sucesso ao importar: " + nomeCategoria);
+            log.info("Sucesso ao importar: {}", nomeCategoria);
 
         } catch (Exception e) {
-            System.err.println("Erro na categoria " + nomeCategoria + ": " + e.getMessage());
+            log.error("Erro na categoria {}: {}", nomeCategoria, e.getMessage(), e);
         }
     }
 
     public void atualizarEquipamentosViaApi() {
         List<Equipamento> equipamentos = repository.findAll();
-        System.out.println("Iniciando enriquecimento de " + equipamentos.size() + " equipamentos via API...");
-
-        RestTemplate restTemplate = new RestTemplate();
-        ObjectMapper mapper = new ObjectMapper();
+        log.info("Iniciando enriquecimento de {} equipamentos via API...", equipamentos.size());
 
         for (Equipamento equip : equipamentos) {
             try {
@@ -95,18 +98,16 @@ public class ScraperService {
                 ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class, equip.getNome());
 
                 if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                    JsonNode root = mapper.readTree(response.getBody());
+                    JsonNode root = objectMapper.readTree(response.getBody());
 
                     if (root.has("levelrequired"))
                         equip.setLevelMinimo(extrairInteiro(root.get("levelrequired").asText()));
-                    if (root.has("vocrequired")) {
+                    if (root.has("vocrequired"))
                         equip.setVocacoes(padronizarVocacao(root.get("vocrequired").asText()));
-                    }
                     if (root.has("hands")) {
                         List<String> categoriasComMaos = Arrays.asList("Swords", "Axes", "Clubs", "Distance", "Fist");
-                        if (categoriasComMaos.contains(equip.getCategoria())) {
+                        if (categoriasComMaos.contains(equip.getCategoria()))
                             equip.setMaos(root.get("hands").asText());
-                        }
                     }
                     if (root.has("defense"))
                         equip.setDefesa(extrairInteiro(root.get("defense").asText()));
@@ -122,50 +123,40 @@ public class ScraperService {
                         equip.setTier(extrairInteiro(root.get("upgradeclass").asText()));
                     if (root.has("attrib"))
                         equip.setAtributos(root.get("attrib").asText());
-                    if (root.has("hpleech_ch")) {
+                    if (root.has("hpleech_ch"))
                         equip.setLifeLeechChance(extrairInteiro(root.get("hpleech_ch").asText()));
-                    }
-                    if (root.has("hpleech_am")) {
+                    if (root.has("hpleech_am"))
                         equip.setLifeLeechAmount(extrairInteiro(root.get("hpleech_am").asText()));
-                    }
-                    if (root.has("manaleech_ch")) {
+                    if (root.has("manaleech_ch"))
                         equip.setManaLeechChance(extrairInteiro(root.get("manaleech_ch").asText()));
-                    }
-                    if (root.has("manaleech_am")) {
+                    if (root.has("manaleech_am"))
                         equip.setManaLeechAmount(extrairInteiro(root.get("manaleech_am").asText()));
-                    }
-                    if (root.has("crithit_ch")) {
+                    if (root.has("crithit_ch"))
                         equip.setCriticalChance(extrairInteiro(root.get("crithit_ch").asText()));
-                    }
-                    if (root.has("critextra_dmg")) {
+                    if (root.has("critextra_dmg"))
                         equip.setCriticalDamage(extrairInteiro(root.get("critextra_dmg").asText()));
-                    }
-                    if (root.has("mantra")) {
+                    if (root.has("mantra"))
                         equip.setMantra(extrairInteiro(root.get("mantra").asText()));
-                    }
-                    if (root.has("range")) {
+                    if (root.has("range"))
                         equip.setAlcance(extrairInteiro(root.get("range").asText()));
-                    }
-                    if (root.has("resist")) {
+                    if (root.has("resist"))
                         equip.setProtecao(root.get("resist").asText());
-                    }
-                    if (root.has("elementalbond")) {
+                    if (root.has("elementalbond"))
                         equip.setElementalBond(root.get("elementalbond").asText());
-                    }
 
                     String danoElemental = extrairDanoElemental(root);
                     if (!danoElemental.isEmpty())
                         equip.setDanoElemental(danoElemental);
 
                     repository.save(equip);
-                    System.out.println("✅ Status Atualizados: " + equip.getNome());
+                    log.info("Status atualizados: {}", equip.getNome());
                 }
                 Thread.sleep(1000);
             } catch (Exception e) {
-                System.err.println("❌ Sem dados na API para: " + equip.getNome());
+                log.warn("Sem dados na API para: {}", equip.getNome());
             }
         }
-        System.out.println("🎉 Processo de enriquecimento via API finalizado!");
+        log.info("Processo de enriquecimento via API finalizado!");
     }
 
     private Integer extrairInteiro(String texto) {

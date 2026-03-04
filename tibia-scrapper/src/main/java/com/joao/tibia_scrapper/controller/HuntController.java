@@ -6,7 +6,7 @@ import com.joao.tibia_scrapper.model.HuntRecord;
 import com.joao.tibia_scrapper.model.Usuario;
 import com.joao.tibia_scrapper.repository.HuntRecordRepository;
 import com.joao.tibia_scrapper.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.format.DateTimeFormatter;
@@ -24,19 +25,27 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 
+@Slf4j
 @Controller
 @RequestMapping("/hunts")
 public class HuntController {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final HuntRecordRepository huntRecordRepository;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    private HuntRecordRepository huntRecordRepository;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    public HuntController(UsuarioRepository usuarioRepository,
+            HuntRecordRepository huntRecordRepository,
+            ObjectMapper objectMapper) {
+        this.usuarioRepository = usuarioRepository;
+        this.huntRecordRepository = huntRecordRepository;
+        this.objectMapper = objectMapper;
+    }
 
     @GetMapping
     public String exibirPaginaHunts(@AuthenticationPrincipal UserDetails userDetails, Model model) {
@@ -75,14 +84,15 @@ public class HuntController {
         Usuario currentUser = currentUserOpt.get();
 
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            HuntingSessionDTO sessionData = mapper.readValue(jsonText, HuntingSessionDTO.class);
+            HuntingSessionDTO sessionData = objectMapper.readValue(jsonText, HuntingSessionDTO.class);
 
             List<Map<String, Object>> partySnapshotList = new ArrayList<>();
 
             Map<String, Object> ownerData = new HashMap<>();
-            ownerData.put("name", currentUser.getCharName() != null ? currentUser.getCharName() : currentUser.getUsername());
-            ownerData.put("vocation", currentUser.getCharVocation() != null ? currentUser.getCharVocation() : "Unknown");
+            ownerData.put("name",
+                    currentUser.getCharName() != null ? currentUser.getCharName() : currentUser.getUsername());
+            ownerData.put("vocation",
+                    currentUser.getCharVocation() != null ? currentUser.getCharVocation() : "Unknown");
             ownerData.put("level", currentUser.getCharLevel() != null ? currentUser.getCharLevel() : 0);
             ownerData.put("activeSetIndex", meuSetId);
             ownerData.put("setsJson", currentUser.getSetsEquipamentos());
@@ -103,7 +113,8 @@ public class HuntController {
                             Usuario member = memberOpt.get();
                             Map<String, Object> mData = new HashMap<>();
                             mData.put("name", member.getCharName());
-                            mData.put("vocation", member.getCharVocation() != null ? member.getCharVocation() : "Unknown");
+                            mData.put("vocation",
+                                    member.getCharVocation() != null ? member.getCharVocation() : "Unknown");
                             mData.put("level", member.getCharLevel() != null ? member.getCharLevel() : 0);
                             mData.put("activeSetIndex", 1);
                             mData.put("setsJson", member.getSetsEquipamentos());
@@ -128,7 +139,7 @@ public class HuntController {
                 }
             }
 
-            String partySnapshotJson = mapper.writeValueAsString(partySnapshotList);
+            String partySnapshotJson = objectMapper.writeValueAsString(partySnapshotList);
 
             HuntRecord record = new HuntRecord();
             record.setUsuario(currentUser);
@@ -142,14 +153,12 @@ public class HuntController {
             record.setWaste(sessionData.getBalance() != null && sessionData.getBalance().startsWith("-"));
             record.setHuntJsonOriginal(jsonText);
             record.setPartySnapshot(partySnapshotJson);
-            
-            // GERAÇÃO DO SLUG AQUI:
             record.setSlug(gerarSlugAleatorio());
 
             huntRecordRepository.save(record);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Erro ao processar/salvar a nova hunt: {}", e.getMessage(), e);
             return "redirect:/hunts?erro=true";
         }
 
@@ -157,13 +166,14 @@ public class HuntController {
     }
 
     @GetMapping("/{slug}/{nomeDaHunt}")
-    public String visualizarHuntCompletaPersonalizada(@PathVariable String slug, @PathVariable String nomeDaHunt, Model model) {
+    public String visualizarHuntCompletaPersonalizada(@PathVariable String slug, @PathVariable String nomeDaHunt,
+            Model model) {
         HuntRecord record = huntRecordRepository.findBySlug(slug)
                 .orElseThrow(() -> new IllegalArgumentException("Hunt não encontrada"));
 
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            HuntingSessionDTO sessionData = mapper.readValue(record.getHuntJsonOriginal(), HuntingSessionDTO.class);
+            HuntingSessionDTO sessionData = objectMapper.readValue(record.getHuntJsonOriginal(),
+                    HuntingSessionDTO.class);
 
             if (sessionData.getKilledMonsters() != null) {
                 sessionData.getKilledMonsters().sort((m1, m2) -> Integer.compare(m2.getCount(), m1.getCount()));
@@ -197,7 +207,6 @@ public class HuntController {
             model.addAttribute("dataCriacao", dataAcesso);
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
             if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
                 usuarioRepository.findByUsername(auth.getName()).ifPresent(user -> model.addAttribute("usuario", user));
             } else {
@@ -205,7 +214,7 @@ public class HuntController {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Erro ao carregar dados para visualizar a hunt (Slug: {}): {}", slug, e.getMessage(), e);
             return "redirect:/hunts?erro=true";
         }
 
@@ -230,15 +239,15 @@ public class HuntController {
     private String gerarSlugAleatorio() {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder sb = new StringBuilder(8);
-        Random random = new Random();
         for (int i = 0; i < 8; i++) {
-            sb.append(chars.charAt(random.nextInt(chars.length())));
+            sb.append(chars.charAt(SECURE_RANDOM.nextInt(chars.length())));
         }
         return sb.toString();
     }
 
     private long extrairNumero(String valor) {
-        if (valor == null || valor.trim().isEmpty()) return 0;
+        if (valor == null || valor.trim().isEmpty())
+            return 0;
         try {
             return Long.parseLong(valor.replaceAll("[^\\d-]", ""));
         } catch (NumberFormatException e) {
