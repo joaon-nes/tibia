@@ -342,11 +342,10 @@
                         </div>
                     </div>
 
-                    <a href="#" class="menu-item" style="pointer-events: none; opacity: 0.5;">
+                    <a href="/buscar-party" class="menu-item">
                         <i class="fa-solid fa-users-viewfinder text-info menu-icon"></i>
                         <div class="menu-text">
-                            <span class="menu-title">Buscar Party <span class="badge bg-danger ms-1 fw-normal"
-                                    style="font-size: 0.6em;">EM BREVE</span></span>
+                            <span class="menu-title">Buscar Party</span>
                             <span class="menu-subtitle">Encontre jogadores</span>
                         </div>
                     </a>
@@ -367,11 +366,10 @@
                         </div>
                     </a>
 
-                    <a href="#" class="menu-item" style="pointer-events: none; opacity: 0.5;">
+                    <a href="/builder" class="menu-item">
                         <i class="fa-solid fa-user-shield text-success menu-icon"></i>
                         <div class="menu-text">
-                            <span class="menu-title">Set Builder <span class="badge bg-danger ms-1 fw-normal"
-                                    style="font-size: 0.6em;">MANUTENÇÃO</span></span>
+                            <span class="menu-title">Set Builder</span>
                             <span class="menu-subtitle">Simulador de status</span>
                         </div>
                     </a>
@@ -453,20 +451,42 @@
                             </div>
                         </div>
 
-                        <div class="tibiadata-card p-2 position-relative d-flex align-items-center"
-                            style="background-color: #1a1a1a;">
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-1"
-                                style="font-size: 0.5em; letter-spacing: 0.5px;">EM CONSTRUÇÃO</span>
+                        <a href="/buscar-party"
+                            class="tibiadata-card p-2 position-relative d-flex align-items-center text-decoration-none"
+                            style="background-color: #1a1a1a; transition: border-color 0.2s, transform 0.2s; border: 1px solid #333;"
+                            onmouseover="this.style.borderColor='#00b7ff'; this.style.transform='translateY(-2px)';"
+                            onmouseout="this.style.borderColor='#333'; this.style.transform='translateY(0)';">
+
                             <div class="bg-black rounded p-2 me-3 border border-secondary text-center d-flex align-items-center justify-content-center"
-                                style="width: 45px; height: 45px;">
-                                <i class="fa-solid fa-users-viewfinder text-primary fs-5"></i>
+                                style="width: 45px; height: 45px; flex-shrink: 0;">
+                                <i class="fa-solid fa-users-viewfinder text-info fs-5"></i>
                             </div>
-                            <div class="overflow-hidden">
-                                <h6 class="fw-bold text-primary mb-0" style="font-size: 0.85em;">Última Party</h6>
-                                <span class="text-secondary d-block text-truncate" style="font-size: 0.75em;">Elite
-                                    Knight (Lvl 250+) - Cobra Bastion</span>
+
+                            <div class="overflow-hidden w-100" th:if="${ultimaParty != null}">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="fw-bold text-info mb-1" style="font-size: 0.85em;">Última Party</h6>
+                                    <span class="badge bg-dark border border-secondary text-light ms-2"
+                                        style="font-size: 0.6em;" th:text="${ultimaParty.tipoBusca}">x4</span>
+                                </div>
+                                <span class="text-secondary d-block text-truncate" style="font-size: 0.75em;"
+                                    th:with="voc=${ultimaParty.usuario.charVocation}, 
+                                               lvl=${ultimaParty.usuario.charLevel}, 
+                                               obj=${ultimaParty.objetivo},
+                                               nome=${ultimaParty.usuario.charName},
+                                               vocAbr=${voc == 'Master Sorcerer' ? 'MS' : (voc == 'Elder Druid' ? 'ED' : (voc == 'Royal Paladin' ? 'RP' : (voc == 'Elite Knight' ? 'EK' : (voc == 'Exalted Monk' ? 'MK' : (voc == 'Sorcerer' ? 'MS' : (voc == 'Druid' ? 'ED' : (voc == 'Paladin' ? 'RP' : (voc == 'Knight' ? 'EK' : (voc == 'Monk' ? 'MK' : 'None')))))))))}">
+                                    <span class="text-light" th:text="${nome}">Draq Paladino</span> - <span
+                                        th:text="${vocAbr + ' ' + lvl}">RP 182</span> - <span
+                                        th:text="${obj}">Bosses</span>
+                                </span>
                             </div>
-                        </div>
+
+                            <div class="overflow-hidden" th:unless="${ultimaParty != null}">
+                                <h6 class="fw-bold text-info mb-0" style="font-size: 0.85em;">Buscar Party</h6>
+                                <span class="text-secondary d-block text-truncate" style="font-size: 0.75em;">
+                                    Ninguém a procurar grupo no momento.
+                                </span>
+                            </div>
+                        </a>
 
                         <div class="tibiadata-card p-3 position-relative flex-grow-1 d-flex flex-column justify-content-center align-items-center text-center transition"
                             style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.05) 0%, rgba(0,0,0,0.8) 100%); cursor: pointer;">
@@ -891,6 +911,7 @@
             fetchTibiaData();
             fetchEventsSchedule();
         });
+
         async function fetchEventsSchedule() {
             try {
                 let eventList = [];
@@ -901,15 +922,11 @@
                         const data = await response.json();
                         eventList = data.eventlist;
                     } else {
-                        throw new Error("Arquivo não encontrado, usando fallback.");
+                        throw new Error("Arquivo não encontrado.");
                     }
                 } catch (err) {
-                    eventList = [
-                        { "colordark": "#4a1259", "colorlight": "#611a75", "description": "Ajude as bruxas a preparar a poção mágica e proteja o caldeirão!", "enddate": 1773100800, "name": "Bewitched", "startdate": 1772323200 }, // 1 a 10 de Março
-                        { "colordark": "#1d5263", "colorlight": "#24657b", "description": "Fim de semana de Double XP e Double Skill para todos os jogadores!", "enddate": 1774224000, "name": "Double XP/Skill", "startdate": 1773964800 }, // 20 a 23 de Março
-                        { "colordark": "#235c00", "colorlight": "#2d7400", "description": "A primavera chegou! Cuidado com os coelhos mutantes.", "enddate": 1776384000, "name": "Spring into Sleep", "startdate": 1775779200 }, // Abril
-                        { "colordark": "#235c00", "colorlight": "#2d7400", "description": "This is the time of witches, ghosts and vampires. Look out for the Mutated Pumpkin.", "enddate": 1793696400, "name": "Halloween Event", "startdate": 1793437200 } // Outubro
-                    ];
+                    console.warn("A usar lista de eventos vazia devido a erro no carregamento.");
+                    eventList = [];
                 }
 
                 const container = document.getElementById('event-list');
@@ -937,7 +954,7 @@
 
                     let statusHtml = '';
                     if (isAtivo) {
-                        statusHtml = `<span class="badge bg-success ms-2 shadow-sm" style="font-size: 0.65rem;">AGORA</span>`;
+                        statusHtml = `<span class="badge bg-success ms-2 shadow-sm" style="font-size: 0.65rem;">Acontecendo</span>`;
                     } else {
                         const diffDias = Math.ceil((ev.startdate - nowUnix) / 86400);
                         statusHtml = `<span class="text-secondary ms-2" style="font-size: 0.75em;">em ${diffDias} dias</span>`;

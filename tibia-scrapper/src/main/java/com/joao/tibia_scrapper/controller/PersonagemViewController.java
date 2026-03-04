@@ -119,4 +119,32 @@ public class PersonagemViewController {
         }
         return "redirect:/personagem";
     }
+
+    @PostMapping("/atualizar-dados")
+    public String atualizarDadosPersonagem(Principal principal, RedirectAttributes redirectAttributes) {
+        if (principal == null)
+            return "redirect:/login";
+
+        Usuario usuario = usuarioRepository.findByUsername(principal.getName()).orElse(null);
+        if (usuario == null || usuario.getCharName() == null) {
+            return "redirect:/personagem";
+        }
+
+        CharacterDTO character = characterService.buscarPersonagem(usuario.getCharName());
+
+        if (character == null) {
+            redirectAttributes.addFlashAttribute("erro", "Erro ao tentar atualizar os dados do personagem no Tibia.");
+            return "redirect:/personagem";
+        }
+
+        usuario.setCharLevel(character.level());
+        usuario.setCharVocation(character.vocation());
+        usuario.setCharWorld(character.world());
+        usuario.setCharResidence(character.residence());
+
+        usuarioRepository.save(usuario);
+
+        redirectAttributes.addFlashAttribute("sucesso", "Dados do personagem atualizados com sucesso!");
+        return "redirect:/personagem";
+    }
 }

@@ -5,6 +5,8 @@ import com.joao.tibia_scrapper.model.Equipamento;
 import com.joao.tibia_scrapper.repository.EquipamentoRepository;
 import com.joao.tibia_scrapper.model.HuntRecord;
 import com.joao.tibia_scrapper.repository.HuntRecordRepository;
+import com.joao.tibia_scrapper.model.AnuncioParty;
+import com.joao.tibia_scrapper.repository.AnuncioPartyRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,11 +25,18 @@ public class EquipamentoViewController {
     @Autowired
     private HuntRecordRepository huntRecordRepository;
 
+    @Autowired
+    private AnuncioPartyRepository partyRepository;
+
     @GetMapping({ "/", "/home" })
     public String home(Model model) {
         HuntRecord ultimaHunt = huntRecordRepository.findFirstByOrderByDataRegistroDesc();
-        
         model.addAttribute("ultimaHunt", ultimaHunt);
+        
+        List<AnuncioParty> ultimosAnuncios = partyRepository.findAllByOrderByDataCriacaoDesc();
+        if (!ultimosAnuncios.isEmpty()) {
+            model.addAttribute("ultimaParty", ultimosAnuncios.get(0));
+        }
         
         return "home";
     }

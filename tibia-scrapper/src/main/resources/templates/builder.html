@@ -375,15 +375,15 @@
                                                 class="d-flex justify-content-center gap-2 mb-2 w-100 border-bottom border-dark pb-3">
                                                 <input type="radio" class="btn-check" name="set-options" id="set1"
                                                     autocomplete="off" checked onchange="trocarSet(1)">
-                                                <label class="btn btn-outline-info btn-sm flex-grow-1" for="set1">Draft
+                                                <label class="btn btn-outline-info btn-sm flex-grow-1" for="set1">Configuração
                                                     1</label>
                                                 <input type="radio" class="btn-check" name="set-options" id="set2"
                                                     autocomplete="off" onchange="trocarSet(2)">
-                                                <label class="btn btn-outline-info btn-sm flex-grow-1" for="set2">Draft
+                                                <label class="btn btn-outline-info btn-sm flex-grow-1" for="set2">Configuração
                                                     2</label>
                                                 <input type="radio" class="btn-check" name="set-options" id="set3"
                                                     autocomplete="off" onchange="trocarSet(3)">
-                                                <label class="btn btn-outline-info btn-sm flex-grow-1" for="set3">Draft
+                                                <label class="btn btn-outline-info btn-sm flex-grow-1" for="set3">Configuração
                                                     3</label>
                                             </div>
 
@@ -581,7 +581,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script th:src="@{/scripts/scripts.js}"></script>
     <script>
         const exaltationForgeData = {
             "Weapons": { efeito: "Onslaught", percentuais: [0, 0.50, 1.05, 1.70, 2.45, 3.30, 4.25, 5.30, 6.45, 7.70, 9.05] },
