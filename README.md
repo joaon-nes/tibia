@@ -23,6 +23,6 @@ O **TibiaBuilder** nasceu como um projeto pessoal focado em aprender e aplicar c
 
 ## 🚀 Próximos Passos (Roadmap)
 Como todo bom projeto, a gente nunca para. O que vem por aí:
-- [ ] Módulo de Hunts (Rotas recomendadas por level/vocação).
-- [ ] Sistema de "Buscar Party".
+- [X] Módulo de Hunts (Rotas recomendadas por level/vocação).
+- [X] Sistema de "Buscar Party".
 - [ ] Trade Market interno da plataforma.
