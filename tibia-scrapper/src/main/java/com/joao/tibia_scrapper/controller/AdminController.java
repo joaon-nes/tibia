@@ -1,22 +1,27 @@
 package com.joao.tibia_scrapper.controller;
 
 import com.joao.tibia_scrapper.Enums.CategoriaEnum;
+import com.joao.tibia_scrapper.model.Usuario;
 import com.joao.tibia_scrapper.repository.EquipamentoRepository;
+import com.joao.tibia_scrapper.repository.HuntRecordRepository;
 import com.joao.tibia_scrapper.repository.TopicoRepository;
 import com.joao.tibia_scrapper.repository.UsuarioRepository;
 import com.joao.tibia_scrapper.service.ScraperService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
@@ -32,21 +37,50 @@ public class AdminController {
     private TopicoRepository topicoRepository;
 
     @Autowired
+    private HuntRecordRepository huntRecordRepository;
+
+    @Autowired
     private ScraperService scraperService;
 
     @GetMapping
-    public String adminDashboard(Model model) {
+    public String adminDashboard(@RequestParam(required = false, defaultValue = "") String busca, Model model) {
+        // Estatísticas Globais
         model.addAttribute("totalUsuarios", usuarioRepository.count());
         model.addAttribute("totalEquipamentos", equipamentoRepository.count());
         model.addAttribute("totalTopicos", topicoRepository.count());
-        
         model.addAttribute("totalPersonagens", usuarioRepository.countPersonagensLinkados());
+        model.addAttribute("totalHunts", huntRecordRepository.count());
 
+        // Estatísticas Demográficas
         model.addAttribute("statsVocacoes", agruparDados(usuarioRepository.countByVocation()));
         model.addAttribute("statsMundos", agruparDados(usuarioRepository.countByWorld()));
         model.addAttribute("statsCidades", agruparDados(usuarioRepository.countByCity()));
 
-        return "admin"; 
+        // Rankings Tops Atividade
+        model.addAttribute("topAutores", agruparDados(topicoRepository.findTopAutores(PageRequest.of(0, 5))));
+        model.addAttribute("topHunts", agruparDados(huntRecordRepository.findTopHuntCreators(PageRequest.of(0, 5))));
+
+        // Rankings Tops In-Game
+        model.addAttribute("topLevels", usuarioRepository.findTop5ByCharNameIsNotNullOrderByCharLevelDesc());
+        model.addAttribute("topMagic", usuarioRepository.findTop5ByCharNameIsNotNullOrderByMagicLevelDesc());
+        model.addAttribute("topDistance", usuarioRepository.findTop5ByCharNameIsNotNullOrderByDistanceSkillDesc());
+        model.addAttribute("topSword", usuarioRepository.findTop5ByCharNameIsNotNullOrderBySwordSkillDesc());
+        model.addAttribute("topAxe", usuarioRepository.findTop5ByCharNameIsNotNullOrderByAxeSkillDesc());
+        model.addAttribute("topClub", usuarioRepository.findTop5ByCharNameIsNotNullOrderByClubSkillDesc());
+        model.addAttribute("topFist", usuarioRepository.findTop5ByCharNameIsNotNullOrderByFistSkillDesc());
+        model.addAttribute("topShielding", usuarioRepository.findTop5ByCharNameIsNotNullOrderByShieldingSkillDesc());
+        model.addAttribute("topFishing", usuarioRepository.findTop5ByCharNameIsNotNullOrderByFishingSkillDesc());
+
+        // Tabela de Gerenciamento
+        model.addAttribute("ultimosUsuarios", usuarioRepository.findUsuariosGerenciamento(busca));
+        model.addAttribute("busca", busca);
+
+        List<String> logs = new ArrayList<>();
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("HH:mm:ss");
+        logs.add("[" + LocalDateTime.now().format(df) + "] Admin acessou o painel de controle.");
+        model.addAttribute("systemLogs", logs);
+
+        return "admin";
     }
 
     private Map<String, Long> agruparDados(List<Object[]> resultados) {
@@ -64,21 +98,92 @@ public class AdminController {
         try {
             for (CategoriaEnum cat : CategoriaEnum.values()) {
                 scraperService.importarCategoria(cat.getNome(), cat.getSubUrl());
-                Thread.sleep(1000); 
+                Thread.sleep(1000);
             }
-            redirectAttributes.addFlashAttribute("sucesso", "Base de dados atualizada com sucesso! Todas as categorias foram importadas.");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            redirectAttributes.addFlashAttribute("erro", "Erro: O processo de importação foi interrompido.");
+            redirectAttributes.addFlashAttribute("sucesso", "Base de dados atualizada com sucesso!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("erro", "Erro ao executar o Scraper: " + e.getMessage());
         }
-        return "redirect:/admin";
+        return "redirect:/admin?tab=sistema";
     }
 
     @PostMapping("/atualizar-itens-api")
     public ResponseEntity<String> iniciarAtualizacaoApi() {
         new Thread(() -> scraperService.atualizarEquipamentosViaApi()).start();
-        return ResponseEntity.ok("Processo de atualização via API iniciado. Acompanhe os logs na consola do Spring Boot!");
+        return ResponseEntity.ok("Processo de atualização via API iniciado na consola!");
+    }
+
+    @PostMapping("/usuario/promover/{id}")
+    public String promoverUsuario(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        Optional<Usuario> opt = usuarioRepository.findById(id);
+        if (opt.isPresent()) {
+            Usuario u = opt.get();
+            if (!"ADMIN".equals(u.getRole())) {
+                u.setRole("MODERATOR");
+                usuarioRepository.save(u);
+                redirectAttributes.addFlashAttribute("sucesso", u.getUsername() + " foi promovido a Moderador.");
+            }
+        }
+        return "redirect:/admin?tab=contas";
+    }
+
+    @PostMapping("/usuario/rebaixar/{id}")
+    public String rebaixarUsuario(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        Optional<Usuario> opt = usuarioRepository.findById(id);
+        if (opt.isPresent()) {
+            Usuario u = opt.get();
+            if (!"ADMIN".equals(u.getRole())) {
+                u.setRole("USER");
+                usuarioRepository.save(u);
+                redirectAttributes.addFlashAttribute("sucesso", u.getUsername() + " foi rebaixado para Usuário comum.");
+            }
+        }
+        return "redirect:/admin?tab=contas";
+    }
+
+    @PostMapping("/usuario/banir/{id}")
+    public String banirUsuario(@PathVariable Long id,
+            @RequestParam(required = false, defaultValue = "0") Integer horasBan,
+            RedirectAttributes redirectAttributes) {
+        Optional<Usuario> opt = usuarioRepository.findById(id);
+        if (opt.isPresent()) {
+            Usuario u = opt.get();
+            if ("BANNED".equals(u.getRole())) {
+                u.setRole("USER");
+                u.setBanExpiration(null);
+                redirectAttributes.addFlashAttribute("sucesso", u.getUsername() + " teve o seu acesso restaurado.");
+            } else if (!"ADMIN".equals(u.getRole())) {
+                u.setRole("BANNED");
+                if (horasBan > 0) {
+                    u.setBanExpiration(LocalDateTime.now().plusHours(horasBan));
+                    redirectAttributes.addFlashAttribute("sucesso",
+                            u.getUsername() + " foi banido por " + horasBan + " horas.");
+                } else {
+                    u.setBanExpiration(null);
+                    redirectAttributes.addFlashAttribute("sucesso", u.getUsername() + " foi banido permanentemente.");
+                }
+            }
+            usuarioRepository.save(u);
+        }
+        return "redirect:/admin?tab=contas";
+    }
+
+    @PostMapping("/usuario/deletar/{id}")
+    public String deletarUsuario(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        Optional<Usuario> opt = usuarioRepository.findById(id);
+        if (opt.isPresent()) {
+            Usuario u = opt.get();
+            if (!"ADMIN".equals(u.getRole())) {
+                try {
+                    usuarioRepository.delete(u);
+                    redirectAttributes.addFlashAttribute("sucesso",
+                            "Conta de " + u.getUsername() + " foi eliminada com sucesso.");
+                } catch (Exception e) {
+                    redirectAttributes.addFlashAttribute("erro", "Não é possível eliminar a conta de " + u.getUsername()
+                            + " pois ela possui registos dependentes (Hunts, Tópicos, etc).");
+                }
+            }
+        }
+        return "redirect:/admin?tab=contas";
     }
 }

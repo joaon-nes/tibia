@@ -181,6 +181,40 @@
                                 </div>
                             </div>
 
+                            <hr class="border-secondary my-4 opacity-50">
+
+                            <div class="mb-4">
+                                <div
+                                    class="d-flex align-items-center justify-content-between bg-black p-3 rounded border border-secondary">
+                                    <div>
+                                        <span class="d-block text-white mb-1" style="font-size: 0.9rem;">Autenticação de
+                                            2 Fatores (2FA)</span>
+
+                                        <small class="text-secondary" th:if="${usuario.isUsing2FA == true}">
+                                            Status: <span class="text-success fw-bold"><i
+                                                    class="fa-solid fa-circle-check"></i> Ativado</span>
+                                        </small>
+
+                                        <small class="text-secondary" th:if="${usuario.isUsing2FA != true}">
+                                            Status: <span class="text-danger fw-bold"><i
+                                                    class="fa-solid fa-circle-xmark"></i> Desativado</span>
+                                        </small>
+                                    </div>
+
+                                    <div>
+                                        <a th:if="${usuario.isUsing2FA != true}" href="/mfa/setup"
+                                            class="btn btn-sm btn-outline-warning">
+                                            Configurar
+                                        </a>
+
+                                        <a th:if="${usuario.isUsing2FA == true}" href="/mfa/disable"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Tem certeza que deseja desativar a segurança de 2 Fatores?');">
+                                            Desativar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="d-grid gap-2 mt-4 pt-2 border-top border-dark pt-3">
                                 <button type="submit" class="btn btn-warning" style="font-weight: 500;">
                                     <i class="fa-solid fa-floppy-disk me-2"></i> Salvar Alterações

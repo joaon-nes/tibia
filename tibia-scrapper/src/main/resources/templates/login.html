@@ -22,7 +22,7 @@
         </div>
         <div class="card-body p-4">
             <div th:if="${param.error}" class="alert alert-danger text-center small py-2">
-                Usuário ou senha inválidos.
+                Usuário, senha ou código 2FA inválidos.
             </div>
             <div th:if="${param.sucesso}" class="alert alert-success text-center small py-2">
                 Cadastro realizado! Faça login.
@@ -38,7 +38,8 @@
                             required autofocus>
                     </div>
                 </div>
-                <div class="mb-4">
+
+                <div class="mb-3">
                     <label class="form-label text-secondary small">Senha</label>
                     <div class="input-group">
                         <span class="input-group-text bg-black border-secondary text-secondary"><i
@@ -47,6 +48,17 @@
                             required>
                     </div>
                 </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-secondary small">Código 2FA</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-black border-secondary text-secondary"><i
+                                class="fa-solid fa-shield-halved"></i></span>
+                        <input type="text" name="code" class="form-control bg-black text-white border-secondary"
+                            placeholder="Deixe em branco se não usar">
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-warning w-100 fw-bold">Entrar</button>
             </form>
         </div>

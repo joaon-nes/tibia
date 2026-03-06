@@ -82,8 +82,11 @@ public class PersonagemViewController {
             usuario.setCharVocation(null);
             usuario.setCharWorld(null);
             usuario.setCharResidence(null);
+            
+            usuario.setSetsEquipamentos(null);
+            
             usuarioRepository.save(usuario);
-            redirectAttributes.addFlashAttribute("sucesso", "Personagem desvinculado com sucesso.");
+            redirectAttributes.addFlashAttribute("sucesso", "Personagem desvinculado com sucesso e sets removidos.");
         }
         return "redirect:/personagem";
     }

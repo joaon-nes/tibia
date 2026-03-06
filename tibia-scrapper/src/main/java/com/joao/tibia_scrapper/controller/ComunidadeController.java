@@ -61,13 +61,19 @@ public class ComunidadeController {
     @GetMapping("/topico/{id}")
     public String verTopico(@PathVariable Long id, Model model, Principal principal) {
         Topico topico = topicoRepository.findById(id).orElse(null);
+
         if (topico == null)
             return "redirect:/comunidade";
+
+        int visualizacoesAtuais = (topico.getVisualizacoes() != null) ? topico.getVisualizacoes() : 0;
+        topico.setVisualizacoes(visualizacoesAtuais + 1);
+        topicoRepository.save(topico);
 
         if (principal != null) {
             Usuario logado = usuarioRepository.findByUsername(principal.getName()).orElse(null);
             model.addAttribute("usuarioLogado", logado);
         }
+
         model.addAttribute("topico", topico);
         return "topico";
     }

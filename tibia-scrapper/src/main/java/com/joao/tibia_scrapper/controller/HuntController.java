@@ -49,19 +49,20 @@ public class HuntController {
 
     @GetMapping
     public String exibirPaginaHunts(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        if (userDetails == null)
-            return "redirect:/login";
+        List<HuntRecord> todasHunts = huntRecordRepository.findAllByOrderByDataRegistroDesc();
+        model.addAttribute("todasHunts", todasHunts);
 
-        Optional<Usuario> userOpt = usuarioRepository.findByUsername(userDetails.getUsername());
-        if (userOpt.isPresent()) {
-            Usuario usuario = userOpt.get();
-            model.addAttribute("usuario", usuario);
+        if (userDetails != null) {
+            Optional<Usuario> userOpt = usuarioRepository.findByUsername(userDetails.getUsername());
+            if (userOpt.isPresent()) {
+                Usuario usuario = userOpt.get();
+                model.addAttribute("usuario", usuario);
 
-            List<HuntRecord> todasHunts = huntRecordRepository.findAllByOrderByDataRegistroDesc();
-            model.addAttribute("todasHunts", todasHunts);
-
-            List<HuntRecord> minhasHunts = huntRecordRepository.findByUsuarioOrderByDataRegistroDesc(usuario);
-            model.addAttribute("minhasHunts", minhasHunts);
+                List<HuntRecord> minhasHunts = huntRecordRepository.findByUsuarioOrderByDataRegistroDesc(usuario);
+                model.addAttribute("minhasHunts", minhasHunts);
+            }
+        } else {
+            model.addAttribute("usuario", null);
         }
 
         return "hunts";

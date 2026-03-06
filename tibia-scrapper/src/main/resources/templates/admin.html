@@ -13,223 +13,630 @@
             background-color: #1a1a1a;
             border: 1px solid #333;
             border-radius: 12px;
-            transition: transform 0.2s, border-color 0.2s;
         }
 
-        .admin-card:hover {
-            transform: translateY(-5px);
-            border-color: #555;
+        .log-console {
+            background-color: #000;
+            font-family: monospace;
+            color: #0f0;
+            border: 1px solid #333;
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            border-radius: 8px;
         }
 
-        .icon-box {
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            font-size: 1.8rem;
+        .table-dark-custom {
+            --bs-table-bg: transparent;
+            --bs-table-color: #ddd;
+            --bs-table-border-color: #333;
+        }
+
+        .admin-tabs .nav-link {
+            color: #aaa;
+            border: 1px solid #444;
+            margin-right: 8px;
+            border-radius: 8px;
+            background-color: #111;
+        }
+
+        .admin-tabs .nav-link:hover {
+            color: #fff;
+            border-color: #666;
+            background-color: #222;
+        }
+
+        .admin-tabs .nav-link.active {
+            color: #fff;
+            background-color: #2c3e50;
+            border-color: #3498db;
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-dark text-white">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-secondary mb-4 position-relative">
-        <div class="container-fluid px-lg-5 d-flex justify-content-between align-items-center">
+    <div th:replace="~{fragments :: header}"></div>
 
-            <div style="flex: 1;"></div>
-
-            <div class="position-absolute top-50 start-50 translate-middle text-center" style="z-index: 10;">
-                <a class="navbar-brand fw-bold text-warning fs-3 m-0 d-flex align-items-center justify-content-center"
-                    href="/">
-                    <i class="fa-solid fa-dragon me-2"></i> TibiaBuilder
-                    <span class="badge bg-danger ms-2"
-                        style="font-size: 0.4em; transform: translateY(-2px);">ADMIN</span>
-                </a>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-end" style="flex: 1;">
-                <span class="me-4 text-secondary d-none d-md-inline">
-                    <i class="fa-solid fa-user-shield me-1"></i> Bem-vindo, <span sec:authentication="name"
-                        class="fw-bold text-light">Admin</span>
-                </span>
-                <a href="/" class="btn btn-sm btn-outline-light"><i class="fa-solid fa-arrow-left me-1"></i> Voltar ao
-                    Site</a>
-            </div>
-
-        </div>
-    </nav>
-
-    <main class="container mb-5 flex-grow-1">
-
-        <div class="d-flex justify-content-between align-items-end mb-4">
-            <div>
-                <h2 class="fw-bold text-light mb-0">Dashboard</h2>
-                <span class="text-secondary">Visão geral do sistema e base de dados</span>
-            </div>
-        </div>
+    <main class="container-fluid px-4 px-lg-5 mb-5 flex-grow-1">
 
         <div th:if="${sucesso}"
             class="alert alert-success alert-dismissible fade show border-success text-success bg-dark" role="alert">
             <i class="fa-solid fa-circle-check me-2"></i> <span th:text="${sucesso}"></span>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
         </div>
         <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show border-danger text-danger bg-dark"
             role="alert">
             <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${erro}"></span>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
         </div>
 
-        <div class="row g-4 mb-5">
-            <div class="col-md-3">
-                <div class="admin-card p-4 d-flex align-items-center gap-4 shadow-sm h-100">
-                    <div class="icon-box bg-primary bg-opacity-10 text-primary">
-                        <i class="fa-solid fa-users"></i>
+        <ul class="nav nav-pills admin-tabs mb-4 border-bottom border-dark pb-3" id="adminTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active px-4 py-2" data-bs-toggle="pill" data-bs-target="#tab-dashboard"
+                    type="button" role="tab">
+                    <i class="fa-solid fa-chart-line me-2"></i> Dashboard Geral
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link px-4 py-2" data-bs-toggle="pill" data-bs-target="#tab-contas" type="button"
+                    role="tab">
+                    <i class="fa-solid fa-users-gear me-2"></i> Gestão de Contas
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link px-4 py-2" data-bs-toggle="pill" data-bs-target="#tab-sistema" type="button"
+                    role="tab">
+                    <i class="fa-solid fa-server me-2"></i> Sistema e Extrações
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="adminTabsContent">
+
+            <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel">
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="admin-card p-3 d-flex align-items-center gap-3 border-secondary h-100">
+                            <div class="text-primary fs-1 px-2"></div>
+                            <div>
+                                <h6 class="text-secondary fw-bold mb-0" style="font-size: 0.8em;">Contas Registadas</h6>
+                                <h3 class="mb-0 text-light" th:text="${totalUsuarios}">0</h3>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <h6 class="text-secondary fw-bold mb-1" style="font-size: 0.85em;">Contas Registadas</h6>
-                        <h2 class="mb-0 fw-bold text-light" th:text="${totalUsuarios}">0</h2>
+                    <div class="col-md-3">
+                        <div class="admin-card p-3 d-flex align-items-center gap-3 border-secondary h-100">
+                            <div class="text-success fs-1 px-2"></div>
+                            <div>
+                                <h6 class="text-secondary mb-0" style="font-size: 0.8em;">Hunts Postadas</h6>
+                                <h3 class="mb-0 fw-bold text-light" th:text="${totalHunts}">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="admin-card p-3 d-flex align-items-center gap-3 border-secondary h-100">
+                            <div class="text-warning fs-1 px-2"></i></div>
+                            <div>
+                                <h6 class="text-secondary mb-0" style="font-size: 0.8em;">Tópicos no Fórum</h6>
+                                <h3 class="mb-0 fw-bold text-light" th:text="${totalTopicos}">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="admin-card p-3 d-flex align-items-center gap-3 border-secondary h-100">
+                            <div class="text-info fs-1 px-2"></div>
+                            <div>
+                                <h6 class="text-secondary mb-0" style="font-size: 0.8em;">Equipamentos Registados</h6>
+                                <h3 class="mb-0 fw-bold text-light" th:text="${totalEquipamentos}">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="admin-card p-4 h-100">
+                            <h5 class="text-light fw-bold mb-4"><i class="fa-solid fa-chart-pie text-info me-2"></i>
+                                Demografia In-Game</h5>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6 class="text-secondary fw-bold text-center" style="font-size: 0.8em;">Vocações
+                                    </h6>
+                                    <div style="height: 180px;"><canvas id="chartVocacoes"></canvas></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="text-secondary fw-bold text-center" style="font-size: 0.8em;">Mundos</h6>
+                                    <div style="height: 180px;"><canvas id="chartMundos"></canvas></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="text-secondary fw-bold text-center" style="font-size: 0.8em;">Cidades
+                                    </h6>
+                                    <div style="height: 180px;"><canvas id="chartCidades"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="admin-card p-3 shadow-sm border-secondary h-100">
+                            <h5 class="text-light fw-bold mb-3"><i class="fa-solid fa-users text-warning me-2"></i> Top
+                                Fórum</h5>
+                            <table class="table table-sm table-dark-custom mb-0">
+                                <thead>
+                                    <tr class="text-secondary border-dark"
+                                        style="font-size: 0.75rem; text-transform: uppercase;">
+                                        <th>#</th>
+                                        <th>Usuário</th>
+                                        <th class="text-end">Contribuições</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="entry, stat : ${topAutores}">
+                                        <td class="text-secondary" th:text="${stat.count} + '.'">1.</td>
+                                        <td th:text="${entry.key}">User</td>
+                                        <td class="text-end text-warning fw-bold">
+                                            <span th:text="${entry.value}">0</span> <small
+                                                class="text-secondary fw-normal">posts</small>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${topAutores == null or topAutores.isEmpty()}">
+                                        <td colspan="3" class="text-center text-secondary small py-2">Nenhum registo.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="admin-card p-3 shadow-sm border-secondary h-100">
+                            <h5 class="text-light fw-bold mb-3"><i class="fa-solid fa-map text-success me-2"></i> Top
+                                Hunts</h5>
+                            <table class="table table-sm table-dark-custom mb-0">
+                                <thead>
+                                    <tr class="text-secondary border-dark"
+                                        style="font-size: 0.75rem; text-transform: uppercase;">
+                                        <th>#</th>
+                                        <th>Usuário</th>
+                                        <th class="text-end">Contribuições</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="entry, stat : ${topHunts}">
+                                        <td class="text-secondary" th:text="${stat.count} + '.'">1.</td>
+                                        <td th:text="${entry.key}">User</td>
+                                        <td class="text-end text-success fw-bold">
+                                            <span th:text="${entry.value}">0</span> <small
+                                                class="text-secondary fw-normal">hunts</small>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${topHunts == null or topHunts.isEmpty()}">
+                                        <td colspan="3" class="text-center text-secondary small py-2">Nenhum registo.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="admin-card p-4 shadow-sm border-secondary mb-4 mt-5">
+                            <div
+                                class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-dark">
+                                <h5 class="text-light fw-bold m-0"><i class="fa-solid fa-trophy text-warning me-2"></i>
+                                    Rankings In-Game</h5>
+                                <select id="rankingSelector"
+                                    class="form-select form-select-sm bg-black text-white border-secondary w-auto shadow-none"
+                                    onchange="mostrarRanking(this.value)">
+                                    <option value="level">Top Level</option>
+                                    <option value="magic">Top Magic Level</option>
+                                    <option value="distance">Top Distance Fighting</option>
+                                    <option value="sword">Top Sword Fighting</option>
+                                    <option value="axe">Top Axe Fighting</option>
+                                    <option value="club">Top Club Fighting</option>
+                                    <option value="shielding">Top Shielding</option>
+                                    <option value="fist">Top Fist Fighting</option>
+                                    <option value="fishing">Top Fishing</option>
+                                </select>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-sm table-dark-custom mb-0 ranking-table" id="rank-level">
+                                    <thead>
+                                        <tr class="text-secondary border-dark"
+                                            style="font-size: 0.75rem; text-transform: uppercase;">
+                                            <th>#</th>
+                                            <th>Jogador</th>
+                                            <th class="text-end">Level</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="u, stat : ${topLevels}">
+                                            <td class="text-secondary" th:text="${stat.count} + '.'">1.</td>
+                                            <td th:text="${u.charName}">Nome</td>
+                                            <td class="text-end text-warning fw-bold" th:text="${u.charLevel}">0</td>
+                                        </tr>
+                                        <tr th:if="${topLevels == null or topLevels.isEmpty()}">
+                                            <td colspan="3" class="text-center text-secondary py-3">Nenhum registo.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table class="table table-sm table-dark-custom mb-0 ranking-table d-none"
+                                    id="rank-magic">
+                                    <thead>
+                                        <tr class="text-secondary border-dark"
+                                            style="font-size: 0.75rem; text-transform: uppercase;">
+                                            <th>#</th>
+                                            <th>Jogador</th>
+                                            <th class="text-end">Magic Level</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="u, stat : ${topMagic}">
+                                            <td class="text-secondary" th:text="${stat.count} + '.'">1.</td>
+                                            <td th:text="${u.charName}">Nome</td>
+                                            <td class="text-end text-warning fw-bold" th:text="${u.magicLevel}">0</td>
+                                        </tr>
+                                        <tr th:if="${topMagic == null or topMagic.isEmpty()}">
+                                            <td colspan="3" class="text-center text-secondary py-3">Nenhum registo.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table class="table table-sm table-dark-custom mb-0 ranking-table d-none"
+                                    id="rank-distance">
+                                    <thead>
+                                        <tr class="text-secondary border-dark"
+                                            style="font-size: 0.75rem; text-transform: uppercase;">
+                                            <th>#</th>
+                                            <th>Jogador</th>
+                                            <th class="text-end">Distance Fighting</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="u, stat : ${topDistance}">
+                                            <td class="text-secondary" th:text="${stat.count} + '.'">1.</td>
+                                            <td th:text="${u.charName}">Nome</td>
+                                            <td class="text-end text-warning fw-bold" th:text="${u.distanceSkill}">0
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${topDistance == null or topDistance.isEmpty()}">
+                                            <td colspan="3" class="text-center text-secondary py-3">Nenhum registo.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table class="table table-sm table-dark-custom mb-0 ranking-table d-none"
+                                    id="rank-sword">
+                                    <thead>
+                                        <tr class="text-secondary border-dark"
+                                            style="font-size: 0.75rem; text-transform: uppercase;">
+                                            <th>#</th>
+                                            <th>Jogador</th>
+                                            <th class="text-end">Sword Fighting</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="u, stat : ${topSword}">
+                                            <td class="text-secondary" th:text="${stat.count} + '.'">1.</td>
+                                            <td th:text="${u.charName}">Nome</td>
+                                            <td class="text-end text-warning fw-bold" th:text="${u.swordSkill}">0</td>
+                                        </tr>
+                                        <tr th:if="${topSword == null or topSword.isEmpty()}">
+                                            <td colspan="3" class="text-center text-secondary py-3">Nenhum registo.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table class="table table-sm table-dark-custom mb-0 ranking-table d-none" id="rank-axe">
+                                    <thead>
+                                        <tr class="text-secondary border-dark"
+                                            style="font-size: 0.75rem; text-transform: uppercase;">
+                                            <th>#</th>
+                                            <th>Jogador</th>
+                                            <th class="text-end">Axe Fighting</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="u, stat : ${topAxe}">
+                                            <td class="text-secondary" th:text="${stat.count} + '.'">1.</td>
+                                            <td th:text="${u.charName}">Nome</td>
+                                            <td class="text-end text-warning fw-bold" th:text="${u.axeSkill}">0</td>
+                                        </tr>
+                                        <tr th:if="${topAxe == null or topAxe.isEmpty()}">
+                                            <td colspan="3" class="text-center text-secondary py-3">Nenhum registo.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table class="table table-sm table-dark-custom mb-0 ranking-table d-none"
+                                    id="rank-club">
+                                    <thead>
+                                        <tr class="text-secondary border-dark"
+                                            style="font-size: 0.75rem; text-transform: uppercase;">
+                                            <th>#</th>
+                                            <th>Jogador</th>
+                                            <th class="text-end">Club Fighting</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="u, stat : ${topClub}">
+                                            <td class="text-secondary" th:text="${stat.count} + '.'">1.</td>
+                                            <td th:text="${u.charName}">Nome</td>
+                                            <td class="text-end text-warning fw-bold" th:text="${u.clubSkill}">0</td>
+                                        </tr>
+                                        <tr th:if="${topClub == null or topClub.isEmpty()}">
+                                            <td colspan="3" class="text-center text-secondary py-3">Nenhum registo.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table class="table table-sm table-dark-custom mb-0 ranking-table d-none"
+                                    id="rank-shielding">
+                                    <thead>
+                                        <tr class="text-secondary border-dark"
+                                            style="font-size: 0.75rem; text-transform: uppercase;">
+                                            <th>#</th>
+                                            <th>Jogador</th>
+                                            <th class="text-end">Shielding</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="u, stat : ${topShielding}">
+                                            <td class="text-secondary" th:text="${stat.count} + '.'">1.</td>
+                                            <td th:text="${u.charName}">Nome</td>
+                                            <td class="text-end text-warning fw-bold" th:text="${u.shieldingSkill}">0
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${topShielding == null or topShielding.isEmpty()}">
+                                            <td colspan="3" class="text-center text-secondary py-3">Nenhum registo.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table class="table table-sm table-dark-custom mb-0 ranking-table d-none"
+                                    id="rank-fist">
+                                    <thead>
+                                        <tr class="text-secondary border-dark"
+                                            style="font-size: 0.75rem; text-transform: uppercase;">
+                                            <th>#</th>
+                                            <th>Jogador</th>
+                                            <th class="text-end">Fist Fighting</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="u, stat : ${topFist}">
+                                            <td class="text-secondary" th:text="${stat.count} + '.'">1.</td>
+                                            <td th:text="${u.charName}">Nome</td>
+                                            <td class="text-end text-warning fw-bold" th:text="${u.fistSkill}">0</td>
+                                        </tr>
+                                        <tr th:if="${topFist == null or topFist.isEmpty()}">
+                                            <td colspan="3" class="text-center text-secondary py-3">Nenhum registo.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table class="table table-sm table-dark-custom mb-0 ranking-table d-none"
+                                    id="rank-fishing">
+                                    <thead>
+                                        <tr class="text-secondary border-dark"
+                                            style="font-size: 0.75rem; text-transform: uppercase;">
+                                            <th>#</th>
+                                            <th>Jogador</th>
+                                            <th class="text-end">Fishing</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="u, stat : ${topFishing}">
+                                            <td class="text-secondary" th:text="${stat.count} + '.'">1.</td>
+                                            <td th:text="${u.charName}">Nome</td>
+                                            <td class="text-end text-warning fw-bold" th:text="${u.fishingSkill}">0</td>
+                                        </tr>
+                                        <tr th:if="${topFishing == null or topFishing.isEmpty()}">
+                                            <td colspan="3" class="text-center text-secondary py-3">Nenhum registo.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="tab-pane fade" id="tab-contas" role="tabpanel">
+                <div class="admin-card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="text-light fw-bold m-0"><i class="fa-solid fa-users-gear text-info me-2"></i> Base de
+                            Utilizadores</h5>
+                        <form action="/admin" method="get" class="d-flex gap-2 w-50 justify-content-end">
+                            <input type="hidden" name="tab" value="contas">
+                            <input type="text" name="busca"
+                                class="form-control form-control-sm bg-dark text-white border-secondary w-50"
+                                placeholder="Buscar por login ou char..." th:value="${busca}">
+                            <button type="submit" class="btn btn-sm btn-outline-info"><i
+                                    class="fa-solid fa-magnifying-glass"></i></button>
+                            <a href="/admin?tab=contas" class="btn btn-sm btn-outline-secondary"
+                                th:if="${busca != null and !busca.isEmpty()}">Limpar</a>
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0 align-middle"
+                            style="--bs-table-bg: transparent;">
+                            <thead class="text-secondary border-secondary">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Usuário</th>
+                                    <th>Personagem</th>
+                                    <th>Status / Cargo</th>
+                                    <th class="text-end">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="usr : ${ultimosUsuarios}" class="border-secondary">
+                                    <td class="text-secondary" th:text="${usr.id}">1</td>
+                                    <td>
+                                        <span th:text="${usr.username}" class="fw-bold">Login</span><br>
+                                        <small class="text-secondary" th:text="${usr.email}">email</small>
+                                    </td>
+                                    <td th:text="${usr.charName != null ? usr.charName : 'Não vinculado'}">Char</td>
+                                    <td>
+                                        <span class="badge"
+                                            th:classappend="${usr.role == 'BANNED' ? 'bg-danger' : (usr.role == 'MODERATOR' ? 'bg-info' : (usr.role == 'ADMIN' ? 'bg-warning text-dark' : 'bg-secondary'))}"
+                                            th:text="${usr.role}">USER</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <form th:if="${usr.role == 'USER'}"
+                                            th:action="@{/admin/usuario/promover/{id}(id=${usr.id})}" method="post"
+                                            class="d-inline ms-1"
+                                            onsubmit="return confirm('Promover este utilizador a Moderador?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-info"
+                                                title="Promover a Moderador"><i class="fa-solid fa-arrow-up"></i>
+                                                Mod</button>
+                                        </form>
+                                        <form th:if="${usr.role == 'MODERATOR'}"
+                                            th:action="@{/admin/usuario/rebaixar/{id}(id=${usr.id})}" method="post"
+                                            class="d-inline ms-1"
+                                            onsubmit="return confirm('Retirar os privilégios de moderação deste utilizador?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                                title="Rebaixar a Usuário"><i class="fa-solid fa-arrow-down"></i>
+                                                User</button>
+                                        </form>
+
+                                        <button th:if="${usr.role != 'BANNED' && usr.role != 'ADMIN'}" type="button"
+                                            class="btn btn-sm btn-outline-warning ms-1" data-bs-toggle="modal"
+                                            th:data-bs-target="'#modalBan' + ${usr.id}">
+                                            <i class="fa-solid fa-gavel"></i> Banir
+                                        </button>
+
+                                        <form th:if="${usr.role == 'BANNED'}"
+                                            th:action="@{/admin/usuario/banir/{id}(id=${usr.id})}" method="post"
+                                            class="d-inline ms-1"
+                                            onsubmit="return confirm('Restaurar o acesso desta conta?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-success"
+                                                title="Desbanir Conta"><i class="fa-solid fa-check"></i>
+                                                Desbanir</button>
+                                        </form>
+
+                                        <form th:if="${usr.role != 'ADMIN'}"
+                                            th:action="@{/admin/usuario/deletar/{id}(id=${usr.id})}" method="post"
+                                            class="d-inline ms-1"
+                                            onsubmit="return confirm('ATENÇÃO: Deletar esta conta é irreversível. Deseja continuar?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                title="Deletar Conta"><i class="fa-solid fa-trash-can"></i>
+                                                Deletar</button>
+                                        </form>
+
+                                        <div th:if="${usr.role != 'BANNED' && usr.role != 'ADMIN'}"
+                                            class="modal fade text-start" th:id="'modalBan' + ${usr.id}" tabindex="-1">
+                                            <div class="modal-dialog modal-dialog-centered modal-sm">
+                                                <div class="modal-content bg-dark border-secondary">
+                                                    <div class="modal-header border-dark">
+                                                        <h6 class="modal-title text-warning">Banir <span
+                                                                th:text="${usr.username}">User</span></h6>
+                                                        <button type="button" class="btn-close btn-close-white"
+                                                            data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <form th:action="@{/admin/usuario/banir/{id}(id=${usr.id})}"
+                                                        method="post">
+                                                        <div class="modal-body p-3">
+                                                            <label class="small text-secondary mb-1">Duração do
+                                                                Banimento:</label>
+                                                            <select name="horasBan"
+                                                                class="form-select form-select-sm bg-black text-white border-secondary">
+                                                                <option value="0">Permanente</option>
+                                                                <option value="1">1 Hora</option>
+                                                                <option value="24">1 Dia</option>
+                                                                <option value="168">1 Semana</option>
+                                                                <option value="720">30 Dias</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="modal-footer border-dark p-2">
+                                                            <button type="submit"
+                                                                class="btn btn-sm btn-danger w-100">Banir</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${ultimosUsuarios == null or ultimosUsuarios.isEmpty()}">
+                                    <td colspan="5" class="text-center text-secondary py-4">Nenhum utilizador encontrado
+                                        com este filtro.</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="admin-card p-4 d-flex align-items-center gap-4 shadow-sm h-100">
-                    <div class="icon-box bg-danger bg-opacity-10 text-danger">
-                        <i class="fa-solid fa-users-rays"></i>
+            <div class="tab-pane fade" id="tab-sistema" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-md-5">
+                        <div class="admin-card p-4 h-100 d-flex flex-column">
+                            <h5 class="text-light fw-bold mb-4"><i class="fa-solid fa-bolt text-warning me-2"></i> Ações
+                                do Servidor</h5>
+                            <div class="mb-4">
+                                <h6 class="text-secondary">Extração TibiaWiki (Scraper Inicial)</h6>
+                                <p class="small text-secondary mb-2">Puxa os nomes e imagens da Wiki. Necessário se a
+                                    tabela de itens estiver vazia.</p>
+                                <form th:action="@{/admin/importar-tudo}" method="post"
+                                    onsubmit="return confirm('Iniciar a extração inicial do TibiaWiki? Isto pode demorar.');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100"><i
+                                            class="fa-solid fa-spider me-2"></i> Iniciar Scraper</button>
+                                </form>
+                            </div>
+                            <div>
+                                <h6 class="text-secondary">Atualização de Atributos (API)</h6>
+                                <p class="small text-secondary mb-2">Descarrega os atributos oficiais para os itens já
+                                    registados na base de dados.</p>
+                                <button onclick="iniciarAtualizacaoApi()" class="btn btn-sm btn-outline-info w-100"><i
+                                        class="fa-solid fa-database me-2"></i> Atualizar via API</button>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <h6 class="text-secondary fw-bold mb-1" style="font-size: 0.85em;">Personagens Conectados</h6>
-                        <h2 class="mb-0 fw-bold text-light" th:text="${totalPersonagens}">0</h2>
+                    <div class="col-md-7">
+                        <div class="admin-card p-4 h-100">
+                            <h5 class="text-light fw-bold mb-3"><i class="fa-solid fa-terminal text-success me-2"></i>
+                                Logs do Servidor (Live)</h5>
+                            <div class="log-console" id="logConsole">
+                                <div th:each="log : ${systemLogs}" th:text="${log}"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="admin-card p-4 d-flex align-items-center gap-4 shadow-sm h-100">
-                    <div class="icon-box bg-warning bg-opacity-10 text-warning">
-                        <i class="fa-solid fa-shirt"></i>
-                    </div>
-                    <div>
-                        <h6 class="text-secondary fw-bold mb-1" style="font-size: 0.85em;">Itens no Banco</h6>
-                        <h2 class="mb-0 fw-bold text-light" th:text="${totalEquipamentos}">0</h2>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="admin-card p-4 d-flex align-items-center gap-4 shadow-sm h-100">
-                    <div class="icon-box bg-success bg-opacity-10 text-success">
-                        <i class="fa-solid fa-comments"></i>
-                    </div>
-                    <div>
-                        <h6 class="text-secondary fw-bold mb-1" style="font-size: 0.85em;">Tópicos no Fórum</h6>
-                        <h2 class="mb-0 fw-bold text-light" th:text="${totalTopicos}">0</h2>
-                    </div>
-                </div>
-            </div>
         </div>
-
-        <h4 class="mb-3 text-light fw-bold"><i class="fa-solid fa-chart-pie text-info me-2"></i> Estatísticas de
-            Jogadores</h4>
-        <div class="row g-4 mb-5">
-            <div class="col-md-4">
-                <div class="admin-card p-4 h-100 shadow-sm">
-                    <h6 class="text-secondary fw-bold mb-3 text-center">Vocações</h6>
-                    <div style="height: 250px;">
-                        <canvas id="chartVocacoes"></canvas>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="admin-card p-4 h-100 shadow-sm">
-                    <h6 class="text-secondary fw-bold mb-3 text-center">Mundos</h6>
-                    <div style="height: 250px;">
-                        <canvas id="chartMundos"></canvas>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="admin-card p-4 h-100 shadow-sm">
-                    <h6 class="text-secondary fw-bold mb-3 text-center">Cidades</h6>
-                    <div style="height: 250px;">
-                        <canvas id="chartCidades"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <h4 class="mb-3 text-light fw-bold"><i class="fa-solid fa-bolt text-warning me-2"></i> Ações Rápidas</h4>
-        <div class="row g-4">
-            <div class="col-md-6">
-                <div class="admin-card p-4 h-100 d-flex flex-column border-danger">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="fa-solid fa-spider text-danger fs-3 me-3"></i>
-                        <h5 class="text-light fw-bold mb-0">1. Extrair Nomes (Scraper)</h5>
-                    </div>
-                    <p class="text-secondary flex-grow-1" style="font-size: 0.9em; line-height: 1.6;">
-                        Inicia o robô para varrer o TibiaWiki e salvar os <strong>Nomes e Imagens</strong> dos
-                        equipamentos no banco de dados. <br>
-                        <span class="text-warning fw-bold"><i class="fa-solid fa-triangle-exclamation"></i> Passo
-                            1:</span> Execute este passo primeiro caso seu banco de dados esteja vazio.
-                    </p>
-                    <form th:action="@{/admin/importar-tudo}" method="post"
-                        onsubmit="return confirm('Iniciar a extração inicial de nomes e imagens do TibiaWiki?');">
-                        <button type="submit" class="btn btn-outline-danger w-100 fw-bold py-2 mt-2">
-                            <i class="fa-solid fa-cloud-arrow-down me-2"></i> Iniciar Importação em Massa
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="admin-card p-4 h-100 d-flex flex-column border-info">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="fa-solid fa-database text-info fs-3 me-3"></i>
-                        <h5 class="text-light fw-bold mb-0">2. Atualizar Atributos (API)</h5>
-                    </div>
-                    <p class="text-secondary flex-grow-1" style="font-size: 0.9em; line-height: 1.6;">
-                        Descarrega os atributos completos (Ataque, Defesa, Slots, Elementos) para os itens do banco de
-                        dados através da API oficial. <br>
-                        <span class="text-info fw-bold"><i class="fa-solid fa-circle-info"></i> Passo 2:</span> Execute
-                        isto apenas <strong class="text-white">após</strong> o Passo 1. (Demora cerca de 15 minutos).
-                    </p>
-                    <button onclick="iniciarAtualizacaoApi()" class="btn btn-outline-info w-100 fw-bold py-2 mt-2">
-                        <i class="fa-solid fa-play me-2"></i> Iniciar Atualização via API
-                    </button>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="admin-card p-4 h-100 d-flex flex-column" style="opacity: 0.5;">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="fa-solid fa-user-gear text-info fs-3 me-3"></i>
-                        <h5 class="text-light fw-bold mb-0">Gerir Usuários <span class="badge bg-secondary ms-2"
-                                style="font-size: 0.5em;">EM BREVE</span></h5>
-                    </div>
-                    <p class="text-secondary flex-grow-1" style="font-size: 0.9em; line-height: 1.6;">
-                        Módulo futuro para promover contas a administradores, suspender utilizadores do fórum ou
-                        visualizar detalhes de registo.
-                    </p>
-                    <button class="btn btn-outline-secondary w-100 fw-bold py-2 mt-2" disabled>
-                        <i class="fa-solid fa-lock me-2"></i> Indisponível
-                    </button>
-                </div>
-            </div>
-        </div>
-
     </main>
-
-    <footer class="bg-black text-center text-secondary py-4 border-top border-dark mt-auto">
-        <div class="container">
-            <small>&copy; 2026 TibiaBuilder Project. Restrito a Administradores.</small>
-        </div>
-    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script th:src="@{/scripts/scripts.js}"></script>
     <script th:inline="javascript">
+        function mostrarRanking(tipo) {
+            document.querySelectorAll('.ranking-table').forEach(table => {
+                table.classList.add('d-none');
+            });
+            document.getElementById('rank-' + tipo).classList.remove('d-none');
+        }
+
+        const logConsole = document.getElementById("logConsole");
+        if (logConsole) logConsole.scrollTop = logConsole.scrollHeight;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('tab') && urlParams.get('tab') === 'contas') {
+            const triggerEl = document.querySelector('button[data-bs-target="#tab-contas"]');
+            if (triggerEl) bootstrap.Tab.getOrCreateInstance(triggerEl).show();
+        } else if (urlParams.has('tab') && urlParams.get('tab') === 'sistema') {
+            const triggerEl = document.querySelector('button[data-bs-target="#tab-sistema"]');
+            if (triggerEl) bootstrap.Tab.getOrCreateInstance(triggerEl).show();
+        }
+
         const statsVocacoes = /*[[${statsVocacoes}]]*/ {};
         const statsMundos = /*[[${statsMundos}]]*/ {};
         const statsCidades = /*[[${statsCidades}]]*/ {};
@@ -241,16 +648,10 @@
                 type: 'doughnut',
                 data: {
                     labels: Object.keys(statsVocacoes),
-                    datasets: [{
-                        data: Object.values(statsVocacoes),
-                        backgroundColor: ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#95a5a6'],
-                        borderWidth: 0, hoverOffset: 4
-                    }]
+                    datasets: [{ data: Object.values(statsVocacoes), backgroundColor: ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#95a5a6'], borderWidth: 0 }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
-        } else {
-            document.getElementById('chartVocacoes').parentElement.innerHTML = '<p class="text-center text-secondary mt-5">Sem dados suficientes</p>';
         }
 
         if (Object.keys(statsMundos).length > 0) {
@@ -258,17 +659,10 @@
                 type: 'bar',
                 data: {
                     labels: Object.keys(statsMundos),
-                    datasets: [{
-                        label: 'Personagens',
-                        data: Object.values(statsMundos),
-                        backgroundColor: '#9b59b6',
-                        borderRadius: 4
-                    }]
+                    datasets: [{ label: 'Personagens', data: Object.values(statsMundos), backgroundColor: '#9b59b6', borderRadius: 4 }]
                 },
-                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false } } }
             });
-        } else {
-            document.getElementById('chartMundos').parentElement.innerHTML = '<p class="text-center text-secondary mt-5">Sem dados suficientes</p>';
         }
 
         if (Object.keys(statsCidades).length > 0) {
@@ -276,39 +670,18 @@
                 type: 'pie',
                 data: {
                     labels: Object.keys(statsCidades),
-                    datasets: [{
-                        data: Object.values(statsCidades),
-                        backgroundColor: ['#1abc9c', '#34495e', '#e67e22', '#bdc3c7', '#8e44ad', '#c0392b'],
-                        borderWidth: 0
-                    }]
+                    datasets: [{ data: Object.values(statsCidades), backgroundColor: ['#1abc9c', '#34495e', '#e67e22', '#bdc3c7', '#8e44ad', '#c0392b'], borderWidth: 0 }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
-        } else {
-            document.getElementById('chartCidades').parentElement.innerHTML = '<p class="text-center text-secondary mt-5">Sem dados suficientes</p>';
         }
 
         function iniciarAtualizacaoApi() {
-            if (!confirm("Deseja iniciar a atualização de todos os equipamentos via API? O processo rodará em segundo plano.")) {
-                return;
-            }
-
-            fetch('/admin/atualizar-itens-api', {
-                method: 'POST',
-            })
-                .then(response => {
-                    if (response.ok) {
-                        return response.text();
-                    }
-                    throw new Error('Falha na requisição');
-                })
-                .then(mensagem => {
-                    alert("✅ " + mensagem);
-                })
-                .catch(error => {
-                    console.error(error);
-                    alert("❌ Erro ao tentar se comunicar com o servidor.");
-                });
+            if (!confirm("Deseja iniciar a atualização de atributos API? O processo rodará em background.")) return;
+            fetch('/admin/atualizar-itens-api', { method: 'POST' })
+                .then(r => r.ok ? r.text() : Promise.reject('Erro'))
+                .then(msg => alert(msg))
+                .catch(e => alert("Erro no servidor."));
         }
     </script>
 </body>

@@ -29,6 +29,9 @@ public class Topico {
     @JoinColumn(name = "autor_id")
     private Usuario autor;
 
+    @Column(name = "visualizacoes", columnDefinition = "integer default 0")
+    private Integer visualizacoes = 0;
+
     @OneToMany(mappedBy = "topico", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Postagem> postagens = new ArrayList<>();
 

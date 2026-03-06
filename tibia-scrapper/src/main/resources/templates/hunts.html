@@ -9,7 +9,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        /* CSS do Menu */
         .sidebar-menu {
             display: flex;
             flex-direction: column;
@@ -245,8 +244,7 @@
                     <div
                         class="d-flex justify-content-between align-items-center border-bottom border-dark pb-3 mb-4 mt-1">
                         <div>
-                            <h2 class="m-0" style="font-family: 'Cinzel', serif;">Hunt Sessions
-                            </h2>
+                            <h2 class="m-0" style="font-family: 'Cinzel', serif;">Hunt Sessions</h2>
                             <p class="text-secondary m-0 small mt-1">Explore as expedições da comunidade e registe as
                                 suas.</p>
                         </div>
@@ -264,14 +262,13 @@
                                 Todas as Hunts
                             </button>
                         </li>
-                        <li class="nav-item" role="presentation">
+                        <li class="nav-item" role="presentation" th:if="${usuario != null}">
                             <button class="nav-link btn-sm" id="minhas-tab" data-bs-toggle="pill"
                                 data-bs-target="#minhas" type="button" role="tab">
                                 Minhas Hunts
                             </button>
                         </li>
                     </ul>
-
                     <div class="tab-content" id="hunts-tabContent">
 
                         <div class="tab-pane fade show active" id="todas" role="tabpanel">
@@ -351,24 +348,34 @@
                             </div>
                         </div>
 
-                        <div class="tab-pane fade" id="minhas" role="tabpanel">
+                        <div class="tab-pane fade" id="minhas" role="tabpanel" th:if="${usuario != null}">
 
                             <div class="d-flex justify-content-between align-items-center mb-4 pt-2">
                                 <h5 class="text-secondary m-0" style="font-size: 1rem;">Seu histórico pessoal</h5>
                                 <button class="btn btn-warning shadow-sm" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#formCollapse" aria-expanded="false"
-                                    style="font-size: 0.9em; font-weight: 500;">Nova Hunt
+                                    style="font-size: 0.9em; font-weight: 500;">
+                                    Nova Hunt
                                 </button>
                             </div>
 
                             <div class="collapse mb-5" id="formCollapse">
                                 <div class="arcane-panel p-4 border-warning">
                                     <form th:action="@{/hunts/adicionar}" method="post" class="row g-3">
-                                        <div class="col-md-4">
+                                        <div class="col-md-4 position-relative">
                                             <label class="text-warning small mb-1">Hunt</label>
-                                            <input type="text" name="nomeHunt"
+
+                                            <input type="text" name="nomeHunt" id="nomeHunt"
                                                 class="form-control form-control-sm bg-dark text-white border-secondary mb-3"
-                                                placeholder="Ex: Roshamuul Bones" required>
+                                                placeholder="Ex: Roshamuul Mines" required autocomplete="off">
+
+                                            <div id="sugestoesHunt" class="list-group position-absolute w-100 shadow-lg"
+                                                style="z-index: 1050; max-height: 200px; overflow-y: auto; display: none; border: 1px solid #444; top: 60px;">
+                                            </div>
+
+                                            <div id="infoHuntDetalhe"
+                                                class="p-2 border border-secondary rounded bg-dark d-none transition mb-3">
+                                            </div>
 
                                             <label class="text-warning small mb-1"
                                                 th:if="${usuario.charName != null}">Minha build</label>
@@ -389,44 +396,9 @@
                                                 Dados da Sessão
                                             </label>
                                             <textarea name="jsonText"
-    class="form-control bg-dark text-white border-secondary json-textarea h-100"
-    style="min-height: 300px; font-size: 0.80rem;" required
-    placeholder='{
-    "Balance": "800,000",
-    "Damage": "5,600,000",
-    "Damage/h": "4,200,000",
-    "Healing": "1,100,000",
-    "Healing/h": "825,000",
-    "Killed Monsters": [
-        {
-            "Count": 450,
-            "Name": "dawn asura"
-        },
-        {
-            "Count": 420,
-            "Name": "midnight asura"
-        }
-    ],
-    "Loot": "1,250,000",
-    "Looted Items": [
-        {
-            "Count": 145,
-            "Name": "platinum coin"
-        },
-        {
-            "Count": 85,
-            "Name": "demonic essence"
-        }
-    ],
-    "Raw XP Gain": "3,000,000",
-    "Raw XP/h": "2,250,000",
-    "Session end": "2026-03-03, 15:20:00",
-    "Session length": "01:20h",
-    "Session start": "2026-03-03, 14:00:00",
-    "Supplies": "450,000",
-    "XP Gain": "4,500,100",
-    "XP/h": "3,375,000"
-}'></textarea>
+                                                class="form-control bg-dark text-white border-secondary json-textarea h-100"
+                                                style="min-height: 300px; font-size: 0.80rem;" required
+                                                placeholder='{"Balance": "800,000", ...}'></textarea>
                                         </div>
                                         <div class="col-md-3 d-flex flex-column">
                                             <label class="text-warning small mb-1">Party Members</label>
@@ -625,6 +597,20 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <hr class="border-secondary opacity-25 my-4">
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="text-warning m-0">Descrições da hunt</h6>
+                                <span id="huntNameForDesc" class="d-none" th:text="${nomeHunt}"></span>
+                            </div>
+
+                            <div id="hunt-descriptions-container" class="p-3 bg-black border border-secondary rounded">
+                                <div class="text-center text-secondary py-3">
+                                    <i class="fas fa-spinner fa-spin fs-4 mb-2"></i><br>Buscando descrições da Wiki...
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -699,8 +685,7 @@
                                         </thead>
                                         <tbody>
                                             <tr th:each="item, stat : ${huntData.lootedItems}">
-                                                <td class="text-center text-secondary" th:text="${stat.count}">1
-                                                </td>
+                                                <td class="text-center text-secondary" th:text="${stat.count}">1</td>
                                                 <td class="text-start text-capitalize">
                                                     <img th:src="'https://www.tibiawiki.com.br/wiki/Special:FilePath/' + ${#strings.replace(#strings.capitalizeWords(item.name), ' ', '_')} + '.gif'"
                                                         style="max-width: 48px; max-height: 48px; object-fit: contain; margin-right: 8px;"
@@ -727,8 +712,7 @@
 
                         <div class="p-4 position-relative" style="z-index: 1;">
                             <div id="full-snapshot-render" class="row row-cols-1 row-cols-xl-2 g-4"
-                                th:attr="data-snapshot=${partySnapshot}">
-                            </div>
+                                th:attr="data-snapshot=${partySnapshot}"></div>
                         </div>
                     </div>
                 </div>
@@ -801,9 +785,7 @@
                     } catch (e) { }
                 }
 
-                el.querySelector('.time-text').innerHTML = `
-                <div class="text-secondary">Criada em: <span class="text-light">${dataExibicao}</span></div>
-                `;
+                el.querySelector('.time-text').innerHTML = `<div class="text-secondary">Criada em: <span class="text-light">${dataExibicao}</span></div>`;
                 el.querySelector('.party-size-text').innerText = partySizeText;
             });
 
@@ -881,7 +863,6 @@
                                 const dados = activeData[slot];
                                 if (dados && dados.item) {
                                     const item = dados.item;
-
                                     if (item.atributos) {
                                         let parts = String(item.atributos).toLowerCase().split(',');
                                         parts.forEach(p => {
@@ -1042,7 +1023,7 @@
                                 let sign = val > 0 ? '+' : '';
 
                                 return `
-                                    <div class="d-flex justify-content-between align-items-center px-1border-secondary pb-1">
+                                    <div class="d-flex justify-content-between align-items-center px-1 border-secondary pb-1">
                                         <span class="text-secondary" style="font-size: 0.85em;">${label}</span>
                                         <div class="d-flex align-items-center gap-1">
                                             <span class="${colorClass}" style="font-size: 0.85em;">${sign}${val}%</span>
@@ -1072,7 +1053,6 @@
                             html += '</div>';
                             return html;
                         }
-
 
                         party.forEach((member, index) => {
                             let sets = null;
@@ -1108,7 +1088,6 @@
                             gridHtml += `</div>`;
 
                             const dataBonus = calcularBonus(activeData);
-
                             const htmlSkillsLeft = renderSkillsLeft(member, dataBonus);
                             const htmlStatsRight = renderStatsRight(dataBonus);
 
@@ -1116,18 +1095,15 @@
                             charCard.className = 'col';
                             charCard.innerHTML = `
                                 <div class="p-3 border border-dark rounded h-100 shadow-sm d-flex flex-column position-relative" style="background-color: #050505; z-index: 2;">
-                                    
                                     <div class="mb-3 border-secondary pb-2">
                                         <h6 class="mb-0" style="color: #dfdfdf;">${member.name}</h6>
                                         <small class="text-secondary d-block">Level ${member.level} | ${member.vocation}</small>
                                     </div>
-                                    
                                     <div class="d-flex align-items-start gap-4 flex-grow-1">
                                         <div class="flex-shrink-0" style="width: 114px;">
                                             ${gridHtml}
                                             ${htmlSkillsLeft}
                                         </div>
-                                        
                                         <div class="flex-grow-1 border-start border-dark ps-3">
                                             ${htmlStatsRight}
                                         </div>
@@ -1136,7 +1112,6 @@
                             `;
                             fullSnapshotRender.appendChild(charCard);
                         });
-
                     } catch (e) { console.error("Erro ao renderizar party snapshot completo", e); }
                 }
             }
@@ -1150,7 +1125,6 @@
             if (jsonStr) {
                 try {
                     const data = JSON.parse(jsonStr);
-
                     const extractNum = (str) => {
                         if (!str) return 0;
                         return parseInt(str.toString().replace(/[^\d-]/g, '')) || 0;
@@ -1171,11 +1145,8 @@
                     const elBalance = card.querySelector('.render-balance');
                     if (elBalance) {
                         elBalance.innerText = balanceCalc.toLocaleString('en-US');
-                        if (balanceCalc < 0) {
-                            elBalance.classList.add('text-danger');
-                        } else {
-                            elBalance.classList.add('text-success');
-                        }
+                        if (balanceCalc < 0) elBalance.classList.add('text-danger');
+                        else elBalance.classList.add('text-success');
                     }
 
                     const outerCard = card.closest('.card-hover-effect');

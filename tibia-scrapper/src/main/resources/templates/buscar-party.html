@@ -160,12 +160,11 @@
 
                     <div th:if="${usuarioLogado != null}">
                         <button th:if="${!jaAnunciou}" class="btn btn-info shadow-sm" data-bs-toggle="modal"
-                            data-bs-target="#modalAnunciar">
-                            <i class="fa-solid fa-bullhorn me-1"></i> Criar Anúncio
+                            data-bs-target="#modalAnunciar"> Anunciar busca
                         </button>
                         <form th:if="${jaAnunciou}" th:action="@{/buscar-party/remover}" method="post"
                             style="display: inline;">
-                            <button type="submit" class="btn btn-outline-danger btn-sm">Remover Meu Anúncio</button>
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Remover minha busca</button>
                         </form>
                     </div>
                 </div>
@@ -214,8 +213,7 @@
                                                 method="post" class="mb-2">
                                                 <button type="submit"
                                                     class="btn btn-sm btn-outline-success py-1 px-2 shadow-sm w-100"
-                                                    style="font-size: 0.75rem;">
-                                                    <i class="fa-regular fa-bell me-1"></i> Interesse
+                                                    style="font-size: 0.75rem;">Tenho Interesse
                                                 </button>
                                             </form>
 
@@ -296,11 +294,20 @@
                                 <option value="PvP">PvP</option>
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label text-secondary small">Qual? (Opcional)</label>
-                            <textarea name="objetivoEspecifico" class="form-control bg-dark text-white border-secondary"
-                                rows="2" placeholder="Ex: Werelions, Cobra Bastion, Defesa..."
-                                maxlength="100"></textarea>
+                        <div class="mb-3 position-relative" id="divObjetivoEspecifico">
+                            <label class="form-label text-secondary small">Hunt / Boss</label>
+
+                            <input type="text" name="objetivoEspecifico" id="inputObjetivoEspecifico"
+                                class="form-control bg-dark text-white border-secondary"
+                                placeholder="Ex: Werelions, Cobra Bastion, Defesa..." maxlength="100"
+                                autocomplete="off">
+
+                            <div id="sugestoesParty" class="list-group position-absolute w-100 shadow-lg"
+                                style="z-index: 1050; max-height: 200px; overflow-y: auto; display: none; border: 1px solid #444;">
+                            </div>
+
+                            <div id="infoHuntParty"
+                                class="mt-2 p-2 border border-secondary rounded bg-dark d-none transition"></div>
                         </div>
                     </div>
                     <div class="modal-footer border-secondary bg-black">

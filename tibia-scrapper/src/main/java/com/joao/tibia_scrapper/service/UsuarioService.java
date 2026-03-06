@@ -3,12 +3,13 @@ package com.joao.tibia_scrapper.service;
 import com.joao.tibia_scrapper.model.Usuario;
 import com.joao.tibia_scrapper.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class UsuarioService implements UserDetailsService {
@@ -23,11 +24,16 @@ public class UsuarioService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Usuario usuario = repository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
-        return User.builder()
-                .username(usuario.getUsername())
-                .password(usuario.getPassword())
-                .roles(usuario.getRole())
-                .build();
+
+        if ("BANNED".equals(usuario.getRole()) && usuario.getBanExpiration() != null) {
+            if (LocalDateTime.now().isAfter(usuario.getBanExpiration())) {
+                usuario.setRole("USER");
+                usuario.setBanExpiration(null);
+                repository.save(usuario);
+            }
+        }
+
+        return usuario;
     }
 
     public void cadastrarUsuario(String username, String password, String nome, String email) {
@@ -54,11 +60,9 @@ public class UsuarioService implements UserDetailsService {
         if (novaSenha != null && !novaSenha.trim().isEmpty()) {
             usuario.setPassword(passwordEncoder.encode(novaSenha));
         }
-
         if (avatarBase64 != null) {
             usuario.setAvatar(avatarBase64);
         }
-
         if (charName != null && !charName.isEmpty()) {
             usuario.setCharName(charName);
             usuario.setCharLevel(charLevel);
@@ -66,7 +70,6 @@ public class UsuarioService implements UserDetailsService {
             usuario.setCharWorld(charWorld);
             usuario.setCharResidence(charResidence);
         }
-
         repository.save(usuario);
     }
 }

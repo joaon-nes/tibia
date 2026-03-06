@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Configurar 2FA - TibiaBuilder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body class="bg-black text-white p-5 min-vh-100 d-flex flex-column align-items-center justify-content-center">
+
+    <div class="container d-flex flex-column align-items-center">
+        <div class="text-center mb-4">
+            <h2 class="text-warning fw-bold"><i class="fa-solid fa-shield"></i> Configurar 2FA</h2>
+        </div>
+
+        <div th:if="${mensagem}" class="alert alert-success text-center">
+            <span th:text="${mensagem}"></span>
+            <br>
+            <a href="/" class="btn btn-outline-warning mt-3">Voltar ao Início</a>
+        </div>
+
+        <div th:if="${qrCodeImage != null}" class="card bg-dark border-secondary p-4 text-center shadow"
+            style="width: 100%; max-width: 450px;">
+            <p class="text-light small">Escaneie o QR Code abaixo com o seu aplicativo de autenticação (ex: Google
+                Authenticator ou Authy).</p>
+
+            <img th:src="${qrCodeImage}" alt="QR Code" class="img-fluid rounded mb-3 mx-auto"
+                style="width: 200px; height: 200px; background: white; padding: 10px;" />
+
+            <p class="small text-secondary mb-4">Ou digite a chave manualmente: <br><strong class="text-white"
+                    th:text="${secret}"></strong></p>
+
+            <form th:action="@{/mfa/verify}" method="post">
+                <div th:if="${erro}" class="alert alert-danger py-2 small" th:text="${erro}"></div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text bg-black border-secondary text-secondary"><i
+                            class="fa-solid fa-key"></i></span>
+                    <input type="text" name="code" id="verificationCode"
+                        class="form-control bg-black text-white border-secondary" placeholder="Código de 6 dígitos"
+                        required>
+                </div>
+
+                <button type="submit" class="btn btn-warning w-100 fw-bold">Verificar e Ativar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var inputElement = document.getElementById('verificationCode');
+            if (inputElement) {
+                inputElement.addEventListener('input', function (e) {
+                    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

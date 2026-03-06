@@ -198,6 +198,7 @@
             background-color: rgba(0, 183, 255, 0.05);
         }
 
+        /* Estilos das Notícias */
         .news-item {
             transition: background 0.2s;
             border-bottom: 1px solid #222 !important;
@@ -232,159 +233,12 @@
 
 <body class="d-flex flex-column min-vh-100 bg-dark text-white">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-secondary mb-4 position-relative">
-        <div class="container-fluid px-lg-5 d-flex justify-content-between align-items-center">
-
-            <div style="flex: 1;"></div>
-
-            <div class="position-absolute top-50 start-50 translate-middle text-center" style="z-index: 10;">
-                <a class="navbar-brand fw-bold text-warning fs-3 m-0" href="/">
-                    <i class="fa-solid fa-dragon"></i> TibiaBuilder
-                </a>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-end gap-2" style="flex: 1;">
-                <div class="d-flex align-items-center" sec:authorize="isAuthenticated()">
-
-                    <div class="dropdown me-4 pe-2">
-                        <button class="btn btn-sm btn-outline-light position-relative border-0" type="button"
-                            id="dropdownNotificacoes" data-bs-toggle="dropdown" aria-expanded="false"
-                            onclick="carregarNotificacoes()">
-                            <i class="fa-solid fa-bell fs-5"></i>
-                            <span id="notif-badge"
-                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
-                                style="font-size: 0.6rem;">0</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary shadow"
-                            aria-labelledby="dropdownNotificacoes"
-                            style="width: 320px; max-height: 400px; overflow-y: auto;">
-                            <li>
-                                <h6 class="dropdown-header text-warning fw-bold border-bottom border-secondary">Últimas
-                                    Atualizações</h6>
-                            </li>
-                            <div id="lista-notificacoes-preview">
-                                <li class="text-center p-3 text-secondary"><i class="fas fa-spinner fa-spin"></i>
-                                    Carregando...</li>
-                            </div>
-                            <li>
-                                <hr class="dropdown-divider border-secondary">
-                            </li>
-                            <li><a class="dropdown-item text-center text-info small fw-bold py-2"
-                                    href="/notificacoes">Ver todas as notificações</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" id="dropdownUser"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa-solid fa-user"></i> <span class="d-none d-md-inline ms-1"
-                                sec:authentication="name">Usuario</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary shadow"
-                            aria-labelledby="dropdownUser">
-                            <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item text-warning" href="/admin"><i
-                                        class="fa-solid fa-gear me-2"></i> Painel Admin</a></li>
-                            <li><a class="dropdown-item text-light" href="/personagem"> Personagem</a></li>
-                            <li><a class="dropdown-item text-light" href="/perfil"> Editar Perfil</a></li>
-                            <li>
-                                <hr class="dropdown-divider border-secondary opacity-50">
-                            </li>
-                            <li>
-                                <form th:action="@{/logout}" method="post" class="m-0 p-0 px-2">
-                                    <button type="submit" class="btn btn-sm btn-danger w-100 text-start"><i
-                                            class="fa-solid fa-power-off me-2"></i> Sair</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div sec:authorize="!isAuthenticated()">
-                    <a href="/login" class="btn btn-sm btn-warning fw-bold px-3"><i
-                            class="fa-solid fa-right-to-bracket"></i> Entrar</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <div th:replace="~{fragments :: header}"></div>
 
     <main class="container-fluid px-lg-5 mb-5 flex-grow-1 mt-2">
         <div class="row g-4">
 
-            <aside class="col-lg-3 col-xl-2 order-1">
-                <div class="sidebar-menu">
-
-                    <a href="/comunidade" class="menu-item">
-                        <i class="fa-solid fa-users text-primary menu-icon"></i>
-                        <div class="menu-text">
-                            <span class="menu-title">Comunidade</span>
-                            <span class="menu-subtitle">Fórum e discussões</span>
-                        </div>
-                    </a>
-
-                    <a href="#collapseEnciclopedia" class="menu-item" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="collapseEnciclopedia">
-                        <i class="fa-solid fa-book-open text-warning menu-icon"></i>
-                        <div class="menu-text">
-                            <span class="menu-title">Enciclopédia</span>
-                            <span class="menu-subtitle">Base de dados</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-down chevron-icon"></i>
-                    </a>
-
-                    <div class="collapse" id="collapseEnciclopedia">
-                        <div class="submenu-container">
-                            <a href="#" class="submenu-item">Vocações</a>
-                            <a href="/enciclopedia/equipamentos" class="submenu-item">Equipamentos</a>
-                            <a href="#" class="submenu-item">Runas</a>
-                            <a href="#" class="submenu-item">Magias</a>
-                            <a href="#" class="submenu-item">Criaturas</a>
-                            <a href="#" class="submenu-item">Imbuements</a>
-                        </div>
-                    </div>
-
-                    <a href="/buscar-party" class="menu-item">
-                        <i class="fa-solid fa-users-viewfinder text-info menu-icon"></i>
-                        <div class="menu-text">
-                            <span class="menu-title">Buscar Party</span>
-                            <span class="menu-subtitle">Encontre jogadores</span>
-                        </div>
-                    </a>
-
-                    <a href="javascript:void(0)" class="menu-item" onclick="abrirMapa(32369, 32240, 7)">
-                        <i class="fa-solid fa-map text-success menu-icon"></i>
-                        <div class="menu-text">
-                            <span class="menu-title">Mapa</span>
-                            <span class="menu-subtitle">Explore o continente</span>
-                        </div>
-                    </a>
-
-                    <a href="/hunts" class="menu-item">
-                        <i class="fa-solid fa-map-location-dot text-danger menu-icon"></i>
-                        <div class="menu-text">
-                            <span class="menu-title">Hunts</span>
-                            <span class="menu-subtitle">Locais de caça</span>
-                        </div>
-                    </a>
-
-                    <a href="/builder" class="menu-item">
-                        <i class="fa-solid fa-user-shield text-success menu-icon"></i>
-                        <div class="menu-text">
-                            <span class="menu-title">Set Builder</span>
-                            <span class="menu-subtitle">Simulador de status</span>
-                        </div>
-                    </a>
-
-                    <a href="#" class="menu-item" style="pointer-events: none; opacity: 0.5;">
-                        <i class="fa-solid fa-handshake menu-icon" style="color: #ffc107;"></i>
-                        <div class="menu-text">
-                            <span class="menu-title">Trade Market <span class="badge bg-danger ms-1 fw-normal"
-                                    style="font-size: 0.6em;">EM BREVE</span></span>
-                            <span class="menu-subtitle">Compra e venda</span>
-                        </div>
-                    </a>
-
-                </div>
-            </aside>
+            <div th:replace="~{fragments :: sidebar}"></div>
 
             <div class="col-lg-6 col-xl-8 order-3 order-lg-2">
                 <div class="row g-3 h-100">
@@ -470,10 +324,10 @@
                                 </div>
                                 <span class="text-secondary d-block text-truncate" style="font-size: 0.75em;"
                                     th:with="voc=${ultimaParty.usuario.charVocation}, 
-                                               lvl=${ultimaParty.usuario.charLevel}, 
-                                               obj=${ultimaParty.objetivo},
-                                               nome=${ultimaParty.usuario.charName},
-                                               vocAbr=${voc == 'Master Sorcerer' ? 'MS' : (voc == 'Elder Druid' ? 'ED' : (voc == 'Royal Paladin' ? 'RP' : (voc == 'Elite Knight' ? 'EK' : (voc == 'Exalted Monk' ? 'MK' : (voc == 'Sorcerer' ? 'MS' : (voc == 'Druid' ? 'ED' : (voc == 'Paladin' ? 'RP' : (voc == 'Knight' ? 'EK' : (voc == 'Monk' ? 'MK' : 'None')))))))))}">
+                                           lvl=${ultimaParty.usuario.charLevel}, 
+                                           obj=${ultimaParty.objetivo},
+                                           nome=${ultimaParty.usuario.charName},
+                                           vocAbr=${voc == 'Master Sorcerer' ? 'MS' : (voc == 'Elder Druid' ? 'ED' : (voc == 'Royal Paladin' ? 'RP' : (voc == 'Elite Knight' ? 'EK' : (voc == 'Exalted Monk' ? 'MK' : (voc == 'Sorcerer' ? 'MS' : (voc == 'Druid' ? 'ED' : (voc == 'Paladin' ? 'RP' : (voc == 'Knight' ? 'EK' : (voc == 'Monk' ? 'MK' : 'None')))))))))}">
                                     <span class="text-light" th:text="${nome}">Draq Paladino</span> - <span
                                         th:text="${vocAbr + ' ' + lvl}">RP 182</span> - <span
                                         th:text="${obj}">Bosses</span>
@@ -711,7 +565,7 @@
                 1: { city: "Svargrond", bg: "https://www.tibiawiki.com.br/images/3/34/Rashid_Svargrond.png", coords: "32210,31158,7", desc: "Em Svargrond, na Taverna Dankwart, sul do templo." },
                 2: { city: "Liberty Bay", bg: "https://www.tibiawiki.com.br/images/3/33/Rashid_Liberty_Bay.png", coords: "32301,32837,7", desc: "Na taverna de Lyonel ao oeste do depot, Liberty Bay" },
                 3: { city: "Port Hope", bg: "https://www.tibiawiki.com.br/images/4/4e/Rashid_Port_Hope.png", coords: "32578,32754,7", desc: "Na taverna de Clyde ao norte do barco, em Port Hope." },
-                4: { city: "Ankrahmun", bg: "https://www.tibiawiki.com.br/images/d/dd/Rashid_Ankrahmun.png", coords: "33070,32882,6", desc: "Em Ankhramun, na taverna de Arito, acima do post office." },
+                4: { city: "Ankrahmun", bg: "https://www.tibiawiki.com.br/images/2/2a/Rashid_Ankrahmun.png", coords: "33070,32882,6", desc: "Em Ankhramun, na taverna de Arito, acima do post office." },
                 5: { city: "Darashia", bg: "https://www.tibiawiki.com.br/images/c/cb/Rashid_Darashia.png", coords: "33235,32485,7", desc: "Na cidade de Darashia, na taverna de Miraia, a oeste do barco." },
                 6: { city: "Edron", bg: "https://www.tibiawiki.com.br/images/6/6f/Rashid_Edron.png", coords: "33168,31809,6", desc: "Em Edron, na taverna de Mirabell, acima do depot." },
                 0: { city: "Carlin", bg: "https://www.tibiawiki.com.br/images/8/87/Rashid_Carlin.png", coords: "32330,31782,6", desc: "Em Carlin, no primeiro andar do depot." }
