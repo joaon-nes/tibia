@@ -37,6 +37,15 @@ public class Usuario implements UserDetails {
     @Column(name = "email_confirmado")
     private Boolean emailConfirmado = false;
 
+    @Column(name = "verification_token")
+    private String verificationToken;
+
+    @Column(name = "reset_password_token")
+    private String resetPasswordToken;
+
+    @Column(name = "reset_password_token_expiration")
+    private LocalDateTime resetPasswordTokenExpiration;
+
     @Lob
     @Column(columnDefinition = "LONGTEXT")
     private String avatar;

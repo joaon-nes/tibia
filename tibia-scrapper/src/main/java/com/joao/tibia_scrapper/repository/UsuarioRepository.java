@@ -15,10 +15,17 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     Optional<Usuario> findByEmail(String email);
 
+    Optional<Usuario> findByVerificationToken(String token);
+    
+    Optional<Usuario> findByResetPasswordToken(String token);
+
     Optional<Usuario> findByCharNameIgnoreCase(String charName);
 
     @Query("SELECT COUNT(u) FROM Usuario u WHERE u.charName IS NOT NULL AND u.charName <> ''")
     long countPersonagensLinkados();
+
+    @Query("SELECT u FROM Usuario u WHERE u.charName IS NOT NULL AND u.charName <> ''")
+    List<Usuario> findAllUsuariosComPersonagem();
 
     @Query("SELECT u.charVocation, COUNT(u) FROM Usuario u WHERE u.charVocation IS NOT NULL AND u.charVocation <> '' GROUP BY u.charVocation")
     List<Object[]> countByVocation();

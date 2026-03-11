@@ -53,10 +53,12 @@ public class SecurityConfig {
                                 .authenticationProvider(authenticationProvider())
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/", "/home", "/css/**", "/scripts/**", "/images/**",
-                                                                "/json/**", "/cadastro",
-                                                                "/login", "/enciclopedia/**", "/api/enciclopedia/**",
-                                                                "/buscar-party/**",
-                                                                "/comunidade/**", "/builder/**", "/hunts/**")
+                                                                "/tibia-images/**", "/json/**", "/cadastro", "/login",
+                                                                "/error",
+                                                                "/enciclopedia/**", "/api/enciclopedia/**",
+                                                                "/buscar-party/**", "/comunidade/**", "/builder/**",
+                                                                "/hunts/**", "/confirmar-email", "/recuperar-senha",
+                                                                "/resetar-senha")
                                                 .permitAll()
                                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                                 .anyRequest().authenticated())

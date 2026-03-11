@@ -1,6 +1,34 @@
 let globalHuntsData = [];
 
 document.addEventListener("DOMContentLoaded", function () {
+
+    // ---------------------------------------------------------
+    // LÓGICA DO MENU LATERAL (Sidebar Active State)
+    // ---------------------------------------------------------
+    const currentPath = window.location.pathname;
+    const menuLinks = document.querySelectorAll('.sidebar-menu a.menu-item, .sidebar-menu a.submenu-item');
+
+    menuLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href && href !== '#' && currentPath === href) {
+            link.classList.add('active');
+
+            // Abre o menu colapsável caso o item ativo seja um submenu
+            const collapseParent = link.closest('.collapse');
+            if (collapseParent) {
+                collapseParent.classList.add('show');
+                const toggler = document.querySelector('[aria-controls="' + collapseParent.id + '"]');
+                if (toggler) {
+                    toggler.classList.add('active');
+                    toggler.setAttribute('aria-expanded', 'true');
+                }
+            }
+        }
+    });
+
+    // ---------------------------------------------------------
+    // LÓGICA DE NOTIFICAÇÕES E HUNTS JSON
+    // ---------------------------------------------------------
     if (document.getElementById('notif-badge')) {
         atualizarContadorNotificacoes();
         setInterval(atualizarContadorNotificacoes, 15000);
@@ -68,7 +96,7 @@ function carregarNotificacoes() {
                             <div class="mt-1"><i class="fa-solid ${notif.icone}"></i></div>
                             <div style="width: 100%;">
                                 <div class="small">
-                                    <span class="text-warning">${notif.remetente}</span> ${notif.mensagem}
+                                    <span class="tibia-gold-text">${notif.remetente}</span> ${notif.mensagem}
                                 </div>
                                 <div class="text-secondary text-end" style="font-size: 0.65em;">${notif.dataFormatada}</div>
                             </div>
@@ -231,4 +259,70 @@ function populateHuntDescriptions() {
             </div>
         </div>
     `;
+}
+
+function abrirMapa(x, y, z) {
+    const modal = new bootstrap.Modal(document.getElementById('mapaGlobalModal'));
+    const embedUrl = `https://tibiamaps.io/map/embed#${x},${y},${z}:1`;
+    document.getElementById('modal-global-iframe').src = embedUrl;
+    modal.show();
+}
+
+// =========================================
+// FUNÇÕES DO PAINEL ADMIN
+// =========================================
+function importarCriaturasJson() {
+    const pasta = document.getElementById('pastaJsonInput').value;
+    if (!confirm(`Importar criaturas de:\n${pasta}`)) return;
+    const token = document.querySelector('input[name="_csrf"]')?.value || document.querySelector('.csrf-token')?.value;
+    fetch(`/admin/importar-criaturas-json?pasta=${encodeURIComponent(pasta)}`, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': token }
+    }).then(r => r.text()).then(msg => alert(msg));
+}
+
+function migrarLocal() {
+    if (!confirm("Deseja importar os dados locais?")) return;
+    const token = document.querySelector('input[name="_csrf"]')?.value || document.querySelector('.csrf-token')?.value;
+    fetch('/admin/migrar-criaturas-local', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': token }
+    }).then(r => alert("Processo iniciado!"));
+}
+
+function iniciarMagiasApi() {
+    if (!confirm("Deseja iniciar a extração de magias? O processo rodará em background.")) return;
+    const token = document.querySelector('.csrf-token')?.value || document.querySelector('input[name="_csrf"]')?.value;
+    fetch('/admin/importar-magias', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': token }
+    }).then(r => r.ok ? r.text() : Promise.reject('Erro ao iniciar. Status: ' + r.status))
+      .then(msg => alert(msg)).catch(e => alert(e));
+}
+
+function iniciarRunasApi() {
+    if (!confirm("Deseja iniciar a extração de runas? O processo rodará em background.")) return;
+    const token = document.getElementById('csrf-token')?.value || document.querySelector('input[name="_csrf"]')?.value;
+    fetch('/admin/importar-runas', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': token }
+    }).then(r => r.ok ? r.text() : Promise.reject('Erro ao iniciar. Status: ' + r.status))
+      .then(msg => alert(msg)).catch(e => alert(e));
+}
+
+function iniciarAtualizacaoApi() {
+    if (!confirm("Deseja iniciar a atualização de atributos API? O processo rodará em background.")) return;
+    const token = document.querySelector('input[name="_csrf"]')?.value || '';
+    fetch('/admin/atualizar-itens-api', { 
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': token }
+    })
+    .then(r => r.ok ? r.text() : Promise.reject('Erro'))
+    .then(msg => alert(msg)).catch(e => alert("Erro no servidor."));
+}
+
+function mostrarRanking(tipo) {
+    document.querySelectorAll('.ranking-table').forEach(table => table.classList.add('d-none'));
+    const target = document.getElementById('rank-' + tipo);
+    if(target) target.classList.remove('d-none');
 }

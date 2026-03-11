@@ -9,100 +9,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        .sidebar-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 8px 12px;
-            border-radius: 6px;
-            text-decoration: none;
-            color: #aaa;
-            transition: all 0.2s ease;
-            background: transparent;
-            cursor: pointer;
-        }
-
-        .menu-item:hover,
-        .menu-item[aria-expanded="true"] {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: #fff;
-        }
-
-        .menu-icon {
-            width: 24px;
-            text-align: center;
-            margin-right: 12px;
-            font-size: 1.1em;
-        }
-
-        .menu-text {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .menu-title {
-            font-size: 0.95em;
-            font-weight: 500;
-            line-height: 1.2;
-            color: #dfdfdf;
-            transition: color 0.2s;
-        }
-
-        .menu-subtitle {
-            font-size: 0.75em;
-            color: #666;
-            margin-top: 2px;
-        }
-
-        .menu-item:hover .menu-title {
-            color: #fff;
-        }
-
-        .chevron-icon {
-            font-size: 0.75rem;
-            transition: transform 0.3s ease;
-            color: #666;
-        }
-
-        .menu-item[aria-expanded="true"] .chevron-icon {
-            transform: rotate(180deg);
-            color: #fff;
-        }
-
-        .submenu-container {
-            padding-left: 36px;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            margin-top: 4px;
-            margin-bottom: 8px;
-            border-left: 1px solid #333;
-            margin-left: 23px;
-        }
-
-        .submenu-item {
-            font-size: 0.85em;
-            color: #888;
-            text-decoration: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-        }
-
-        .submenu-item:hover {
-            color: #00b7ff;
-            background-color: rgba(0, 183, 255, 0.05);
-        }
-
-        /* CSS das Hunts */
         .hunt-hub {
             font-family: 'Verdana', sans-serif;
         }
@@ -686,12 +592,16 @@
                                         <tbody>
                                             <tr th:each="item, stat : ${huntData.lootedItems}">
                                                 <td class="text-center text-secondary" th:text="${stat.count}">1</td>
-                                                <td class="text-start text-capitalize">
-                                                    <img th:src="'https://www.tibiawiki.com.br/wiki/Special:FilePath/' + ${#strings.replace(#strings.capitalizeWords(item.name), ' ', '_')} + '.gif'"
+
+                                                <td class="text-start text-capitalize"
+                                                    th:with="
+                                                    rawName=${item.name.trim()},
+                                                    cleanName=${rawName.toLowerCase().startsWith('a ') ? rawName.substring(2) : (rawName.toLowerCase().startsWith('an ') ? rawName.substring(3) : rawName)}">
+                                                    <img th:src="'https://www.tibiawiki.com.br/wiki/Special:FilePath/' + ${#strings.replace(#strings.capitalizeWords(cleanName), ' ', '_')} + '.gif'"
                                                         style="max-width: 48px; max-height: 48px; object-fit: contain; margin-right: 8px;"
                                                         onerror="this.src='https://www.tibiawiki.com.br/images/b/b4/Unknown_Item.gif'">
                                                     <span class="me-1" th:text="${item.count} + 'x'"></span>
-                                                    <span class="text-light" th:text="${item.name}">Item</span>
+                                                    <span class="text-light" th:text="${cleanName}">Item</span>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -718,10 +628,12 @@
                 </div>
             </div>
         </div>
-    </main>
 
+    </main>
+    <div th:replace="~{fragments :: modal-mapa}"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script th:src="@{/scripts/scripts.js}"></script>
+    <script th:src="@{/scripts/set-builder.js}"></script>
     <script>
         function addPartyMember() {
             const input = document.getElementById('partyMemberInput');
@@ -741,27 +653,10 @@
             }
         }
 
-        function abreviarVocacao(vocacaoStr) {
-            if (!vocacaoStr) return '?';
-            const v = String(vocacaoStr).toLowerCase();
-            if (v.includes('royal paladin')) return 'RP';
-            if (v.includes('paladin')) return 'P';
-            if (v.includes('elite knight')) return 'EK';
-            if (v.includes('knight')) return 'K';
-            if (v.includes('master sorcerer')) return 'MS';
-            if (v.includes('sorcerer')) return 'S';
-            if (v.includes('elder druid')) return 'ED';
-            if (v.includes('druid')) return 'D';
-            if (v.includes('exalted monk')) return 'EM';
-            if (v.includes('monk')) return 'M';
-            return '?';
-        }
-
         document.addEventListener("DOMContentLoaded", function () {
 
             document.querySelectorAll('.party-info-header').forEach(el => {
                 const criacaoStr = el.getAttribute('data-criacao') || '';
-                const lengthStr = el.getAttribute('data-length') || '';
                 const snapshotStr = el.getAttribute('data-snapshot');
 
                 let dataExibicao = criacaoStr;
@@ -817,242 +712,10 @@
             const fullSnapshotRender = document.getElementById('full-snapshot-render');
             if (fullSnapshotRender) {
                 fullSnapshotRender.className = "row row-cols-1 row-cols-xl-2 g-4";
-
                 const snapshotStr = fullSnapshotRender.getAttribute('data-snapshot');
                 if (snapshotStr) {
                     try {
                         const party = JSON.parse(snapshotStr);
-                        const imagensPadrao = {
-                            "Amulets": "https://www.tibiawiki.com.br/images/3/3e/Crystal_Necklace.gif", "Helmets": "https://www.tibiawiki.com.br/images/2/29/Leather_Helmet.gif",
-                            "Backpacks": "https://www.tibiawiki.com.br/images/9/9a/Backpack.gif", "Weapons": "https://www.tibiawiki.com.br/images/1/1f/Sword.gif",
-                            "Armors": "https://www.tibiawiki.com.br/images/0/0d/Leather_Armor.gif", "Shields": "https://www.tibiawiki.com.br/images/2/2d/Wooden_Shield.gif",
-                            "Rings": "https://www.tibiawiki.com.br/images/d/db/Axe_Ring.gif", "Legs": "https://www.tibiawiki.com.br/images/0/07/Leather_Legs.gif",
-                            "ExtraSlot": "https://www.tibiawiki.com.br/images/4/46/Moon_Mirror.gif", "Boots": "https://www.tibiawiki.com.br/images/9/94/Leather_Boots.gif"
-                        };
-                        const slotMatrix = [
-                            ["Amulets", "Helmets", "Backpacks"], ["Weapons", "Armors", "Shields"],
-                            ["Rings", "Legs", "ExtraSlot"], [null, "Boots", null]
-                        ];
-
-                        function calcularBonus(activeData) {
-                            let bonus = { ml: 0, dist: 0, sword: 0, axe: 0, club: 0, shield: 0, fist: 0 };
-                            let protecoes = { physical: 1, fire: 1, earth: 1, ice: 1, energy: 1, death: 1, holy: 1, lifeDrain: 1, manaDrain: 1 };
-                            let specials = { crit: 0, life: 0, mana: 0 };
-
-                            if (!activeData) return { bonus, protecoes, specials };
-
-                            const imbStats = {
-                                "Magic Level (Epiphany)": { stat: "ml", bonus: [1, 2, 4] },
-                                "Distance Skill (Precision)": { stat: "dist", bonus: [1, 2, 4] },
-                                "Sword Skill (Slash)": { stat: "sword", bonus: [1, 2, 4] },
-                                "Axe Skill (Chop)": { stat: "axe", bonus: [1, 2, 4] },
-                                "Club Skill (Bash)": { stat: "club", bonus: [1, 2, 4] },
-                                "Shielding (Blockade)": { stat: "shield", bonus: [1, 2, 4] },
-                                "Fire Protection (Dragon Hide)": { protElement: "fire", bonus: [3, 8, 15] },
-                                "Earth Protection (Lich Shroud)": { protElement: "earth", bonus: [3, 8, 15] },
-                                "Ice Protection (Quagmire)": { protElement: "ice", bonus: [3, 8, 15] },
-                                "Energy Protection (Cloud Fabric)": { protElement: "energy", bonus: [3, 8, 15] },
-                                "Death Protection (Demon Presence)": { protElement: "death", bonus: [2, 5, 10] },
-                                "Holy Protection (Fairy Wings)": { protElement: "holy", bonus: [3, 8, 15] },
-                                "Critical Hit (Strike)": { special: "crit", bonus: [15, 25, 50] },
-                                "Life Leech (Vampirism)": { special: "life", bonus: [5, 10, 25] },
-                                "Mana Leech (Void)": { special: "mana", bonus: [3, 5, 8] }
-                            };
-
-                            for (let slot in activeData) {
-                                const dados = activeData[slot];
-                                if (dados && dados.item) {
-                                    const item = dados.item;
-                                    if (item.atributos) {
-                                        let parts = String(item.atributos).toLowerCase().split(',');
-                                        parts.forEach(p => {
-                                            let match = p.match(/([a-z\s]+)\s*([+-]\s*\d+)/);
-                                            if (match) {
-                                                let attr = match[1].trim();
-                                                let val = parseInt(match[2].replace(/\s/g, ''));
-                                                if (attr === 'magic level') bonus.ml += val;
-                                                else if (attr.includes('sword fighting')) bonus.sword += val;
-                                                else if (attr.includes('axe fighting')) bonus.axe += val;
-                                                else if (attr.includes('club fighting')) bonus.club += val;
-                                                else if (attr.includes('distance fighting')) bonus.dist += val;
-                                                else if (attr.includes('shielding')) bonus.shield += val;
-                                                else if (attr.includes('fist')) bonus.fist += val;
-                                            }
-                                        });
-                                    }
-
-                                    if (item.protecao) {
-                                        let parts = String(item.protecao).toLowerCase().split(',');
-                                        parts.forEach(p => {
-                                            let match = p.match(/([a-z\s]+)\s*([+-]\s*\d+)\s*%/);
-                                            if (match) {
-                                                let element = match[1].trim();
-                                                let val = parseInt(match[2].replace(/\s/g, ''));
-                                                let factor = 1 - (val / 100);
-                                                if (element.includes('physical')) protecoes.physical *= factor;
-                                                else if (element.includes('fire')) protecoes.fire *= factor;
-                                                else if (element.includes('earth')) protecoes.earth *= factor;
-                                                else if (element.includes('ice')) protecoes.ice *= factor;
-                                                else if (element.includes('energy')) protecoes.energy *= factor;
-                                                else if (element.includes('death')) protecoes.death *= factor;
-                                                else if (element.includes('holy')) protecoes.holy *= factor;
-                                                else if (element.includes('life drain')) protecoes.lifeDrain *= factor;
-                                                else if (element.includes('mana drain')) protecoes.manaDrain *= factor;
-                                            }
-                                        });
-                                    }
-
-                                    if (dados.imbuements) {
-                                        dados.imbuements.forEach(imb => {
-                                            const details = imbStats[imb.tipo];
-                                            if (details) {
-                                                if (details.stat) bonus[details.stat] += details.bonus[imb.tier];
-                                                if (details.protElement) {
-                                                    let factor = 1 - (details.bonus[imb.tier] / 100);
-                                                    protecoes[details.protElement] *= factor;
-                                                }
-                                                if (details.special) {
-                                                    if (details.special === 'crit') specials.crit = Math.max(specials.crit, details.bonus[imb.tier]);
-                                                    else specials[details.special] += details.bonus[imb.tier];
-                                                }
-                                            }
-                                        });
-                                    }
-                                }
-                            }
-                            return { bonus, protecoes, specials };
-                        }
-
-                        function renderSkillsLeft(member, dataBonus) {
-                            let voc = String(member.vocation).toLowerCase();
-                            const bonus = dataBonus.bonus;
-
-                            let html = '<div class="d-flex flex-column w-100 mt-3" style="font-family: \'Verdana\', sans-serif;">';
-                            html += `<div><span class="d-block border-bottom border-dark pb-1 mb-2 text-center" style="font-size: 11px; color: #dfdfdf;">Skills</span></div>`;
-
-                            let skillsHtml = '<div class="d-flex flex-column gap-2">';
-
-                            const renderSkillBar = (label, baseVal, bVal) => {
-                                baseVal = parseInt(baseVal);
-                                if (isNaN(baseVal)) baseVal = (label === 'ML' ? 0 : 10);
-
-                                let total = baseVal + bVal;
-                                let barColor = bVal > 0 ? '#00ff00' : (label === 'ML' ? '#0dcaf0' : '#dc3545');
-                                let textClass = bVal > 0 ? 'text-success' : 'text-white';
-
-                                let percentual = 0;
-                                if (total > 0) {
-                                    percentual = (total * 17) % 100;
-                                    if (total === 10 && label !== 'ML') percentual = 0;
-                                }
-
-                                let tooltipAttr = '';
-                                if (bVal !== 0) {
-                                    let sign = bVal > 0 ? '+ ' : '- ';
-                                    let bValAbsoluto = Math.abs(bVal);
-                                    tooltipAttr = `data-bs-toggle="tooltip" data-bs-placement="top" title="${label} ${baseVal} ${sign}${bValAbsoluto} = ${total}"`;
-                                }
-
-                                return `
-                                    <div class="mb-1 p-1 rounded" style="background-color: #111; border: 1px solid #222;" ${tooltipAttr}>
-                                        <div class="d-flex justify-content-between px-1 mb-1">
-                                            <span style="color: #ccc; font-size: 11px;">${label}</span>
-                                            <span class="${textClass}" style="font-size: 11px;">${total}</span>
-                                        </div>
-                                        <div class="progress" style="height: 4px; background-color: #000; border-radius: 0;">
-                                            <div class="progress-bar" style="width: ${percentual}%; background-color: ${barColor}; transition: width 1s ease-out;"></div>
-                                        </div>
-                                    </div>
-                                `;
-                            };
-
-                            let sTemp = '';
-                            if (voc.includes('sorcerer') || voc.includes('druid')) {
-                                sTemp += renderSkillBar('ML', member.magicLevel, bonus.ml);
-                            } else if (voc.includes('paladin')) {
-                                sTemp += renderSkillBar('ML', member.magicLevel, bonus.ml) + renderSkillBar('Dist', member.distanceSkill, bonus.dist) + renderSkillBar('Shield', member.shieldingSkill, bonus.shield);
-                            } else if (voc.includes('knight')) {
-                                sTemp += renderSkillBar('ML', member.magicLevel, bonus.ml) + renderSkillBar('Sword', member.swordSkill, bonus.sword) + renderSkillBar('Axe', member.axeSkill, bonus.axe) + renderSkillBar('Club', member.clubSkill, bonus.club) + renderSkillBar('Shield', member.shieldingSkill, bonus.shield);
-                            } else if (voc.includes('monk')) {
-                                sTemp += renderSkillBar('ML', member.magicLevel, bonus.ml) + renderSkillBar('Fist', member.fistSkill, bonus.fist);
-                            }
-
-                            if (sTemp !== '') skillsHtml += sTemp;
-                            else skillsHtml += '<span class="text-secondary small text-center">Sem skills</span>';
-
-                            skillsHtml += '</div></div>';
-                            return html + skillsHtml;
-                        }
-
-                        function renderStatsRight(dataBonus) {
-                            const protecoes = dataBonus.protecoes;
-                            const specials = dataBonus.specials;
-
-                            let html = '<div class="d-flex flex-column gap-3 w-100" style="font-family: \'Verdana\', sans-serif;">';
-
-                            let specialHtml = '<div class="d-flex flex-column gap-1">';
-                            let hasSpecial = false;
-
-                            const renderSpecialLine = (label, val) => {
-                                if (val <= 0) return '';
-                                hasSpecial = true;
-                                return `
-                                    <div class="d-flex justify-content-between align-items-center px-1 border-secondary pb-1">
-                                        <span class="text-secondary" style="font-size: 0.85em;">${label}</span>
-                                        <span style="font-size: 0.85em;">+${val}%</span>
-                                    </div>
-                                `;
-                            };
-
-                            let spTemp = '';
-                            spTemp += renderSpecialLine('Critical hit', specials.crit);
-                            spTemp += renderSpecialLine('Life Leech amount', specials.life);
-                            spTemp += renderSpecialLine('Mana Leech amount', specials.mana);
-
-                            if (hasSpecial) specialHtml += spTemp;
-                            else specialHtml += '<span class="text-secondary small px-1">Nenhum</span>';
-
-                            specialHtml += '</div>';
-                            html += `<div><span class="d-block border-bottom border-dark pb-1 mb-2" style="font-size: 11px;">Imbuements</span>${specialHtml}</div>`;
-
-                            let protHtml = '<div class="d-flex flex-column gap-1">';
-                            const renderProtectionRow = (label, pVal, iconHtml) => {
-                                let val = Math.round((1 - pVal) * 100);
-                                if (val === 0) return '';
-                                let colorClass = val > 0 ? 'text-success' : 'text-danger';
-                                let sign = val > 0 ? '+' : '';
-
-                                return `
-                                    <div class="d-flex justify-content-between align-items-center px-1 border-secondary pb-1">
-                                        <span class="text-secondary" style="font-size: 0.85em;">${label}</span>
-                                        <div class="d-flex align-items-center gap-1">
-                                            <span class="${colorClass}" style="font-size: 0.85em;">${sign}${val}%</span>
-                                            ${iconHtml}
-                                        </div>
-                                    </div>
-                                `;
-                            };
-
-                            let pTemp = '';
-                            pTemp += renderProtectionRow('Physical', protecoes.physical, '<img src="https://www.tibiawiki.com.br/images/3/37/Physical_Damage_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
-                            pTemp += renderProtectionRow('Fire', protecoes.fire, '<img src="https://www.tibiawiki.com.br/images/f/fb/Burning_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
-                            pTemp += renderProtectionRow('Earth', protecoes.earth, '<img src="https://www.tibiawiki.com.br/images/5/5e/Poisoned_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
-                            pTemp += renderProtectionRow('Ice', protecoes.ice, '<img src="https://www.tibiawiki.com.br/images/8/88/Freezing_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
-                            pTemp += renderProtectionRow('Energy', protecoes.energy, '<img src="https://www.tibiawiki.com.br/images/3/30/Electrified_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
-                            pTemp += renderProtectionRow('Death', protecoes.death, '<img src="https://www.tibiawiki.com.br/images/9/9c/Cursed_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
-                            pTemp += renderProtectionRow('Holy', protecoes.holy, '<img src="https://www.tibiawiki.com.br/images/3/38/Dazzled_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
-                            pTemp += renderProtectionRow('Life Drain', protecoes.lifeDrain, '<img src="https://www.tibiawiki.com.br/images/f/f1/Drowning_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
-                            pTemp += renderProtectionRow('Mana Drain', protecoes.manaDrain, '<img src="https://www.tibiawiki.com.br/images/f/f1/Drowning_Icon.gif" style="width: 11px; height: 11px; vertical-align: middle;">');
-
-                            if (pTemp !== '') protHtml += pTemp;
-                            else protHtml += '<span class="text-secondary small px-1">Nenhuma</span>';
-                            protHtml += '</div>';
-
-                            html += `<div><span class="d-block border-bottom border-dark pb-1 mb-2" style="font-size: 11px;">Proteções</span>${protHtml}</div>`;
-
-                            html += '</div>';
-                            return html;
-                        }
 
                         party.forEach((member, index) => {
                             let sets = null;
@@ -1087,7 +750,7 @@
                             });
                             gridHtml += `</div>`;
 
-                            const dataBonus = calcularBonus(activeData);
+                            const dataBonus = calcularBonusSnapshot(activeData);
                             const htmlSkillsLeft = renderSkillsLeft(member, dataBonus);
                             const htmlStatsRight = renderStatsRight(dataBonus);
 

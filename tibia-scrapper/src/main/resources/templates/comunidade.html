@@ -8,98 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        .sidebar-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 8px 12px;
-            border-radius: 6px;
-            text-decoration: none;
-            color: #aaa;
-            transition: all 0.2s ease;
-            background: transparent;
-            cursor: pointer;
-        }
-
-        .menu-item:hover,
-        .menu-item[aria-expanded="true"] {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: #fff;
-        }
-
-        .menu-icon {
-            width: 24px;
-            text-align: center;
-            margin-right: 12px;
-            font-size: 1.1em;
-        }
-
-        .menu-text {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .menu-title {
-            font-size: 0.95em;
-            font-weight: 500;
-            line-height: 1.2;
-            color: #dfdfdf;
-            transition: color 0.2s;
-        }
-
-        .menu-subtitle {
-            font-size: 0.75em;
-            color: #666;
-            margin-top: 2px;
-        }
-
-        .menu-item:hover .menu-title {
-            color: #fff;
-        }
-
-        .chevron-icon {
-            font-size: 0.75rem;
-            transition: transform 0.3s ease;
-            color: #666;
-        }
-
-        .menu-item[aria-expanded="true"] .chevron-icon {
-            transform: rotate(180deg);
-            color: #fff;
-        }
-
-        .submenu-container {
-            padding-left: 36px;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            margin-top: 4px;
-            margin-bottom: 8px;
-            border-left: 1px solid #333;
-            margin-left: 23px;
-        }
-
-        .submenu-item {
-            font-size: 0.85em;
-            color: #888;
-            text-decoration: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-        }
-
-        .submenu-item:hover {
-            color: #00b7ff;
-            background-color: rgba(0, 183, 255, 0.05);
-        }
+        .menu-item[aria-expanded="true"]
     </style>
 </head>
 
@@ -206,6 +115,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script th:src="@{/scripts/scripts.js}"></script>
+    <div th:replace="~{fragments :: modal-mapa}"></div>
 </body>
 
 </html>

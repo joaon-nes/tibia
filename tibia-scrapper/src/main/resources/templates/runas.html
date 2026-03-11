@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TibiaBuilder - Enciclopédia de Runas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="referrer" content="no-referrer">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-dark text-white">
+
+    <div th:replace="~{fragments :: header}"></div>
+
+    <main class="container-fluid px-lg-5 mb-5 flex-grow-1 mt-2">
+        <div class="row g-4">
+
+            <div th:replace="~{fragments :: sidebar}"></div>
+
+            <div class="col-md-9 col-lg-9 col-xl-10 order-2">
+
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+                    <h2 class="text-warning m-0"><i class="fa-solid fa-gem me-2"></i> Enciclopédia de Runas</h2>
+                    <span class="badge bg-secondary" th:text="${runas.size()} + ' Runas Listadas'">0 Runas</span>
+                </div>
+
+                <div class="row g-4 mb-5">
+                    <div th:each="runa : ${runas}" class="col-md-6 col-lg-4 col-xxl-3">
+                        <div class="card runa-card bg-black border-secondary h-100">
+
+                            <div class="card-body text-center p-3 d-flex flex-column">
+                                <div class="mb-3 d-flex align-items-center justify-content-center"
+                                    style="height: 64px;">
+                                    <img th:src="${runa.imagemUrl}"
+                                        style="max-height: 100%; width: auto; filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.8));"
+                                        th:alt="${runa.nome}">
+                                </div>
+
+                                <h5 class="text-light fw-bold mb-2" th:text="${runa.nome}">Nome da Runa</h5>
+
+                                <div class="mb-3">
+                                    <span class="spell-words text-warning"
+                                        th:text="'&quot;' + ${runa.spellWords} + '&quot;'">"adori blank"</span>
+                                </div>
+
+                                <div class="mb-3 pb-3 border-bottom border-dark text-start">
+                                    <span class="text-light d-block mb-1" style="font-size: 0.85rem;">Vocações:</span>
+                                    <span class="text-secondary text-capitalize" style="font-size: 0.85rem;"
+                                        th:text="${runa.vocacoes}">Druid, Sorcerer</span>
+                                </div>
+
+                                <div class="mb-3 text-start flex-grow-1">
+                                    <p class="efeito-text m-0" th:title="${runa.efeito}" th:text="${runa.efeito}">
+                                        Descrição do efeito...
+                                    </p>
+                                </div>
+
+                                <ul
+                                    class="list-group list-group-flush stat-list mt-auto border-top border-dark pt-2 text-start">
+                                    <li
+                                        class="list-group-item bg-transparent border-dark px-1 py-2 d-flex justify-content-between align-items-center">
+                                        <span class="text-light">Level Mínimo</span>
+                                        <span class="text-secondary" th:text="${runa.levelMinimo}">0</span>
+                                    </li>
+                                    <li
+                                        class="list-group-item bg-transparent border-dark px-1 py-2 d-flex justify-content-between align-items-center">
+                                        <span class="text-light">Magic Level</span>
+                                        <span class="text-secondary" th:text="${runa.magicLevel}">0</span>
+                                    </li>
+                                    <li
+                                        class="list-group-item bg-transparent border-dark px-1 py-2 d-flex justify-content-between align-items-center">
+                                        <span class="text-light">Mana</span>
+                                        <span class="text-secondary" th:text="${runa.mana}">0</span>
+                                    </li>
+                                    <li
+                                        class="list-group-item bg-transparent border-dark px-1 py-2 d-flex justify-content-between align-items-center">
+                                        <span class="text-light">Soul Points</span>
+                                        <span class="text-secondary" th:text="${runa.soulPoints}">0</span>
+                                    </li>
+                                    <li
+                                        class="list-group-item bg-transparent border-0 px-1 py-2 d-flex justify-content-between align-items-center">
+                                        <span class="text-light">Premium</span>
+                                        <span class="text-secondary text-capitalize"
+                                            th:text="${runa.premium}">Sim</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${runas == null or runas.isEmpty()}" class="col-12 text-center py-5">
+                    <i class="fa-solid fa-gem text-secondary fa-3x mb-3"></i>
+                    <h4 class="text-secondary">Nenhuma runa encontrada.</h4>
+                    <p class="text-secondary">Acesse o painel admin para iniciar a importação da base de dados.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments :: modal-mapa}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/scripts/scripts.js}" defer></script>
+</body>
+
+</html>

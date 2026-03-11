@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TibiaBuilder - Recuperar Senha</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-dark text-white align-items-center justify-content-center">
+
+    <div class="auth-card rounded overflow-hidden shadow-lg"
+        style="width: 100%; max-width: 400px; background-color: #1a1a1a; border: 1px solid #333;">
+        <div class="auth-header text-center p-4" style="background-color: #111; border-bottom: 1px solid #333;">
+            <a th:href="@{/}" class="text-decoration-none">
+                <h3 class="tibia-logo fw-bold fs-2 m-0 text-warning"><i class="fa-solid fa-dragon"></i> TibiaBuilder
+                </h3>
+            </a>
+            <p class="text-secondary mt-2 mb-0">Recuperação de Senha</p>
+        </div>
+
+        <div class="p-4">
+            <p class="text-secondary small text-center mb-4">Insira o seu endereço de email abaixo. Enviaremos um link
+                para criar uma nova senha.</p>
+
+            <form th:action="@{/recuperar-senha}" method="post">
+                <div class="mb-4">
+                    <label class="form-label text-secondary small">Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-black border-secondary text-secondary"><i
+                                class="fa-solid fa-envelope"></i></span>
+                        <input type="email" name="email" class="form-control bg-dark text-white border-secondary"
+                            placeholder="O seu email registado" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-warning w-100 fw-bold mb-3"><i
+                        class="fa-solid fa-paper-plane me-2"></i> Enviar Link</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <a th:href="@{/login}" class="text-info text-decoration-none small"><i
+                        class="fa-solid fa-arrow-left me-1"></i> Voltar ao Login</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

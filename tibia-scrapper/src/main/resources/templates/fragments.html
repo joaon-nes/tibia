@@ -3,14 +3,13 @@
 
 <body>
 
-    <nav th:fragment="header"
-        class="navbar navbar-expand-lg navbar-dark bg-black border-secondary mb-4 position-relative">
+    <nav th:fragment="header" class="navbar navbar-expand-lg tibia-navbar position-relative mb-4">
         <div class="container-fluid px-lg-5 d-flex justify-content-between align-items-center">
 
             <div style="flex: 1;"></div>
 
             <div class="position-absolute top-50 start-50 translate-middle text-center" style="z-index: 10;">
-                <a class="navbar-brand fw-bold text-warning fs-3 m-0" href="/">
+                <a class="navbar-brand tibia-logo fw-bold fs-2 m-0" th:href="@{/}">
                     <i class="fa-solid fa-dragon"></i> TibiaBuilder
                 </a>
             </div>
@@ -18,50 +17,22 @@
             <div class="d-flex align-items-center justify-content-end gap-2" style="flex: 1;">
                 <div class="d-flex align-items-center" sec:authorize="isAuthenticated()">
 
-                    <div class="dropdown me-4 pe-2">
-                        <button class="btn btn-sm btn-outline-light position-relative border-0" type="button"
-                            id="dropdownNotificacoes" data-bs-toggle="dropdown" aria-expanded="false"
-                            onclick="carregarNotificacoes()">
-                            <i class="fa-solid fa-bell fs-5"></i>
-                            <span id="notif-badge"
-                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
-                                style="font-size: 0.6rem;">0</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary shadow"
-                            aria-labelledby="dropdownNotificacoes"
-                            style="width: 320px; max-height: 400px; overflow-y: auto;">
-                            <li>
-                                <h6 class="dropdown-header text-warning fw-bold border-bottom border-secondary">Últimas
-                                    Atualizações</h6>
-                            </li>
-                            <div id="lista-notificacoes-preview">
-                                <li class="text-center p-3 text-secondary"><i class="fas fa-spinner fa-spin"></i>
-                                    Carregando...</li>
-                            </div>
-                            <li>
-                                <hr class="dropdown-divider border-secondary">
-                            </li>
-                            <li><a class="dropdown-item text-center text-info small fw-bold py-2"
-                                    href="/notificacoes">Ver todas as notificações</a></li>
-                        </ul>
-                    </div>
-
                     <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" id="dropdownUser"
+                        <button class="btn btn-sm tibia-btn-outline dropdown-toggle" type="button" id="dropdownUser"
                             data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa-solid fa-user"></i> 
+                            <i class="fa-solid fa-user"></i>
                             <span class="d-none d-md-inline ms-1" sec:authentication="name">Usuario</span>
-                            
-                            <span sec:authorize="hasRole('ADMIN')" class="badge bg-danger ms-1 fw-normal" style="font-size: 0.6em;">ADMIN</span>
+                            <span sec:authorize="hasRole('ADMIN')" class="badge bg-danger ms-1 fw-normal"
+                                style="font-size: 0.6em;">ADMIN</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary shadow"
+                        <ul class="dropdown-menu dropdown-menu-end tibia-dropdown shadow"
                             aria-labelledby="dropdownUser">
-                            <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item text-warning" href="/admin"><i
-                                        class="fa-solid fa-gear me-2"></i> Painel Admin</a></li>
-                            <li><a class="dropdown-item text-light" href="/personagem"> Personagem</a></li>
-                            <li><a class="dropdown-item text-light" href="/perfil"> Editar Perfil</a></li>
+                            <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item tibia-gold-text"
+                                    th:href="@{/admin}"><i class="fa-solid fa-gear me-2"></i> Painel Admin</a></li>
+                            <li><a class="dropdown-item text-light" th:href="@{/personagem}"> Personagem</a></li>
+                            <li><a class="dropdown-item text-light" th:href="@{/perfil}"> Editar Perfil</a></li>
                             <li>
-                                <hr class="dropdown-divider border-secondary opacity-50">
+                                <hr class="dropdown-divider tibia-border">
                             </li>
                             <li>
                                 <form th:action="@{/logout}" method="post" class="m-0 p-0 px-2">
@@ -71,10 +42,39 @@
                             </li>
                         </ul>
                     </div>
+
+                    <div class="dropdown me-4 pe-2">
+                        <button class="btn btn-sm tibia-btn-outline position-relative border-0" type="button"
+                            id="dropdownNotificacoes" data-bs-toggle="dropdown" aria-expanded="false"
+                            onclick="carregarNotificacoes()">
+                            <i class="fa-solid fa-bell fs-5"></i>
+                            <span id="notif-badge"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
+                                style="font-size: 0.6rem;">0</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end tibia-dropdown shadow"
+                            aria-labelledby="dropdownNotificacoes">
+                            <li>
+                                <h6 class="dropdown-header tibia-gold-text fw-bold border-bottom tibia-border">Últimas
+                                    Atualizações</h6>
+                            </li>
+                            <div id="lista-notificacoes-preview">
+                                <li class="text-center p-3 text-secondary"><i class="fas fa-spinner fa-spin"></i>
+                                    Carregando...</li>
+                            </div>
+                            <li>
+                                <hr class="dropdown-divider tibia-border">
+                            </li>
+                            <li><a class="dropdown-item text-center text-info small fw-bold py-2"
+                                    th:href="@{/notificacoes}">Ver todas</a></li>
+                        </ul>
+                    </div>
+
+                    
                 </div>
 
                 <div sec:authorize="!isAuthenticated()">
-                    <a href="/login" class="btn btn-sm btn-warning fw-bold px-3"><i
+                    <a th:href="@{/login}" class="btn btn-sm tibia-btn fw-bold px-3"><i
                             class="fa-solid fa-right-to-bracket"></i> Entrar</a>
                 </div>
             </div>
@@ -82,78 +82,125 @@
     </nav>
 
     <aside th:fragment="sidebar" class="col-lg-3 col-xl-2 order-1">
-        <div class="sidebar-menu">
+        <div class="tibia-menu-box mb-4">
+            <div class="tibia-menu-header">Menu Principal</div>
+            <div class="sidebar-menu tibia-menu-content">
 
-            <a href="/comunidade" class="menu-item">
-                <i class="fa-solid fa-users text-primary menu-icon"></i>
-                <div class="menu-text">
-                    <span class="menu-title">Comunidade</span>
-                    <span class="menu-subtitle">Fórum e discussões</span>
-                </div>
-            </a>
+                <a th:href="@{/comunidade}" class="menu-item">
+                    <i class="fa-solid fa-users menu-icon"></i>
+                    <div class="menu-text">
+                        <span class="menu-title">Comunidade</span>
+                        <span class="menu-subtitle">Fórum e discussões</span>
+                    </div>
+                </a>
 
-            <a href="#collapseEnciclopedia" class="menu-item" data-bs-toggle="collapse" role="button"
-                aria-expanded="false" aria-controls="collapseEnciclopedia">
-                <i class="fa-solid fa-book-open text-warning menu-icon"></i>
-                <div class="menu-text">
-                    <span class="menu-title">Enciclopédia</span>
-                    <span class="menu-subtitle">Base de dados</span>
-                </div>
-                <i class="fa-solid fa-chevron-down chevron-icon"></i>
-            </a>
+                <a href="#collapseEnciclopedia" class="menu-item" data-bs-toggle="collapse" role="button"
+                    aria-expanded="false" aria-controls="collapseEnciclopedia">
+                    <i class="fa-solid fa-book-open menu-icon"></i>
+                    <div class="menu-text">
+                        <span class="menu-title">Enciclopédia</span>
+                        <span class="menu-subtitle">Base de dados</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down chevron-icon"></i>
+                </a>
 
-            <div class="collapse" id="collapseEnciclopedia">
-                <div class="submenu-container">
-                    <a href="#" class="submenu-item">Vocações</a>
-                    <a href="/enciclopedia/equipamentos" class="submenu-item">Equipamentos</a>
-                    <a href="#" class="submenu-item">Runas</a>
-                    <a href="#" class="submenu-item">Magias</a>
-                    <a href="#" class="submenu-item">Criaturas</a>
-                    <a href="#" class="submenu-item">Imbuements</a>
+                <div class="collapse" id="collapseEnciclopedia">
+                    <div class="submenu-container">
+                        <a th:href="@{#}" class="submenu-item">Vocações</a>
+                        <a th:href="@{/enciclopedia/equipamentos}" class="submenu-item">Equipamentos</a>
+                        <a th:href="@{/enciclopedia/runas}" class="submenu-item">Runas</a>
+                        <a th:href="@{/enciclopedia/magias}" class="submenu-item">Magias</a>
+                        <a th:href="@{/enciclopedia/criaturas}" class="submenu-item">Criaturas</a>
+                        <a th:href="@{#}" class="submenu-item">Imbuements</a>
+                    </div>
                 </div>
+
+                <a th:href="@{/buscar-party}" class="menu-item">
+                    <i class="fa-solid fa-users-viewfinder menu-icon"></i>
+                    <div class="menu-text">
+                        <span class="menu-title">Buscar Party</span>
+                        <span class="menu-subtitle">Encontre jogadores</span>
+                    </div>
+                </a>
+
+                <a href="javascript:void(0)" class="menu-item" onclick="abrirMapa(32369, 32240, 7)">
+                    <i class="fa-solid fa-map menu-icon"></i>
+                    <div class="menu-text">
+                        <span class="menu-title">Mapa</span>
+                        <span class="menu-subtitle">Explore o continente</span>
+                    </div>
+                </a>
+
+                <a th:href="@{/hunts}" class="menu-item">
+                    <i class="fa-solid fa-map-location-dot menu-icon"></i>
+                    <div class="menu-text">
+                        <span class="menu-title">Hunts</span>
+                        <span class="menu-subtitle">Locais de caça</span>
+                    </div>
+                </a>
+
+                <a th:href="@{/builder}" class="menu-item">
+                    <i class="fa-solid fa-user-shield menu-icon"></i>
+                    <div class="menu-text">
+                        <span class="menu-title">Set Builder</span>
+                        <span class="menu-subtitle">Simulador de status</span>
+                    </div>
+                </a>
+
+                <a href="#" class="menu-item disabled-item" style="pointer-events: none; opacity: 0.5;">
+                    <i class="fa-solid fa-handshake menu-icon"></i>
+                    <div class="menu-text">
+                        <span class="menu-title">Trade Market <span class="badge bg-danger ms-1 fw-normal"
+                                style="font-size: 0.6em;">EM BREVE</span></span>
+                        <span class="menu-subtitle">Compra e venda</span>
+                    </div>
+                </a>
+
             </div>
-
-            <a href="/buscar-party" class="menu-item">
-                <i class="fa-solid fa-users-viewfinder text-info menu-icon"></i>
-                <div class="menu-text">
-                    <span class="menu-title">Buscar Party</span>
-                    <span class="menu-subtitle">Encontre jogadores</span>
-                </div>
-            </a>
-
-            <a href="javascript:void(0)" class="menu-item" onclick="abrirMapa(32369, 32240, 7)">
-                <i class="fa-solid fa-map text-success menu-icon"></i>
-                <div class="menu-text">
-                    <span class="menu-title">Mapa</span>
-                    <span class="menu-subtitle">Explore o continente</span>
-                </div>
-            </a>
-
-            <a href="/hunts" class="menu-item">
-                <i class="fa-solid fa-map-location-dot text-danger menu-icon"></i>
-                <div class="menu-text">
-                    <span class="menu-title">Hunts</span>
-                    <span class="menu-subtitle">Locais de caça</span>
-                </div>
-            </a>
-            <a href="/builder" class="menu-item">
-                <i class="fa-solid fa-user-shield text-success menu-icon"></i>
-                <div class="menu-text">
-                    <span class="menu-title">Set Builder</span>
-                    <span class="menu-subtitle">Simulador de status</span>
-                </div>
-            </a>
-            <a href="#" class="menu-item" style="pointer-events: none; opacity: 0.5;">
-                <i class="fa-solid fa-handshake menu-icon" style="color: #ffc107;"></i>
-                <div class="menu-text">
-                    <span class="menu-title">Trade Market <span class="badge bg-danger ms-1 fw-normal"
-                            style="font-size: 0.6em;">EM BREVE</span></span>
-                    <span class="menu-subtitle">Compra e venda</span>
-                </div>
-            </a>
-
         </div>
     </aside>
+
+    <div th:fragment="modal-mapa" class="modal fade" id="mapaGlobalModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-transparent border-0 position-relative">
+                <div class="modal-body p-0 bg-dark position-relative shadow-lg"
+                    style="height: 500px; border-radius: 12px; overflow: hidden; border: 2px solid #444;">
+                    <iframe id="modal-global-iframe" src="" width="100%" height="100%" frameborder="0"
+                        style="border:0;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:fragment="modal-buscar-item" class="modal fade" id="modalAdicionarItem" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary text-white">
+                <div class="modal-header border-secondary bg-black">
+                    <h5 class="modal-title text-warning"><i class="fa-solid fa-magnifying-glass me-2"></i>
+                        Buscar Item</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 bg-black">
+
+                    <input type="text" id="inputBuscaItem" class="form-control bg-dark text-white border-secondary mb-3"
+                        placeholder="Procurar equipamento" onkeyup="buscarItemApi(this.value)">
+
+                    <div id="listaResultadosItem" class="list-group mb-3" style="max-height: 200px; overflow-y: auto;">
+                    </div>
+
+                    <div id="areaExaltationForge" class="p-3 border border-secondary rounded bg-dark d-none">
+                    </div>
+
+                </div>
+                <div class="modal-footer border-secondary bg-black d-none" id="footerConfirmarItem">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success btn-sm" onclick="salvarItemNoSet()"><i
+                            class="fa-solid fa-check me-1"></i> Equipar Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 

@@ -1,6 +1,7 @@
 package com.joao.tibia_scrapper.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.joao.tibia_scrapper.dto.EquipamentoFilterDTO;
 import com.joao.tibia_scrapper.model.Equipamento;
 import com.joao.tibia_scrapper.model.Usuario;
 import com.joao.tibia_scrapper.repository.EquipamentoRepository;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,6 +31,29 @@ public class EquipamentoRestController {
         this.equipamentoRepository = equipamentoRepository;
         this.usuarioRepository = usuarioRepository;
         this.objectMapper = objectMapper;
+    }
+
+    @GetMapping("/filtrar")
+    public List<Equipamento> filtrar(EquipamentoFilterDTO filtro) {
+        List<String> categoriasLista = null;
+        if (filtro.categoria() != null && !filtro.categoria().isEmpty()) {
+            categoriasLista = Arrays.asList(filtro.categoria().split(","));
+        }
+        return equipamentoRepository.findComFiltrosAvancados(
+                categoriasLista,
+                filtro.level(),
+                filtro.vocacao(),
+                filtro.elemento(),
+                filtro.protecao(),
+                filtro.atributos(),
+                filtro.bonusEspecial(),
+                filtro.slots(),
+                filtro.tier());
+    }
+
+    @GetMapping("/categoria/{cat}")
+    public List<Equipamento> porCategoria(@PathVariable String cat) {
+        return equipamentoRepository.findByCategoriaIgnoreCase(cat);
     }
 
     @GetMapping("/buscar")
@@ -52,9 +77,7 @@ public class EquipamentoRestController {
             vocacaoFiltro = "monk";
 
         return equipamentoRepository.findFiltrado(termo, levelUser, vocacaoFiltro)
-                .stream()
-                .limit(10)
-                .collect(Collectors.toList());
+                .stream().limit(10).collect(Collectors.toList());
     }
 
     @PostMapping("/salvar-sets")
@@ -66,7 +89,6 @@ public class EquipamentoRestController {
             @SuppressWarnings("unchecked")
             Map<String, Object> sets = (Map<String, Object>) payload.get("sets");
             String setsJson = objectMapper.writeValueAsString(sets);
-
             usuario.setSetsEquipamentos(setsJson);
             usuarioRepository.save(usuario);
 
